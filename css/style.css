@@ -1,0 +1,47 @@
+.jumbotron {
+    height: 40vh;
+}
+
+.navbar {
+    background-color: #FF6663;
+    padding: 0.78rem 0;
+}
+
+footer {
+    padding: 1.5rem 0;
+    background-color: #5F5566;
+}
+
+footer p {
+    margin-bottom: 0;
+    color: #d8d8d8;
+}
+
+footer a {
+    color: #d8d8d8;
+}
+
+footer a:hover {
+    color: #b8b8b8;
+}
+
+.d-print-only {
+    display: none !important;
+}
+/*
+    LOGIC FOR PRINTING
+*/
+@media print
+{   
+    html, body {
+        padding: 0;
+    }
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+
+    .d-print-only {
+        display: block !important;
+    }
+}
