@@ -1,15 +1,10 @@
-.jumbotron {
-    height: 40vh;
+body{
+    background-color: #f6f6f7;
 }
-
-.navbar {
-    background-color: #FF6663;
-    padding: 0.78rem 0;
-}
-
 footer {
     padding: 1.5rem 0;
     background-color: #5F5566;
+    position: bo;
 }
 
 footer p {
@@ -25,9 +20,34 @@ footer a:hover {
     color: #b8b8b8;
 }
 
+.jumbotron {
+    height: 50vh;
+    border-bottom: 1px solid #dddae0;
+}
+
+.navbar {
+    background-color: #FF6663;
+    padding: 0.78rem 0;
+}
+
+.about-us {
+    padding: 3rem 0;
+}
+
+#present-icon {
+    height: 15rem;
+    width: auto;
+    margin-bottom: 2rem;
+}
+
+
+/*
+    Utility functions
+*/
 .d-print-only {
     display: none !important;
 }
+
 /*
     LOGIC FOR PRINTING
 */
