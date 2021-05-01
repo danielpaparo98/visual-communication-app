@@ -112,7 +112,14 @@ LOGIC FOR PRINTING
 */
 
 @media print {
-    
+    * {
+        -webkit-transition: none !important;
+        transition: none !important;
+      }
+
+    .col-sm {
+        width: 25%;
+    }
     .card-body {
         padding: 0rem 0.2rem;
     }
@@ -136,10 +143,11 @@ LOGIC FOR PRINTING
 
     .container {
         padding: 0 !important;
+        width: 100% !important;
     }
 
     .card {
-        border-width: 0;
+        border-width: 0 !important;
     }
 
     .card h6, .card p {
