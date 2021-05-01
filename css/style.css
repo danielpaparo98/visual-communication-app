@@ -1,10 +1,16 @@
-body{
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Raleway&display=swap');
+body {
     background-color: #f6f6f7;
+    font-family: 'Raleway', sans-serif !important;
 }
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Fredoka One', cursive;
+}
+
 footer {
     padding: 1.5rem 0;
     background-color: #5F5566;
-    position: bo;
 }
 
 footer p {
@@ -26,8 +32,16 @@ footer a:hover {
 }
 
 .navbar {
-    background-color: #FF6663;
+    background-color: #5F5566;
     padding: 0.78rem 0;
+}
+
+.nav-link, .navbar-brand {
+    color: #d8d8d8;
+}
+
+.nav-link:hover, .nav-link:focus, .navbar-brand:hover, .navbar-brand:focus {
+    color: #f1f1f1;
 }
 
 .about-us {
@@ -40,10 +54,28 @@ footer a:hover {
     margin-bottom: 2rem;
 }
 
+.talking-chart {
+    color: #FF6663 !important;
+}
+
+/*
+    Bootstrap customisations
+*/
+
+.btn-primary {
+    background-color: #5F5566;
+    border-color: #5F5566;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: #453e4a;
+    border-color: #453e4a;
+}
 
 /*
     Utility functions
 */
+
 .d-print-only {
     display: none !important;
 }
@@ -51,16 +83,14 @@ footer a:hover {
 /*
     LOGIC FOR PRINTING
 */
-@media print
-{   
+
+@media print {
     html, body {
         padding: 0;
     }
-    .no-print, .no-print *
-    {
+    .no-print, .no-print * {
         display: none !important;
     }
-
     .d-print-only {
         display: block !important;
     }
