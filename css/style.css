@@ -128,8 +128,7 @@ LOGIC FOR PRINTING
     * {
         -webkit-transition: none !important;
         transition: none !important;
-      }
-
+    }
     .col-sm {
         width: 25%;
     }
@@ -153,18 +152,17 @@ LOGIC FOR PRINTING
         margin: 0 auto !important;
         max-width: 100% !important;
     }
-
     .container {
         padding: 0 !important;
         width: 100% !important;
     }
-
     .card {
         border-width: 0 !important;
     }
-
     .card h6, .card p {
         overflow: visible;
     }
-
+    .card-img-top {
+        padding: 0;
+    }
 }
