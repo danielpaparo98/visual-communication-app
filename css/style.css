@@ -109,4 +109,10 @@ footer a:hover {
     .d-print-only {
         display: block !important;
     }
+
+    .app-body, .chart-area {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 }
