@@ -4,7 +4,7 @@ body {
     font-family: 'Raleway', sans-serif !important;
 }
 
-h1,h2,h3,h4,h5,h6, .watermark, .heading-input {
+h1, h2, h3, h4, h5, h6, .watermark, .heading-input {
     font-family: 'Fredoka One', cursive;
 }
 
@@ -62,8 +62,7 @@ footer a:hover {
     padding: 2rem;
 }
 
-
-.heading-input{
+.heading-input {
     width: fit-content;
     font-size: 1.5rem;
 }
@@ -84,7 +83,10 @@ footer a:hover {
 
 .text-center input {
     text-align: center;
-    word-wrap: break-word
+    word-wrap: break-word;
+    size: '' !important;
+    width: 100% !important;
+    overflow: hidden;
 }
 
 /*
@@ -95,11 +97,25 @@ footer a:hover {
     display: none !important;
 }
 
+.modal-button, .modal-button:hover, .modal-button:focus, .modal-button:active, .modal-button:focus-visible {
+    background-color: #ffffff00;
+    border-color: #ffffff00;
+}
+
+.card h4, .card p {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 /*
-    LOGIC FOR PRINTING
+LOGIC FOR PRINTING
 */
 
 @media print {
+    
+    .card-body {
+        padding: 0rem 1rem;
+    }
     html, body {
         padding: 0;
     }
@@ -109,10 +125,17 @@ footer a:hover {
     .d-print-only {
         display: block !important;
     }
-
     .app-body, .chart-area {
         width: 100% !important;
+        height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
+        margin: 0 auto !important;
+        max-width: 100% !important;
     }
+
+    .container {
+        padding: 0 !important;
+    }
+
 }
