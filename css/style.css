@@ -4,7 +4,7 @@ body {
     font-family: 'Raleway', sans-serif !important;
 }
 
-h1,h2,h3,h4,h5,h6, .watermark {
+h1,h2,h3,h4,h5,h6, .watermark, .heading-input {
     font-family: 'Fredoka One', cursive;
 }
 
@@ -58,6 +58,16 @@ footer a:hover {
     color: #FF6663 !important;
 }
 
+.chart-area {
+    padding: 2rem;
+}
+
+
+.heading-input{
+    width: fit-content;
+    font-size: 1.5rem;
+}
+
 /*
     Bootstrap customisations
 */
@@ -70,6 +80,11 @@ footer a:hover {
 .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
     background-color: #453e4a;
     border-color: #453e4a;
+}
+
+.text-center input {
+    text-align: center;
+    word-wrap: break-word
 }
 
 /*
