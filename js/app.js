@@ -52,9 +52,9 @@ Vue.component('comm-card', {
     <img-modal></img-modal>
     <div class="card-body">
         <h5 class="text-center d-print-only">{{ heading }}</h5>
-        <input v-model="heading" class="heading-input text-center d-print-none">
+        <input v-model="heading" maxlength="12" class="heading-input text-center d-print-none">
         <p class="text-center d-print-only">{{ subtitle }}</p>
-        <input v-model="subtitle" class="text-center d-print-none">
+        <input v-model="subtitle" maxlength="19" class="text-center d-print-none">
     </div>
     </div>
     `

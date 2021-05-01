@@ -114,7 +114,7 @@ LOGIC FOR PRINTING
 @media print {
     
     .card-body {
-        padding: 0rem 1rem;
+        padding: 0rem 0.2rem;
     }
     html, body {
         padding: 0;
@@ -136,6 +136,14 @@ LOGIC FOR PRINTING
 
     .container {
         padding: 0 !important;
+    }
+
+    .card {
+        border-width: 0;
+    }
+
+    .card h6, .card p {
+        overflow: visible;
     }
 
 }
