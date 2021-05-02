@@ -121,6 +121,26 @@ footer a:hover {
     padding: 3rem;
 }
 
+/* HIDE RADIO */
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + label img {
+  cursor: pointer;
+  width: 10rem;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + label img {
+  outline: 1px solid #a897b4;
+  border-radius: 0.5rem;
+}
+
 /*
 LOGIC FOR PRINTING
 */
@@ -133,7 +153,12 @@ LOGIC FOR PRINTING
     .col-sm {
         width: 25%;
     }
+    .card {
+        border-width: 0 !important;
+        height: 18vh;
+    }
     .card-body {
+        overflow: visible;
         padding: 0rem 0.2rem;
     }
     html, body {
@@ -157,16 +182,16 @@ LOGIC FOR PRINTING
         padding: 0 !important;
         width: 100% !important;
     }
-    .card {
-        border-width: 0 !important;
-        height: 18vh;
-    }
     .card h5, .card p {
-        overflow: visible;
-        margin: 0 !important;
-        padding: 0 !important;
+        margin: 1px !important;
+        padding: 1px !important;
     }
     .card-img-top {
-        padding: 0;
+        padding: 0 !important;
+        width: 80% !important;
+        height: auto !important;
+        max-width:100% !important;
+        max-height:100% !important;
     }
+    
 }

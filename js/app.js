@@ -10,7 +10,22 @@ Vue.component('comm-card', {
             icons : [
                 'img/icons/user.svg',
                 'img/icons/watch.svg',
-                'img/icons/zoom-in.svg'
+                'img/icons/zoom-in.svg',
+                'img/icons/activty.svg',
+                'img/icons/airplay.svg',
+                'img/icons/alert-circle.svg',
+                'img/icons/alert-triangle.svg',
+                'img/icons/align-center.svg',
+                'img/icons/align-justify.svg',
+                'img/icons/align-right.svg',
+                'img/icons/anchor.svg',
+                'img/icons/aperture.svg',
+                'img/icons/archive.svg',
+                'img/icons/arrow-down-circle.svg',
+                'img/icons/arrow-down-left.svg',
+                'img/icons/bar-chart.svg',
+                'img/icons/at-sign.svg',
+                'img/icons/award.svg',
             ],
         }
     },
@@ -29,11 +44,15 @@ Vue.component('comm-card', {
 
 
         <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
-                <div v-for="icon in icons" :key="icon.message">
-                    <b-form-radio v-model="img_addr"  name="icons" :value="icon">
-                        <img :src="icon" :alt=img_alt>
-                    </b-form-radio>
+            <div class="container">
+                <div class="row">
+                    <div v-for="icon in icons" :key="icon.message" class="col">
+                            <b-form-radio v-model="img_addr"  name="icons" :value="icon" >
+                                <img :src="icon" :alt=img_alt>
+                            </b-form-radio>
+                    </div>
                 </div>
+            </div>
         </b-modal>
     </div>
     `
