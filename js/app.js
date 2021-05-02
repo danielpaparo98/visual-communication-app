@@ -1,3 +1,4 @@
+
 Vue.component('comm-card', {
     props:['modal_id'],
     data: function () {
@@ -6,6 +7,11 @@ Vue.component('comm-card', {
             img_alt: '',
             heading: '',
             subtitle: '',
+            icons : [
+                'img/icons/user.svg',
+                'img/icons/watch.svg',
+                'img/icons/zoom-in.svg'
+            ],
         }
     },
     template: `
@@ -23,9 +29,11 @@ Vue.component('comm-card', {
 
 
         <b-modal :id="modal_id" size="lg" title="Select a new icon" ok-only no-stacking>
-          <p class="my-2">First Modal</p>
-          <b-form-radio v-model="img_addr" v-bind="img_addr" :aria-describedby="ariaDescribedby" name="icons" value="img/icons/watch.svg">Option A</b-form-radio>
-          <b-form-radio v-model="img_addr" :aria-describedby="ariaDescribedby" name="icons" value="img/icons/zoom-in.svg">Option B</b-form-radio>
+                <div v-for="icon in icons" :key="icon.message">
+                    <b-form-radio v-model="img_addr"  name="icons" :value="icon">
+                        <img :src="icon" :alt=img_alt>
+                    </b-form-radio>
+                </div>
         </b-modal>
     </div>
     `
