@@ -3,10 +3,6 @@ Vue.component('comm-card', {
     props:['modal_id'],
     data: function () {
         return {
-            img_addr: '/img/icons/image.svg',
-            img_alt: '',
-            heading: '',
-            subtitle: '',
             icons : [
                 "img/icons/001-absorb.svg",
                 "img/icons/001-hand wash.svg",
@@ -239,7 +235,15 @@ Vue.component('comm-card', {
                 "img/icons/050-lift.svg",
                 "img/icons/050-protective gloves.svg",
             ],
+            img_addr: '',
+            img_alt: '',
+            heading: '',
+            subtitle: '',
         }
+    },
+    mounted() {
+        this.img_addr = this.icons[Math.floor(Math.random() * this.icons.length)]
+        console.log(this.icons[0])
     },
     template: `
     <div class="card">
