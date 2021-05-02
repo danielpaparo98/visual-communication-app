@@ -158,10 +158,12 @@ LOGIC FOR PRINTING
     }
     .card {
         border-width: 0 !important;
-        height: 20vh;
+        height: 18vh;
     }
-    .card h6, .card p {
+    .card h5, .card p {
         overflow: visible;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .card-img-top {
         padding: 0;
