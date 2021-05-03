@@ -6,15 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Easy to build visual communication charts - The Talking Chart!</title>
   <link rel="stylesheet" href="css/bootstrap.css">
-  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />
   <link rel="stylesheet" href="css/style.css">
 
-  <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"
+    crossorigin="anonymous"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
   <script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>
-  
-  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+
+  <script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue-icons.min.js"></script>
 </head>
 
 <body>
@@ -88,16 +89,17 @@
     </p>
   </footer>
 
-  <script src="js/bootstrap.js"></script>
   <script src="/js/app.js"></script>
-    <script>
-      window.addEventListener('beforeunload', function (e) {
+  <script src="js/bootstrap.js"></script>
+  <script>
+    window.addEventListener('beforeunload', function (e) {
       // Cancel the event
       e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
       // Chrome requires returnValue to be set
       e.returnValue = '';
-      });
-    </script>
+    });
+  </script>
 
 </body>
+
 </html>
