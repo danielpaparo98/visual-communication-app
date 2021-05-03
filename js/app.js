@@ -262,7 +262,7 @@ Vue.component('comm-card', {
         <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
             <div class="container">
                 <div class="row">
-                    <div v-for="icon in icons" :key="icon.message" class="col">
+                    <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
                             <b-form-radio v-model="img_addr"  name="icons" :value="icon" >
                                 <img :src="icon" :alt=img_alt>
                             </b-form-radio>
