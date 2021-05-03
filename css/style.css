@@ -36,11 +36,11 @@ footer a:hover {
     padding: 0.78rem 0;
 }
 
-.nav-link, .navbar-brand {
-    color: #d8d8d8;
+.nav-link, .navbar-brand, .navbar-toggler-icon{
+    color: rgb(216, 216, 216) !important;
 }
 
-.nav-link:hover, .nav-link:focus, .navbar-brand:hover, .navbar-brand:focus {
+.nav-link:hover, .nav-link:focus, .navbar-brand:hover, .navbar-brand:focus, .navbar-toggler-icon:hover, .navbar-toggler-icon:focus{
     color: #f1f1f1;
 }
 
