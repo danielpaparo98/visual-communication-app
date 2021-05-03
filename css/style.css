@@ -2,10 +2,16 @@
 body {
     background-color: #f6f6f7;
     font-family: 'Raleway', sans-serif !important;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, .watermark, .heading-input {
+h1, h2, h3, h4, h5, h6, .watermark, .heading-input, .navbar-brand {
     font-family: 'Fredoka One', cursive;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 footer {
