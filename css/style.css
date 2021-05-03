@@ -157,13 +157,19 @@ button.close {
 /* IMAGE STYLES */
 [type=radio] + label img {
   cursor: pointer;
-  width: 10rem;
+  width: 90%;
+  margin: 5%;
+  padding: 5%;
+  outline: transparent;
+
 }
 
 /* CHECKED STYLES */
 [type=radio]:checked + label img {
-  outline: 1px solid #a897b4;
-  border-radius: 0.5rem;
+  outline: 1px solid #c2aecf;
+  border-radius: 0.2rem;
+  padding: 3%;
+  transition: ease all 0.5s, ease padding 0.25s;
 }
 
 /*
