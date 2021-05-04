@@ -46,9 +46,9 @@
     <br />
     <a href="https://github.com/danielpaparo98/visual-communication-app">View Demo</a>
     ·
-    <a href="https://github.com/danielpaparo98/visual-communication-app/issues">Report Bug</a>
+    <a href="https://github.com/danielpaparo98/visual-communication-app/issues/new/">Report Bug</a>
     ·
-    <a href="https://github.com/danielpaparo98/visual-communication-app/issues">Request Feature</a>
+    <a href="https://github.com/danielpaparo98/visual-communication-app/issues/new/">Request Feature</a>
   </p>
 </p>
 
