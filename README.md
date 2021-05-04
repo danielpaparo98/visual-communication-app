@@ -187,6 +187,6 @@ Project Website: [TheTalkingChart.com](https://thetalkingchart.com)
 [issues-shield]: https://img.shields.io/github/issues/danielpaparo98/visual-communication-app.svg?style=for-the-badge
 [issues-url]: https://github.com/danielpaparo98/visual-communication-app/issues
 [license-shield]: https://img.shields.io/github/license/danielpaparo98/visual-communication-app.svg?style=for-the-badge
-[license-url]: https://github.com/danielpaparo98/visual-communication-app/blob/master/LICENSE.txt
+[license-url]: https://github.com/danielpaparo98/visual-communication-app/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/danielpaparo98
+[linkedin-url]: https://linkedin.com/in/daniel-paparo
