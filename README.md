@@ -1,5 +1,9 @@
-jet: #363636ff;
-red: #f51800ff;
-light-cyan: #e9fff9ff;
-middle-grey: #8b8982ff;
-blue-gray: #6c91c2ff;
+# The Talking Chart
+
+## Usage
+
+## Attributions
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
