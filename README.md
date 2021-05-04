@@ -178,15 +178,15 @@ Project Website: [TheTalkingChart.com](https://thetalkingchart.com)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/danielpaparo98/repo.svg?style=for-the-badge
-[contributors-url]: https://github.com/danielpaparo98/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/danielpaparo98/repo.svg?style=for-the-badge
-[forks-url]: https://github.com/danielpaparo98/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/danielpaparo98/repo.svg?style=for-the-badge
-[stars-url]: https://github.com/danielpaparo98/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/danielpaparo98/repo.svg?style=for-the-badge
-[issues-url]: https://github.com/danielpaparo98/repo/issues
-[license-shield]: https://img.shields.io/github/license/danielpaparo98/repo.svg?style=for-the-badge
-[license-url]: https://github.com/danielpaparo98/repo/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/danielpaparo98/visual-communication-app.svg?style=for-the-badge
+[contributors-url]: https://github.com/danielpaparo98/visual-communication-app/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/danielpaparo98/visual-communication-app.svg?style=for-the-badge
+[forks-url]: https://github.com/danielpaparo98/visual-communication-app/network/members
+[stars-shield]: https://img.shields.io/github/stars/danielpaparo98/visual-communication-app.svg?style=for-the-badge
+[stars-url]: https://github.com/danielpaparo98/visual-communication-app/stargazers
+[issues-shield]: https://img.shields.io/github/issues/danielpaparo98/visual-communication-app.svg?style=for-the-badge
+[issues-url]: https://github.com/danielpaparo98/visual-communication-app/issues
+[license-shield]: https://img.shields.io/github/license/danielpaparo98/visual-communication-app.svg?style=for-the-badge
+[license-url]: https://github.com/danielpaparo98/visual-communication-app/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/danielpaparo98
