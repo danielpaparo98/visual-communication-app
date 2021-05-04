@@ -103,15 +103,7 @@ Here's a blank template to get started:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+I have designed this webapp to use no external dependencies which require installation. This allows it to be openend and edited with nothing more than a simple text editor. To get a local copy up and running follow these simple steps.
 
 ### Installation
 
@@ -119,10 +111,7 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    git clone https://github.com/github_username/repo_name.git
    ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
+2. Open the `index.html` file in a browser or use a live server to auto-reload as the source files are updated.
 
 
 
@@ -145,7 +134,11 @@ See the [open issues](https://github.com/github_username/repo_name/issues) for a
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Your contributions will make this web application more useful for those who may need to use it. Any contributions you make are **greatly appreciated**.
+
+There are two main ways you can contribue:
+
+### Making modifications yourself
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -153,7 +146,12 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Making suggestions and reporting issues
 
+1. Navigate to the [issues tab](https://github.com/danielpaparo98/visual-communication-app/issues/)
+2. Check if your suggestion, feature, or issue has already been reported
+3. If an issue already exists that matches yours, add any additional details that you feel are missing
+4. If one doesnt exits, add a (new issue)[https://github.com/danielpaparo98/visual-communication-app/issues/new], being sure to add any relavent details.
 
 <!-- LICENSE -->
 ## License
@@ -165,10 +163,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email
+Daniel Paparo - [LinkedIn](https://www.linkedin.com/in/daniel-paparo/)
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/danielpaparo98/visual-communication-app](https://github.com/danielpaparo98/visual-communication-app)
 
+Project Website: [TheTalkingChart.com](https://thetalkingchart.com)
 
 
 <!-- ACKNOWLEDGEMENTS -->
