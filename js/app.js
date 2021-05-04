@@ -246,30 +246,32 @@ Vue.component('comm-card', {
         console.log(this.icons[0])
     },
     template: `
-    <div class="card">
-        <b-button v-b-modal=modal_id class="modal-button">
-            <img v-bind:src="img_addr" class="card-img-top" :alt=img_alt>
-        </b-button>
+    <div class="col" >
+        <div class="card">
+            <b-button v-b-modal=modal_id class="modal-button">
+                <img v-bind:src="img_addr" class="card-img-top" :alt=img_alt>
+            </b-button>
 
-        <div class="card-body">
-        <h5 class="text-center d-print-only">{{ heading }}</h5>
-        <input v-model="heading" maxlength="12" class="heading-input text-center d-print-none">
-        <p class="text-center d-print-only">{{ subtitle }}</p>
-        <input v-model="subtitle" maxlength="19" class="text-center d-print-none">
-        </div>
+            <div class="card-body">
+            <h5 class="text-center d-print-only">{{ heading }}</h5>
+            <input v-model="heading" maxlength="12" class="heading-input text-center d-print-none">
+            <p class="text-center d-print-only">{{ subtitle }}</p>
+            <input v-model="subtitle" maxlength="19" class="text-center d-print-none">
+            </div>
 
 
-        <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
-            <div class="container">
-                <div class="row">
-                    <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
-                            <b-form-radio v-model="img_addr"  name="icons" :value="icon" >
-                                <img :src="icon" :alt=img_alt>
-                            </b-form-radio>
+            <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
+                <div class="container">
+                    <div class="row">
+                        <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
+                                <b-form-radio v-model="img_addr"  name="icons" :value="icon" >
+                                    <img :src="icon" :alt=img_alt>
+                                </b-form-radio>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </b-modal>
+            </b-modal>
+        </div>
     </div>
     `
 })

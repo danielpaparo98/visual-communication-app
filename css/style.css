@@ -149,7 +149,9 @@ button.close {
 }
 
 .card-img-top {
-    padding: 3rem;
+    padding: 1.5rem 0;
+    width: 70%;
+    height: auto;
 }
 
 /* HIDE RADIO */
