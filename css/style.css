@@ -134,8 +134,8 @@ button.close {
 }
 
 .modal-button, .modal-button:hover, .modal-button:focus, .modal-button:active, .modal-button:focus-visible {
-    background-color: #ffffff00;
-    border-color: #ffffff00;
+    background-color: transparent;
+    border-color: transparent;
 }
 
 .card h4, .card p {
