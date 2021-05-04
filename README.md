@@ -90,8 +90,8 @@
 ### Built With
 
 * [Vue2](https://vuejs.org/)
-* [BootStrap](https://getbootstrap.com/)
-* [html5](https://developer.mozilla.org/en-US/docs/Web/HTML)
+* [Bootstrap](https://getbootstrap.com/)
+* [Html5](https://developer.mozilla.org/en-US/docs/Web/HTML)
 * [CSS3](https://developer.mozilla.org/en-US/docs/Web/CSS)
 * [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
