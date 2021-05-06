@@ -55,9 +55,9 @@ Vue.component('chart', {
         }
     },
     mounted() {
-        if (true == false) {
+        if (localStorage.getItem('chartSave')) {
             // First check if there is a chart stored in local storage
-
+            this.cards = JSON.parse(localStorage.getItem('chartSave'));
         }
         else {
             // If there is no stored chart, create a new one from scratch
@@ -73,6 +73,7 @@ Vue.component('chart', {
                     subtitle: '',
                 })
             }
+            localStorage.setItem('chartSave', JSON.stringify(this.cards))
         }
 
         console.log(this.cards);
