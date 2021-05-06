@@ -1,280 +1,91 @@
-
-Vue.component('comm-card', {
-    props:['modal_id'],
+Vue.component('chart-card', {
+    props: ['modal_id', 'img_addr', 'img_alt', 'heading', 'subtitle', 'icons'],
     data: function () {
         return {
-            icons : [
-                "img/icons/001-absorb.svg",
-                "img/icons/001-hand wash.svg",
-                "img/icons/001-house.svg",
-                "img/icons/001-nurse.svg",
-                "img/icons/001-weight scale.svg",
-                "img/icons/002-first aid kit.svg",
-                "img/icons/002-parking.svg",
-                "img/icons/002-sanitary pad.svg",
-                "img/icons/002-sphygmomanometer.svg",
-                "img/icons/002-towel.svg",
-                "img/icons/003-id card.svg",
-                "img/icons/003-menstrual cup.svg",
-                "img/icons/003-plunger.svg",
-                "img/icons/003-stethoscope.svg",
-                "img/icons/003-sunglasses.svg",
-                "img/icons/004-disabled person.svg",
-                "img/icons/004-medical record.svg",
-                "img/icons/004-otometer.svg",
-                "img/icons/004-panty.svg",
-                "img/icons/004-trash bin.svg",
-                "img/icons/005-blind.svg",
-                "img/icons/005-body scale.svg",
-                "img/icons/005-pulse oximeter.svg",
-                "img/icons/005-tampon.svg",
-                "img/icons/005-tissue paper.svg",
-                "img/icons/006-cleaning gloves.svg",
-                "img/icons/006-deaf.svg",
-                "img/icons/006-menstrual cup.svg",
-                "img/icons/006-thermometer.svg",
-                "img/icons/006-tongue depressor.svg",
-                "img/icons/007-calendar.svg",
-                "img/icons/007-cleaning brush.svg",
-                "img/icons/007-cotton swab.svg",
-                "img/icons/007-gas station.svg",
-                "img/icons/007-syringe.svg",
-                "img/icons/008-ambulance.svg",
-                "img/icons/008-smartwatch.svg",
-                "img/icons/008-soap.svg",
-                "img/icons/008-toilet paper.svg",
-                "img/icons/008-urine sample.svg",
-                "img/icons/009-blood sample.svg",
-                "img/icons/009-handwash.svg",
-                "img/icons/009-mouthwash.svg",
-                "img/icons/009-smartphone.svg",
-                "img/icons/009-stethoscope.svg",
-                "img/icons/010-glucometer.svg",
-                "img/icons/010-hospital bed.svg",
-                "img/icons/010-laundry basket.svg",
-                "img/icons/010-medical app.svg",
-                "img/icons/010-toilet paper.svg",
-                "img/icons/011-disabled sign.svg",
-                "img/icons/011-eye test.svg",
-                "img/icons/011-nurse.svg",
-                "img/icons/011-secure.svg",
-                "img/icons/011-spray.svg",
-                "img/icons/012-crutch.svg",
-                "img/icons/012-dumb.svg",
-                "img/icons/012-razor.svg",
-                "img/icons/012-reflex hammer.svg",
-                "img/icons/012-teeth.svg",
-                "img/icons/013-blind.svg",
-                "img/icons/013-hearing test.svg",
-                "img/icons/013-medicine.svg",
-                "img/icons/013-sanitary pad.svg",
-                "img/icons/013-shampoo.svg",
-                "img/icons/014-hand.svg",
-                "img/icons/014-pills.svg",
-                "img/icons/014-retinal.svg",
-                "img/icons/014-tablet.svg",
-                "img/icons/014-Walking aid.svg",
-                "img/icons/015-injured.svg",
-                "img/icons/015-sweep.svg",
-                "img/icons/015-thermometer.svg",
-                "img/icons/015-tooth.svg",
-                "img/icons/015-wet wipes.svg",
-                "img/icons/016-blood transfusion.svg",
-                "img/icons/016-crippled.svg",
-                "img/icons/016-moisturizing.svg",
-                "img/icons/016-urinal.svg",
-                "img/icons/016-x rays.svg",
-                "img/icons/017-disabled person.svg",
-                "img/icons/017-ear.svg",
-                "img/icons/017-moisturizer.svg",
-                "img/icons/017-razor.svg",
-                "img/icons/017-ultrasound.svg",
-                "img/icons/018-cat scan.svg",
-                "img/icons/018-cotton bud.svg",
-                "img/icons/018-Cotton.svg",
-                "img/icons/018-disabled person.svg",
-                "img/icons/018-heart rate.svg",
-                "img/icons/019-dust pan.svg",
-                "img/icons/019-injured.svg",
-                "img/icons/019-mri.svg",
-                "img/icons/019-scissors.svg",
-                "img/icons/019-tissues.svg",
-                "img/icons/020-band aid.svg",
-                "img/icons/020-EKG.svg",
-                "img/icons/020-sanitary towel.svg",
-                "img/icons/020-vagina.svg",
-                "img/icons/020-walking stick.svg",
-                "img/icons/021-cream.svg",
-                "img/icons/021-eeg.svg",
-                "img/icons/021-hospital bed.svg",
-                "img/icons/021-medical mask.svg",
-                "img/icons/021-pills.svg",
-                "img/icons/022-eye drop.svg",
-                "img/icons/022-love.svg",
-                "img/icons/022-microscope.svg",
-                "img/icons/022-sink.svg",
-                "img/icons/022-wheelchair.svg",
-                "img/icons/023-blood test.svg",
-                "img/icons/023-cleanser.svg",
-                "img/icons/023-deodorant.svg",
-                "img/icons/023-hospital.svg",
-                "img/icons/023-medical assistance.svg",
-                "img/icons/024-dustbin.svg",
-                "img/icons/024-height.svg",
-                "img/icons/024-prosthetic.svg",
-                "img/icons/024-reception.svg",
-                "img/icons/024-sponge.svg",
-                "img/icons/025-bucket.svg",
-                "img/icons/025-crutch.svg",
-                "img/icons/025-Dental care.svg",
-                "img/icons/025-hot water bottle.svg",
-                "img/icons/025-thermometer gun.svg",
-                "img/icons/026-deodorant.svg",
-                "img/icons/026-medical report.svg",
-                "img/icons/026-nurse.svg",
-                "img/icons/026-walking stick.svg",
-                "img/icons/026-wc.svg",
-                "img/icons/027-be free.svg",
-                "img/icons/027-medical handbook.svg",
-                "img/icons/027-nurse.svg",
-                "img/icons/027-perfume.svg",
-                "img/icons/027-Walking aid.svg",
-                "img/icons/028-appointment.svg",
-                "img/icons/028-prosthetic.svg",
-                "img/icons/028-tshirt.svg",
-                "img/icons/028-washing hands.svg",
-                "img/icons/028-wheelchair.svg",
-                "img/icons/029-car.svg",
-                "img/icons/029-comb.svg",
-                "img/icons/029-sanitary pad.svg",
-                "img/icons/029-waiting room.svg",
-                "img/icons/029-walking stick.svg",
-                "img/icons/030-dna.svg",
-                "img/icons/030-gynecology.svg",
-                "img/icons/030-medical prescription.svg",
-                "img/icons/030-toothbrush.svg",
-                "img/icons/030-wheelchair.svg",
-                "img/icons/031-medical history.svg",
-                "img/icons/031-old man.svg",
-                "img/icons/031-underwear.svg",
-                "img/icons/031-wheelchair.svg",
-                "img/icons/032-braille.svg",
-                "img/icons/032-electric shaver.svg",
-                "img/icons/032-old woman.svg",
-                "img/icons/032-patient.svg",
-                "img/icons/033-infused water.svg",
-                "img/icons/033-patient.svg",
-                "img/icons/033-vacuum cleaner.svg",
-                "img/icons/033-wheelchair.svg",
-                "img/icons/034-audio book.svg",
-                "img/icons/034-certification.svg",
-                "img/icons/034-child.svg",
-                "img/icons/034-hand dryer.svg",
-                "img/icons/035-bar soap.svg",
-                "img/icons/035-gown.svg",
-                "img/icons/035-prosthetic.svg",
-                "img/icons/035-x ray.svg",
-                "img/icons/036-baby feeder.svg",
-                "img/icons/036-medical prescription.svg",
-                "img/icons/036-Nail clipper.svg",
-                "img/icons/036-prosthetic.svg",
-                "img/icons/037-dish.svg",
-                "img/icons/037-Pear Enema.svg",
-                "img/icons/037-prosthetic.svg",
-                "img/icons/037-vaccination.svg",
-                "img/icons/038-habits.svg",
-                "img/icons/038-menstrual cup.svg",
-                "img/icons/038-schedule.svg",
-                "img/icons/038-sign language.svg",
-                "img/icons/039-psychology.svg",
-                "img/icons/039-stairs.svg",
-                "img/icons/039-syrup.svg",
-                "img/icons/039-tampon.svg",
-                "img/icons/040-patient.svg",
-                "img/icons/040-prosthetic.svg",
-                "img/icons/040-sock.svg",
-                "img/icons/040-tv.svg",
-                "img/icons/041-blood pressure gauge.svg",
-                "img/icons/041-bus.svg",
-                "img/icons/041-force.svg",
-                "img/icons/041-tongue.svg",
-                "img/icons/042-abdominal palpation.svg",
-                "img/icons/042-air purifier.svg",
-                "img/icons/042-eye test.svg",
-                "img/icons/042-hearing aid.svg",
-                "img/icons/043-man.svg",
-                "img/icons/043-sperm.svg",
-                "img/icons/043-ultrasound.svg",
-                "img/icons/043-wheelchair.svg",
-                "img/icons/044-crutch.svg",
-                "img/icons/044-diaper.svg",
-                "img/icons/044-mammogram.svg",
-                "img/icons/044-woman.svg",
-                "img/icons/045-baby.svg",
-                "img/icons/045-guide dog.svg",
-                "img/icons/045-man.svg",
-                "img/icons/045-pap smear.svg",
-                "img/icons/046-baby stroller.svg",
-                "img/icons/046-hospital.svg",
-                "img/icons/046-inhaler.svg",
-                "img/icons/046-sanitizer.svg",
-                "img/icons/047-disabled person.svg",
-                "img/icons/047-drops.svg",
-                "img/icons/047-face shield.svg",
-                "img/icons/047-protective mask.svg",
-                "img/icons/048-bathtub.svg",
-                "img/icons/048-disabled person.svg",
-                "img/icons/048-pills.svg",
-                "img/icons/048-visor.svg",
-                "img/icons/049-dental floss.svg",
-                "img/icons/049-lab.svg",
-                "img/icons/049-mask.svg",
-                "img/icons/049-wc.svg",
-                "img/icons/050-antiseptic.svg",
-                "img/icons/050-glove.svg",
-                "img/icons/050-lift.svg",
-                "img/icons/050-protective gloves.svg",
-            ],
-            img_addr: '',
-            img_alt: '',
-            heading: '',
-            subtitle: '',
         }
-    },
-    mounted() {
-        this.img_addr = this.icons[Math.floor(Math.random() * this.icons.length)]
-        console.log(this.icons[0])
     },
     template: `
     <div class="col" >
-        <div class="card">
-            <b-button v-b-modal=modal_id class="modal-button">
-                <img v-bind:src="img_addr" class="card-img-top" :alt=img_alt>
-            </b-button>
-
-            <div class="card-body">
-            <h5 class="text-center d-print-only">{{ heading }}</h5>
-            <input v-model="heading" maxlength="12" class="heading-input text-center d-print-none">
-            <p class="text-center d-print-only">{{ subtitle }}</p>
-            <input v-model="subtitle" maxlength="19" class="text-center d-print-none">
-            </div>
-
-
-            <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
-                <div class="container">
-                    <div class="row">
-                        <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
-                                <b-form-radio v-model="img_addr"  name="icons" :value="icon" >
-                                    <img :src="icon" :alt=img_alt>
-                                </b-form-radio>
-                        </div>
-                    </div>
-                </div>
-            </b-modal>
-        </div>
+    <div class="card">
+    <b-button v-b-modal=modal_id class="modal-button">
+    <img v-bind:src="img_addr" class="card-img-top" :alt=img_alt>
+    </b-button>
+    
+    <div class="card-body">
+    <h5 class="text-center d-print-only">{{ heading }}</h5>
+    <input v-model="heading" maxlength="12" class="heading-input text-center d-print-none">
+    <p class="text-center d-print-only">{{ subtitle }}</p>
+    <input v-model="subtitle" maxlength="19" class="text-center d-print-none">
+    </div>
+    
+    
+    <b-modal :id="modal_id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
+    <div class="container">
+    <div class="row">
+    <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
+    <b-form-radio v-model="img_addr"  name="icons" :value="icon.addr" >
+    <img :src="icon.addr" :alt=icon.alt>
+    </b-form-radio>
+    </div>
+    </div>
+    </div>
+    </b-modal>
+    </div>
     </div>
     `
 })
+
+Vue.component('chart', {
+    data: function () {
+        return {
+            cards: [],
+            icons: [
+                {
+                    "addr": "img/icons/002-towel.svg",
+                    "alt": "towel"
+                },
+                {
+                    "addr": "img/icons/004-first aid kit.svg",
+                    "alt": "first aid kit"
+                },
+            ]
+            ,
+
+
+        }
+    },
+    mounted() {
+        if (true == false) {
+            // First check if there is a chart stored in local storage
+
+        }
+        else {
+            // If there is no stored chart, create a new one from scratch
+            var img = this.icons[Math.floor(Math.random() * this.icons.length)];
+            for (i = 0; i < 20; i++) {
+                img = this.icons[Math.floor(Math.random() * this.icons.length)];
+                console.log()
+                this.cards.push({
+                    id: 'card-' + i,
+                    img_addr: img.addr,
+                    img_alt: img.alt,
+                    heading: '',
+                    subtitle: '',
+                })
+            }
+        }
+
+        console.log(this.cards);
+    },
+    template: `
+    <div class = "row gy-4 row-cols-2 row-cols-sm-4">
+    <div v-for="card in cards">
+    <chart-card :modal_id="card.id" :icons="icons" :img_addr="card.img_addr" :img_alt="card.img_alt" :heading="card.heading" :subtitle="card.subtitle"></chart-card>
+    </div>
+    </div>
+    `
+})
+
 
 var app = new Vue({
     el: '#app',
