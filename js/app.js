@@ -7,6 +7,11 @@ Vue.component('chart', {
         }
     },
     mounted() {
+        axios.get('/js/icons.json')
+        .then((response)=> {
+          this.icons=response.data;
+        })
+        
         if (localStorage.getItem('chartSave')) {
             // First check if there is a chart stored in local storage
             this.cards = JSON.parse(localStorage.getItem('chartSave'));
@@ -25,11 +30,6 @@ Vue.component('chart', {
             }
             localStorage.setItem('chartSave', JSON.stringify(this.cards))
         }
-
-        axios.get('/js/icons.json')
-        .then((response)=> {
-          this.icons=response.data;
-        })
     },
     watch: {
         'change': function (val) {
