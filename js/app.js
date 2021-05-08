@@ -11,10 +11,8 @@ Vue.component('chart', {
                     "addr": "img/icons/004-first aid kit.svg",
                     "alt": "first aid kit"
                 },
-            ]
-            ,
-
-
+            ],
+            change: 0
         }
     },
     mounted() {
@@ -41,9 +39,14 @@ Vue.component('chart', {
         console.log(this.cards);
     },
     watch: {
-        cards: function() {
-            console.log("updated!");
-            localStorage.setItem('chartSave', JSON.stringify(this.cards));
+        'change': function(val) {
+            localStorage.setItem('chartSave', JSON.stringify(this.cards))
+
+        }
+    },
+    methods: {
+        increment: function() {
+            this.change++;
         }
     },
     template: `
@@ -57,17 +60,17 @@ Vue.component('chart', {
     
     <div class="card-body">
     <h5 class="text-center d-print-only">{{ card.heading }}</h5>
-    <input v-model="card.heading" maxlength="12" class="heading-input text-center d-print-none">
+    <input v-on:keyup="increment" v-model="card.heading" maxlength="12" class="heading-input text-center d-print-none">
     <p class="text-center d-print-only">{{ card.subtitle }}</p>
-    <input v-model="card.subtitle" maxlength="19" class="text-center d-print-none">
+    <input v-on:keyup="increment" v-model="card.subtitle" maxlength="19" class="text-center d-print-none">
     </div>
     
     
-    <b-modal :id="card.id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
+    <b-modal :cardWatcher="this.cards" :id="card.id" size="lg" title="Select a new icon" centered ok-only scrollable  no-stacking>
     <div class="container">
     <div class="row">
     <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
-    <b-form-radio v-model="card.img_addr"  name="icons" :value="icon.addr" >
+    <b-form-radio v-on:focus="increment" v-model="card.img_addr"  name="icons" :value="icon.addr" >
     <img :src="icon.addr" :alt=icon.alt>
     </b-form-radio>
     </div>
