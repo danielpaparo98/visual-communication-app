@@ -24,7 +24,6 @@ Vue.component('chart', {
             // If there is no stored chart, create a new one from scratch
             for (i = 0; i < 20; i++) {
                 var img = this.icons[Math.floor(Math.random() * this.icons.length)];
-                console.log()
                 this.cards.push({
                     id: 'card-' + i,
                     img_addr: img.addr,
@@ -35,8 +34,6 @@ Vue.component('chart', {
             }
             localStorage.setItem('chartSave', JSON.stringify(this.cards))
         }
-
-        console.log(this.cards);
     },
     watch: {
         'change': function(val) {
@@ -70,7 +67,7 @@ Vue.component('chart', {
     <div class="container">
     <div class="row">
     <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
-    <b-form-radio v-on:focus="increment" v-model="card.img_addr"  name="icons" :value="icon.addr" >
+    <b-form-radio v-on:change="increment" v-model="card.img_addr"  name="icons" :value="icon.addr" >
     <img :src="icon.addr" :alt=icon.alt>
     </b-form-radio>
     </div>
