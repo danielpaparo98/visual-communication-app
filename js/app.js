@@ -50,9 +50,9 @@ Vue.component('chart', {
     
     <div class="card-body">
     <h5 class="text-center d-print-only">{{ card.heading }}</h5>
-    <input v-on:focus="increment" v-model="card.heading" maxlength="12" class="heading-input text-center d-print-none">
+    <input v-on:focus="increment" v-model.lazy="card.heading" maxlength="12" class="heading-input text-center d-print-none">
     <p class="text-center d-print-only">{{ card.subtitle }}</p>
-    <input v-on:focus="increment" v-model="card.subtitle" maxlength="19" class="text-center d-print-none">
+    <input v-on:focus="increment" v-model.lazy="card.subtitle" maxlength="19" class="text-center d-print-none">
     </div>
     
     
@@ -60,7 +60,7 @@ Vue.component('chart', {
     <div class="container">
     <div class="row">
     <div v-for="icon in icons" :key="icon.message" class="col-4 col-sm-2">
-    <b-form-radio v-on:change="increment" v-model="card.img_addr"  name="icons" :value="icon.addr" >
+    <b-form-radio v-on:change="increment" v-model.lazy="card.img_addr"  name="icons" :value="icon.addr" >
     <img :src="icon.addr" :alt=icon.alt>
     </b-form-radio>
     </div>
