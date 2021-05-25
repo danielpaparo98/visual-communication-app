@@ -36,7 +36,6 @@ Vue.component('chart', {
     methods: {
         increment: function () {
             this.change++;
-            console.log(this.change)
         }
     },
     template: `
@@ -50,9 +49,9 @@ Vue.component('chart', {
     
     <div class="card-body">
     <h5 class="text-center d-print-only">{{ card.heading }}</h5>
-    <input v-on:focus="increment" v-model.lazy="card.heading" maxlength="12" class="heading-input text-center d-print-none">
+    <input v-on:change="increment" v-model.lazy="card.heading" maxlength="12" class="heading-input text-center d-print-none">
     <p class="text-center d-print-only">{{ card.subtitle }}</p>
-    <input v-on:focus="increment" v-model.lazy="card.subtitle" maxlength="19" class="text-center d-print-none">
+    <input v-on:change="increment" v-model.lazy="card.subtitle" maxlength="19" class="text-center d-print-none">
     </div>
     
     
