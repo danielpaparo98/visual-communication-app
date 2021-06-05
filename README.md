@@ -164,9 +164,7 @@ Project Website: [TheTalkingChart.com](https://thetalkingchart.com)
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
-* []()
-* []()
-* []()
+* [Flat Icons](https://www.flaticon.com/)
 
 
 
