@@ -207,6 +207,9 @@ LOGIC FOR PRINTING
     .col-sm {
         width: 25%;
     }
+    .row-cols-2 > * {
+        width: 25% !important;
+    }
     .card {
         border-width: 0 !important;
         height: 15vh;
