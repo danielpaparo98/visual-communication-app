@@ -52,7 +52,7 @@ Vue.component('chart', {
         },
 
         clearchart: function () {
-            this.title = "My next chart!";
+            this.title = "My Next Chart!";
             this.cards = []
             for (i = 0; i < 20; i++) {
                 const img = this.icons[Math.floor(Math.random() * this.icons.length)];
