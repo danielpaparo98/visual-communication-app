@@ -142,7 +142,7 @@ There are two main ways you can contribue:
 1. Navigate to the [issues tab](https://github.com/danielpaparo98/visual-communication-app/issues/)
 2. Check if your suggestion, feature, or issue has already been reported
 3. If an issue already exists that matches yours, add any additional details that you feel are missing
-4. If one doesnt exits, add a (new issue)[https://github.com/danielpaparo98/visual-communication-app/issues/new], being sure to add any relavent details.
+4. If one doesnt exits, add a [new issue](https://github.com/danielpaparo98/visual-communication-app/issues/new), being sure to add any relavent details.
 
 <!-- LICENSE -->
 ## License
