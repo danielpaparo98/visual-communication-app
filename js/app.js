@@ -45,10 +45,19 @@ Vue.component('chart', {
     methods: {
         increment: function () {
             this.change++;
-        }
+        },
+
+        printchart: function() {
+            print();
+        },
+        
     },
     template: `
     <section>
+    <div class="header-controls text-center d-print-none">
+        <b-button v-on:click="printchart" variant="link">Print</b-button>
+        <b-button variant="link">Clear</b-button>
+    </div>
     <div class="chart-heading">
         <h1 class="d-print-only text-center">{{title}}</h1>
         <input v-on:change="increment" v-model.lazy="title" maxlength="40" class="text-center d-print-none">
