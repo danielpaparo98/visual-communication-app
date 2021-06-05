@@ -158,6 +158,10 @@ button.close {
     padding: 0 0 2rem 0;
 }
 
+.header-controls button{
+    text-decoration: none;
+}
+
 .chart-heading input {
     display: block;
     width: 70%;
