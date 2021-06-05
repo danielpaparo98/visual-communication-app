@@ -32,7 +32,7 @@
 <br />
 <p align="center">
 
-  <h3 align="center">The Talking Chart</h3>
+  <h3 align="center"><a href="https://thetalkingchart.com">The Talking Chart</a></h3>
 
   <p align="center">
      A simple web app that lets users quickly and easily create visual communication charts (PECS chart). 
@@ -40,7 +40,7 @@
     <a href="https://github.com/danielpaparo98/visual-communication-app"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/danielpaparo98/visual-communication-app">View Demo</a>
+    <a href="https://thetalkingchart.com">Try it out</a>
     ·
     <a href="https://github.com/danielpaparo98/visual-communication-app/issues/new/">Report Bug</a>
     ·
