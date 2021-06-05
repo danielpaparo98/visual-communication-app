@@ -1,12 +1,13 @@
 import os
 import json
+import re
 
 icons = os.listdir(r'../img/icons/')
 
 output = []
 
 for icon in icons:
-    alt = icon[4:-4]
+    alt = re.sub(r'-\d\d\d-', ' ', icon)
     desc = ''
 
     output.append(
@@ -21,4 +22,5 @@ print(output)
 json = json.dumps(output)
 
 with open("icons.json", "w") as fd:
+    #print(json)
     fd.write(json)
