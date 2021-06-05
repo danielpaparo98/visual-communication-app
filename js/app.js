@@ -50,13 +50,30 @@ Vue.component('chart', {
         printchart: function() {
             print();
         },
+
+        clearchart: function() {
+            this.title = "My next chart!";
+            this.cards = []
+            for (i = 0; i < 20; i++) {
+                const img = this.icons[Math.floor(Math.random() * this.icons.length)];
+                this.cards.push({
+                    id: 'card-' + i,
+                    img_addr: img.addr,
+                    img_alt: img.alt,
+                    heading: '',
+                    subtitle: '',
+                })
+            }
+            localStorage.setItem('chartSave', JSON.stringify(this.cards))
+            localStorage.setItem('chartTitle', JSON.stringify(this.title))
+        },
         
     },
     template: `
     <section>
     <div class="header-controls text-center d-print-none">
         <b-button v-on:click="printchart" variant="link">Print</b-button>
-        <b-button variant="link">Clear</b-button>
+        <b-button v-on:click="clearchart"  variant="link">Clear</b-button>
     </div>
     <div class="chart-heading">
         <h1 class="d-print-only text-center">{{title}}</h1>
