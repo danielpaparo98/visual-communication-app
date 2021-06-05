@@ -71,13 +71,13 @@ Vue.component('chart', {
     },
     template: `
     <section>
+    <div class="chart-heading">
     <div class="header-controls text-center d-print-none">
         <b-button v-on:click="printchart" variant="link">Print</b-button>
         <b-button v-on:click="clearchart"  variant="link">Clear</b-button>
     </div>
-    <div class="chart-heading">
-        <h1 class="d-print-only text-center">{{title}}</h1>
-        <input v-on:change="increment" v-model.lazy="title" maxlength="40" class="text-center d-print-none">
+    <h1 class="d-print-only text-center">{{title}}</h1>
+    <input v-on:change="increment" v-model.lazy="title" maxlength="40" class="text-center d-print-none">
     </div>
 
     <div class = "row gy-4 row-cols-2 row-cols-sm-4">
