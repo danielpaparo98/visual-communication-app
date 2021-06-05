@@ -38,9 +38,6 @@ Vue.component('chart', {
     watch: {
         'change': function (val) {
             localStorage.setItem('chartSave', JSON.stringify(this.cards))
-
-        },
-        'change': function (val) {
             localStorage.setItem('chartTitle', JSON.stringify(this.title))
         }
     },
