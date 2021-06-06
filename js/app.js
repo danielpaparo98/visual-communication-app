@@ -51,20 +51,28 @@ Vue.component('chart', {
         },
 
         clearchart: function () {
-            this.title = "My Next Chart!";
-            this.cards = []
-            for (i = 0; i < 20; i++) {
-                const img = this.icons[Math.floor(Math.random() * this.icons.length)];
-                this.cards.push({
-                    id: 'card-' + i,
-                    img_addr: img.addr,
-                    img_alt: img.alt,
-                    heading: '',
-                    subtitle: '',
+            this.$bvModal.msgBoxConfirm('Are you sure you want to clear your chart? Once deleted, your old chart cannot be recovered')
+                .then(value => {
+                    if (value == true) {
+                        this.title = "My Next Chart!";
+                        this.cards = []
+                        for (i = 0; i < 20; i++) {
+                            const img = this.icons[Math.floor(Math.random() * this.icons.length)];
+                            this.cards.push({
+                                id: 'card-' + i,
+                                img_addr: img.addr,
+                                img_alt: img.alt,
+                                heading: '',
+                                subtitle: '',
+                            })
+                        }
+                        localStorage.setItem('chartSave', JSON.stringify(this.cards))
+                        localStorage.setItem('chartTitle', JSON.stringify(this.title))
+                    }
                 })
-            }
-            localStorage.setItem('chartSave', JSON.stringify(this.cards))
-            localStorage.setItem('chartTitle', JSON.stringify(this.title))
+                .catch(err => {
+                    // An error occurred
+                })
         },
 
     },
