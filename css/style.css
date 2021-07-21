@@ -240,12 +240,13 @@ LOGIC FOR PRINTING
         width: 100% !important;
     }
     .card h5, .card p {
-        margin: 1px !important;
-        padding: 1px !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .card-img-top {
         padding: 0 !important;
-        width: 80% !important;
+        margin-bottom: 1px !important;
+        width: 70% !important;
         height: auto !important;
         max-width:100% !important;
         max-height:100% !important;
