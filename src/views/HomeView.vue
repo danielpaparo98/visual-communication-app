@@ -1,8 +1,11 @@
 <script setup>
+import CTA from '@/components/CTA.vue';
+import Features from '@/components/Features.vue';
+import Hero from '@/components/Hero.vue';
 </script>
 
 <template>
-  <main>
-
-  </main>
+  <Hero />
+  <Features />
+  <CTA />
 </template>
