@@ -1,5 +1,5 @@
 <template>
-  <footer class="text-gray-500 bg-white px-4 py-5 max-w-screen-xl mx-auto">
+  <footer class="text-gray-500 bg-white px-4 py-5">
     <div class="max-w-lg sm:mx-auto sm:text-center">
       <img src="https://www.floatui.com/logo.svg" class="w-32 sm:mx-auto" />
       <p class="leading-relaxed mt-2 text-[15px]">
@@ -19,7 +19,7 @@
         </a>
       </li>
     </ul>
-    <div class="mt-8 items-center justify-between sm:flex">
+    <div class="mt-8 items-center justify-between sm:flex max-w-screen-xl mx-auto">
       <div class="mt-4 sm:mt-0">
         Created with by 💜 by <a href="#" class="text-blue-500 hover:text-blue-400">Daniel
           Paparo</a> &copy; 2024.
