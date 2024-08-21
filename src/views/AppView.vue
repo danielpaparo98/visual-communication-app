@@ -1,5 +1,6 @@
 <script setup>
 import AppRibbon from '@/components/AppRibbon.vue';
+import Input from '@/components/ui/input/Input.vue';
 
 </script>
 
@@ -11,8 +12,8 @@ import AppRibbon from '@/components/AppRibbon.vue';
     <div class="mx-auto mb-10 ">
       <label class="block text-md font-medium text-gray-700"> Title </label>
 
-      <input placeholder="My chart title"
-        class="mt-1 w-124 rounded-md border-gray-400 shadow-sm text-4xl text-center" />
+      <Input type="text" v-model="test"
+        class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4 lg:gap-4">

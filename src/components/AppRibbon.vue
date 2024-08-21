@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import { Input } from '@/components/ui/input'
+import Select from './ui/select/Select.vue';
+</script>
+
 <template>
     <div class="max-w-screen-xl mx-auto px-4 md:px-8">
         <div class="items-start justify-between py-4 border-b md:flex">
@@ -14,10 +19,13 @@
                     New
                 </a>
             </div>
+            <div>
+                <Select />
+            </div>
             <div class="items-center gap-x-3 mt-6 md:mt-0 sm:flex">
                 <a href="javascript:void(0)"
                     class="block px-4 py-2 text-center text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm">
-                    Save as PDF
+                    Export PDF
                 </a>
                 <a href="javascript:void(0)"
                     class="block px-4 py-2 text-center text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm">
