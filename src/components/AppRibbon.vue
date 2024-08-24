@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import Select from './ui/select/Select.vue';
+
+function print_chart() {
+    window.print();
+}
 </script>
 
 <template>
@@ -27,10 +31,10 @@ import Select from './ui/select/Select.vue';
                     class="block px-4 py-2 text-center text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm">
                     Export PDF
                 </a>
-                <a href="javascript:void(0)"
+                <button v-on:click="print_chart"
                     class="block px-4 py-2 text-center text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm">
                     Print
-                </a>
+                </button>
 
             </div>
         </div>

@@ -1,0 +1,26 @@
+.print, .print * {
+    display: hidden !important;
+}
+
+@media print {
+    .print, .print * {
+        display: block !important;
+    }
+
+    body * {
+        -webkit-transition: none !important;
+        transition: none !important;
+        display: none;
+    }
+
+
+    .no-print, .no-print {
+        display: none !important;
+    }
+    
+
+    html, body {
+        padding: 0;
+    }
+
+}
