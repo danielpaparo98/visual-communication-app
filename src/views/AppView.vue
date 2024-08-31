@@ -70,7 +70,7 @@ function handleNewChart() {
 function handleLoadChart() {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'chart';
+  input.accept = '.chart';
   input.onchange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -104,10 +104,10 @@ function handlePrint() {
 function handleExport() {
   const printSection = document.querySelector('.print');
   const options = {
-    filename: 'chart.pdf',
+    filename: chart.title + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    html2canvas: { scale: 1 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
   };
 
   html2pdf().set(options).from(printSection).save();
