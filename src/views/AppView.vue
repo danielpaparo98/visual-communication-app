@@ -5,6 +5,7 @@ import Input from '@/components/ui/input/Input.vue';
 import Card from '@/components/Card.vue';
 import Dialog from '@/components/ui/dialog/Dialog.vue';
 import { watchImmediate } from '@vueuse/core';
+import html2pdf from 'html2pdf.js';
 
 let chart = reactive({
   title: '',
@@ -101,9 +102,15 @@ function handlePrint() {
 }
 
 function handleExport() {
-  /**
-   * TODO implement this function
-   */
+  const printSection = document.querySelector('.print');
+  const options = {
+    filename: 'chart.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  };
+
+  html2pdf().set(options).from(printSection).save();
 }
 
 
@@ -116,11 +123,10 @@ function handleExport() {
   <section class="max-w-screen-xl mx-auto px-4 md:px-8 my-10 print">
 
     <div class="mx-auto mb-10 ">
+      <p class="print text-6xl text-center print-only">{{ chart.title }} </p>
       <label class="block text-md font-medium text-gray-700"> Title </label>
-
-      <p class="print text-6xl text-center">{{ chart.title }} </p>
       <Input type="text" v-model.lazy="chart.title" v-on:input="storeChart"
-        class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+        class="block text-5xl h-20 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
     </div>
 
 
