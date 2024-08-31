@@ -17,8 +17,8 @@ function storeChart() {
 }
 
 function newChart() {
-  // If there is no stored chart, create a new one from scratch
   chart.title = 'My Chart';
+  chart.cards = [];
   for (let i = 0; i < 20; i++) {
     chart.cards.push({
       id: 'card-' + i,
@@ -34,7 +34,9 @@ function newChart() {
 function loadChart() {
   const storedChart = localStorage.getItem('chart');
   if (storedChart) {
-    chart = JSON.parse(storedChart);
+    const parsedChart = JSON.parse(storedChart);
+    chart.title = parsedChart.title;
+    chart.cards = parsedChart.cards;
   } else {
     newChart();
   }
@@ -58,10 +60,58 @@ function handleOpenIcon(card) {
    * TODO implement this function
    */
 }
+
+function handleNewChart() {
+  newChart();
+  storeChart();
+}
+
+function handleLoadChart() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'chart';
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const contents = e.target.result;
+      const parsedChart = JSON.parse(contents);
+      chart.title = parsedChart.title;
+      chart.cards = parsedChart.cards;
+
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function handleSaveChart() {
+  const data = JSON.stringify(chart);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = chart.title + '.chart';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function handlePrint() {
+  window.print();
+}
+
+function handleExport() {
+  /**
+   * TODO implement this function
+   */
+}
+
+
 </script>
 
 <template>
-  <AppRibbon />
+  <AppRibbon :onNewChart="handleNewChart" :onLoadChart="handleLoadChart" :onSaveChart="handleSaveChart"
+    :onExport="handleExport" :onPrint="handlePrint" />
 
   <section class="max-w-screen-xl mx-auto px-4 md:px-8 my-10 print">
 
@@ -69,7 +119,7 @@ function handleOpenIcon(card) {
       <label class="block text-md font-medium text-gray-700"> Title </label>
 
       <p class="print text-6xl text-center">{{ chart.title }} </p>
-      <Input type="text" v-model.lazy="chart.title"
+      <Input type="text" v-model.lazy="chart.title" v-on:input="storeChart"
         class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
     </div>
 
