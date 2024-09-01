@@ -165,7 +165,8 @@ function handleExport() {
 @import url('https://fontlibrary.org/en/face/opendyslexic');
 @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
-.nunito input .kalam p {
+.nunito input,
+.kalam p {
   font-family: "Nunito", sans-serif !important;
   font-style: normal !important;
 }
@@ -177,7 +178,8 @@ function handleExport() {
   font-style: normal !important;
 }
 
-.opendyslexic input .opendyslexic p {
+.opendyslexic input,
+.opendyslexic p {
   font-family: 'OpenDyslexicMonoRegular' !important;
   font-weight: normal !important;
   font-style: normal !important;
