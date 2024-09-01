@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import Button from './ui/button/Button.vue';
 import { defineEmits, toRefs, ref, watch } from 'vue';
 
@@ -43,7 +53,26 @@ watch(localFontClass, (newValue) => {
             <div class="items-center gap-x-3 mt-6 md:mt-0 sm:flex">
                 <Button @click="onLoadChart()">Load</Button>
                 <Button @click="onSaveChart()">Save</Button>
-                <Button @click="onNewChart()">New</Button>
+                <AlertDialog>
+                    <AlertDialogTrigger as-child>
+                        <Button>
+                            New
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete chart unless you have saved
+                                it.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction @click="onNewChart()">New Chart</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
             <div>
                 <Select v-model="localFontClass">
