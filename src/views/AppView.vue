@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onBeforeMount, watch } from 'vue';
+import { reactive, onBeforeMount } from 'vue';
 import AppRibbon from '@/components/AppRibbon.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Card from '@/components/Card.vue';
@@ -7,9 +7,17 @@ import Dialog from '@/components/ui/dialog/Dialog.vue';
 import { watchImmediate } from '@vueuse/core';
 import html2pdf from 'html2pdf.js';
 
+const fonts = [
+  { name: 'Default', class: 'font-medium' },
+  { name: 'Nunito', class: 'nunito' },
+  { name: 'Kalam', class: 'kalam' },
+  { name: 'OpenDyslexic', class: 'opendyslexic' },
+];
+
 let chart = reactive({
   title: '',
   cards: [],
+  fontClass: fonts[0].class,
 });
 
 // Function to store the chart object in localStorage
@@ -20,6 +28,7 @@ function storeChart() {
 function newChart() {
   chart.title = 'My Chart';
   chart.cards = [];
+  chart.fontClass = fonts[0].class;
   for (let i = 0; i < 20; i++) {
     chart.cards.push({
       id: 'card-' + i,
@@ -38,6 +47,7 @@ function loadChart() {
     const parsedChart = JSON.parse(storedChart);
     chart.title = parsedChart.title;
     chart.cards = parsedChart.cards;
+    chart.fontClass = parsedChart.fontClass;
   } else {
     newChart();
   }
@@ -55,6 +65,12 @@ function handleCardUpdate(cardId, { field, value }) {
   storeChart();
 
 }
+
+function handleFontChange(fontClass) {
+  chart.fontClass = fontClass;
+  storeChart();
+}
+
 
 function handleOpenIcon(card) {
   /**
@@ -85,6 +101,7 @@ function handleLoadChart() {
   };
   input.click();
 }
+
 
 function handleSaveChart() {
   const data = JSON.stringify(chart);
@@ -118,9 +135,10 @@ function handleExport() {
 
 <template>
   <AppRibbon :onNewChart="handleNewChart" :onLoadChart="handleLoadChart" :onSaveChart="handleSaveChart"
-    :onExport="handleExport" :onPrint="handlePrint" />
+    :onExport="handleExport" :onPrint="handlePrint" :currentFontClass="chart.fontClass" :fontClasses="fonts"
+    @font-change="handleFontChange" />
 
-  <section class="max-w-screen-xl mx-auto px-4 md:px-8 my-10 print">
+  <section class="max-w-screen-xl mx-auto px-4 md:px-8 my-10 print" :class="chart.fontClass">
 
     <div class="mx-auto mb-10 ">
       <p class="print text-6xl text-center print-only">{{ chart.title }} </p>
@@ -131,14 +149,39 @@ function handleExport() {
 
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4 lg:gap-4 print">
-      <!-- <div v-for="card in chart.cards" :key="card.id" class="rounded-lg bg-gray-200">
-      </div> -->
       <Card v-for="card in chart.cards" :key="card.id" :id="card.id" :heading="card.heading"
         :description="card.description" :imageUrl="card.imgURL" @updateCard="handleCardUpdate(card.id, $event)"
         @openIcon="handleOpenIcon(card)"></Card>
     </div>
-
-    <p class="text-xl text-center">Created using <a href="http://thetalkingchart.com">thetalkingchart.com</a></p>
+    <p class="text-xl text-center print-only">Created using <a href="http://thetalkingchart.com">thetalkingchart.com</a>
+    </p>
   </section>
 
+  <Dialog></Dialog>
+
 </template>
+<style scoped>
+/* Add your scoped CSS rules here */
+@import url('https://fontlibrary.org/en/face/opendyslexic');
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+.nunito,
+.nunito * {
+  font-family: "Nunito", sans-serif !important;
+  font-style: normal !important;
+}
+
+.kalam,
+.kalam * {
+  font-family: "Kalam", cursive !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+
+.opendyslexic,
+.opendyslexic * {
+  font-family: 'OpenDyslexicMonoRegular' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+}
+</style>
