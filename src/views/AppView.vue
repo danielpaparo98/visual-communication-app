@@ -144,7 +144,7 @@ function handleExport() {
       <p class="print text-6xl text-center print-only">{{ chart.title }} </p>
       <label class="block text-md font-medium text-gray-700"> Title </label>
       <Input type="text" v-model.lazy="chart.title" v-on:input="storeChart"
-        class="block text-5xl h-20 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+        class="block text-5xl h-20 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-center" />
     </div>
 
 
