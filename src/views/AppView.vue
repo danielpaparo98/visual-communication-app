@@ -1,11 +1,13 @@
 <script setup>
-import { reactive, onBeforeMount } from 'vue';
+import { reactive, onBeforeMount, ref } from 'vue';
 import AppRibbon from '@/components/AppRibbon.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Card from '@/components/Card.vue';
-import Dialog from '@/components/ui/dialog/Dialog.vue';
 import { watchImmediate } from '@vueuse/core';
 import html2pdf from 'html2pdf.js';
+import { icons } from '@/assets/icons.js';
+
+import IconPicker from '@/components/IconPicker.vue';
 
 const fonts = [
   { name: 'Default', class: 'font-medium' },
@@ -20,6 +22,9 @@ let chart = reactive({
   fontClass: fonts[0].class,
 });
 
+let iconPickerVisability = ref(false);
+let iconPickerCard = ref(null);
+
 // Function to store the chart object in localStorage
 function storeChart() {
   localStorage.setItem('chart', JSON.stringify(chart));
@@ -30,9 +35,10 @@ function newChart() {
   chart.cards = [];
   chart.fontClass = fonts[0].class;
   for (let i = 0; i < 20; i++) {
+    const randomNumber = Math.floor(Math.random() * icons.length);
     chart.cards.push({
       id: 'card-' + i,
-      imgURL: "https://placehold.co/400x400",
+      imgURL: icons[randomNumber].url,
       heading: '',
       description: '',
     });
@@ -56,6 +62,8 @@ function loadChart() {
 // Load the chart object when the component is mounted
 onBeforeMount(() => {
   loadChart();
+
+  iconPickerCard.value = chart.cards[0];
 });
 
 
@@ -72,10 +80,9 @@ function handleFontChange(fontClass) {
 }
 
 
-function handleOpenIcon(card) {
-  /**
-   * TODO implement this function
-   */
+function handleOpenIcon(cardId) {
+  iconPickerCard.value = chart.cards.find(c => c.id === cardId);
+  iconPickerVisability.value = true;
 }
 
 function handleNewChart() {
@@ -119,15 +126,27 @@ function handlePrint() {
 }
 
 function handleExport() {
-  const printSection = document.querySelector('.print');
+  const printSection = document.querySelector('#printable').innerHTML;
+
   const options = {
     filename: chart.title + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 1 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+    image: { type: 'png' },
+    html2canvas: { scale: 4 },
+    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' },
   };
 
   html2pdf().set(options).from(printSection).save();
+}
+
+function handleimageUpdate(cardId, newImgURL) {
+  iconPickerVisability.value = false;
+  let card = chart.cards.find(c => c.id === cardId);
+  card['imgURL'] = newImgURL;
+  storeChart();
+}
+
+function handleCloseIconPicker() {
+  iconPickerVisability.value = false;
 }
 
 
@@ -141,32 +160,64 @@ function handleExport() {
   <section class="max-w-screen-xl mx-auto px-4 md:px-8 my-10 print" :class="chart.fontClass">
 
     <div class="mx-auto mb-10 ">
-      <p class="print text-6xl text-center print-only">{{ chart.title }} </p>
       <label class="block text-md font-medium text-gray-700"> Title </label>
       <Input type="text" v-model.lazy="chart.title" v-on:input="storeChart"
         class="block text-5xl h-20 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-center" />
     </div>
 
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-4 lg:gap-4 print">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4 lg:gap-4">
       <Card v-for="card in chart.cards" :key="card.id" :id="card.id" :heading="card.heading"
         :description="card.description" :imageUrl="card.imgURL" @updateCard="handleCardUpdate(card.id, $event)"
-        @openIcon="handleOpenIcon(card)"></Card>
+        @openIcon="handleOpenIcon(card.id)"></Card>
     </div>
-    <p class="text-xl text-center print-only">Created using <a href="http://thetalkingchart.com">thetalkingchart.com</a>
-    </p>
   </section>
 
-  <Dialog></Dialog>
+  <IconPicker :card_id="iconPickerCard.id" :currentImgURL="iconPickerCard.imgURL"
+    :iconPickerVisability="iconPickerVisability" @new-card-image="handleimageUpdate(iconPickerCard.id, $event)"
+    @close-icon-picker="handleCloseIconPicker" />
 
+
+  <div id="printable" :class="chart.fontClass" class="printable hidden max-h-[100vh] over">
+    <p class="text-6xl text-center mb-10">{{ chart.title }}</p>
+    <div class="grid grid-cols-4 gap-4 text-center">
+      <div v-for="card in chart.cards">
+        <img :src="card.imgURL" />
+        <p>{{ card.heading }}</p>
+        <p>{{ card.description }}</p>
+      </div>
+
+    </div>
+    <span class="text-center font-medium">Created with 💜 using the <a href="http://thetalkingchart.com">
+        thetalkingchart.com</a>.</span>
+  </div>
 </template>
-<style scoped>
+<style>
 /* Add your scoped CSS rules here */
 @import url('https://fontlibrary.org/en/face/opendyslexic');
 @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
+
+@media print {
+
+  #app :not(#printable *) {
+    -webkit-transition: none !important;
+    transition: none !important;
+    display: none;
+  }
+
+  #printable {
+    display: block !important;
+  }
+
+}
+
+canvas #printable {
+  margin: 10px;
+}
+
 .nunito input,
-.kalam p {
+.nunito p {
   font-family: "Nunito", sans-serif !important;
   font-style: normal !important;
 }

@@ -25,10 +25,6 @@ import {
 
 const emit = defineEmits(['font-change']);
 
-function print_chart() {
-    window.print();
-}
-
 const props = defineProps({
     onNewChart: Function,
     onSaveChart: Function,

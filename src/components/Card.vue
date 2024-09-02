@@ -39,13 +39,11 @@ function openIcon() {
 </script>
 
 <template>
-    <div class="rounded-lg bg-gray-200 py-3 px-7 print text-center">
+    <div class="rounded-lg bg-gray-50 py-3 px-7 text-center">
         <img :src="imageUrl" alt="Card Image" class="card-image" @click="openIcon" />
         <div class="text-center">
-            <h2 class="text-2xl print-only">{{ localHeading }}</h2>
             <Input type="text" v-model="localHeading"
                 class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-2xl text-center" />
-            <h2 class="text-xl print-only">{{ localDescription }}</h2>
             <Input type="text" v-model="localDescription"
                 class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-center" />
         </div>
