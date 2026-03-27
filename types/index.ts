@@ -18,8 +18,26 @@ export interface Card {
   subtitle: string
 }
 
-// Chart state
-export interface ChartState {
+// Chart state for localStorage
+export interface ChartSaveData {
   title: string
   cards: Card[]
 }
+
+// Category metadata
+export interface CategoryInfo {
+  id: IconCategory
+  label: string
+  icon: string // emoji or icon name
+  color: string // Tailwind color class
+}
+
+// Local storage keys
+export const STORAGE_KEYS = {
+  CHART: 'talking-chart-data',
+} as const
+
+// Constants
+export const CARD_COUNT = 20
+export const MAX_HEADING_LENGTH = 12
+export const MAX_SUBTITLE_LENGTH = 19
