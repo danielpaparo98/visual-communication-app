@@ -3,7 +3,7 @@
     :type="type"
     :disabled="disabled"
     :class="buttonClasses"
-    class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="btn-base"
     @click="$emit('click', $event)"
   >
     <slot name="icon-left" />
@@ -33,19 +33,70 @@ defineEmits<{
 
 const buttonClasses = computed(() => {
   const base = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-    secondary: 'bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-400',
-    outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
-    ghost: 'text-gray-600 hover:bg-gray-100 focus:ring-gray-400',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    outline: 'btn-outline',
+    ghost: 'btn-ghost',
+    danger: 'btn-danger',
   }
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
+    sm: 'btn-sm',
+    md: 'btn-md',
+    lg: 'btn-lg',
   }
 
   return [base[props.variant], sizes[props.size]]
 })
 </script>
+
+<style scoped>
+.btn-base {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl
+         font-medium transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-offset-2
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transform active:scale-95 cursor-pointer;
+}
+
+.btn-sm {
+  @apply px-4 py-2 text-sm;
+}
+
+.btn-md {
+  @apply px-5 py-2.5 text-sm;
+}
+
+.btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white
+         hover:from-primary-700 hover:to-primary-600
+         focus:ring-primary-400 shadow-md hover:shadow-lg;
+}
+
+.btn-secondary {
+  @apply bg-gradient-to-r from-accent-500 to-accent-400 text-white
+         hover:from-accent-600 hover:to-accent-500
+         focus:ring-accent-300 shadow-md hover:shadow-lg;
+}
+
+.btn-outline {
+  @apply border-2 border-primary-500 text-primary-600
+         hover:bg-primary-50 hover:border-primary-600
+         focus:ring-primary-400;
+}
+
+.btn-ghost {
+  @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900
+         focus:ring-gray-300;
+}
+
+.btn-danger {
+  @apply bg-gradient-to-r from-red-600 to-red-500 text-white
+         hover:from-red-700 hover:to-red-600
+         focus:ring-red-400 shadow-md hover:shadow-lg;
+}
+</style>

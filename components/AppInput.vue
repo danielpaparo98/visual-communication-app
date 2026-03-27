@@ -6,7 +6,7 @@
     :disabled="disabled"
     :maxlength="maxlength"
     :class="inputClasses"
-    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 transition-colors duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50"
+    class="app-input"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     @blur="$emit('blur', $event)"
     @focus="$emit('focus', $event)"
@@ -37,6 +37,27 @@ defineEmits<{
 }>()
 
 const inputClasses = computed(() => ({
-  'border-red-500 focus:border-red-500 focus:ring-red-500/20': props.error,
+  'app-input-error': props.error,
 }))
 </script>
+
+<style scoped>
+.app-input {
+  @apply w-full rounded-xl border-2 border-gray-200 bg-white
+         px-4 py-3 text-gray-900 placeholder-gray-400
+         transition-all duration-200
+         focus:border-primary-400 focus:outline-none focus:ring-4 focus:ring-primary-100
+         hover:border-gray-300
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.app-input-error {
+  @apply border-red-400 focus:border-red-500 focus:ring-red-100;
+}
+
+/* Search input styling */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+</style>
