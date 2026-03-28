@@ -10,7 +10,7 @@
       >
         <!-- Backdrop -->
         <div
-          class="absolute inset-0 bg-gradient-to-br from-gray-900/60 to-gray-900/40 backdrop-blur-md"
+          class="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
           @click="closeOnBackdrop && close()"
         />
         
@@ -20,8 +20,8 @@
           class="modal-content relative z-10 w-full max-w-4xl max-h-[90vh] overflow-hidden"
         >
           <!-- Header -->
-          <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-            <h2 :id="titleId" class="text-xl sm:text-2xl font-heading font-bold text-gray-900">
+          <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
+            <h2 :id="titleId" class="text-xl sm:text-2xl font-bold text-neutral-900">
               <slot name="title">{{ title }}</slot>
             </h2>
             <button
@@ -41,7 +41,7 @@
           </div>
           
           <!-- Footer (optional) -->
-          <div v-if="$slots.footer" class="border-t border-gray-100 px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
+          <div v-if="$slots.footer" class="border-t border-neutral-200 px-6 py-4 bg-neutral-50">
             <slot name="footer" />
           </div>
         </div>
@@ -91,27 +91,27 @@ function handleEscape(e: KeyboardEvent) {
 
 <style scoped>
 .modal-content {
-  @apply bg-white rounded-3xl shadow-2xl;
+  @apply bg-white rounded-xl shadow-xl;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .modal-close-btn {
-  @apply rounded-xl p-2.5 text-gray-400
-         hover:bg-gray-100 hover:text-gray-600
+  @apply rounded-lg p-2.5 text-neutral-400
+         hover:bg-neutral-100 hover:text-neutral-600
          transition-all duration-200 cursor-pointer
-         focus:outline-none focus:ring-2 focus:ring-primary-400;
+         focus:outline-none focus:ring-2 focus:ring-neutral-400;
 }
 
 .modal-enter-active,
 .modal-leave-active {
-  transition: all 0.3s ease-out;
+  transition: all 0.2s ease-out;
 }
 
 .modal-enter-active .modal-content,
 .modal-leave-active .modal-content {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .modal-enter-from,
@@ -121,7 +121,7 @@ function handleEscape(e: KeyboardEvent) {
 
 .modal-enter-from .modal-content,
 .modal-leave-to .modal-content {
-  transform: scale(0.9) translateY(20px);
+  transform: scale(0.95) translateY(10px);
   opacity: 0;
 }
 </style>

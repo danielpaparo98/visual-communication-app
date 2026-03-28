@@ -1,16 +1,16 @@
 <template>
-  <header class="sticky top-4 z-40 mx-4 print:hidden">
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-neutral-200 print:hidden">
     <div class="container mx-auto">
-      <nav class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-100/50 px-6 py-3">
-        <div class="flex items-center justify-between">
+      <nav class="px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
           <!-- Logo/Brand -->
           <NuxtLink to="/" class="flex items-center gap-3 group">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-900 group-hover:bg-neutral-800 transition-colors duration-200">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <span class="text-xl font-heading font-bold bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
+            <span class="text-lg font-bold text-neutral-900 tracking-tight">
               Talking Chart
             </span>
           </NuxtLink>
@@ -50,13 +50,12 @@
 
 <style scoped>
 .nav-link {
-  @apply flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
-         text-gray-600 hover:bg-gray-100 hover:text-gray-900
-         transition-all duration-200 cursor-pointer;
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+         text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900
+         transition-colors duration-200 cursor-pointer;
 }
 
 .nav-link-active {
-  @apply bg-gradient-to-r from-primary-50 to-accent-50 text-primary-700
-         shadow-sm hover:shadow-md;
+  @apply bg-neutral-100 text-neutral-900 font-semibold;
 }
 </style>

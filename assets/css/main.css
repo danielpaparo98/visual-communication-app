@@ -12,17 +12,19 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
   
   /* Better focus styles for accessibility */
   :focus-visible {
-    @apply outline-none ring-2 ring-primary-400 ring-offset-2;
+    @apply outline-none ring-2 ring-neutral-400 ring-offset-2;
   }
   
   /* Selection color */
   ::selection {
-    @apply bg-primary-200 text-primary-900;
+    @apply bg-neutral-200 text-neutral-900;
   }
   
   /* Smooth scrolling for reduced motion preference */
@@ -41,19 +43,19 @@
 
 /* Custom component styles */
 @layer components {
-  /* Card hover effect */
+  /* Card hover effect - subtle */
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply transition-all duration-200 hover:shadow-lg;
   }
   
-  /* Gradient text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent;
+  /* Monochrome text */
+  .monochrome-text {
+    @apply text-neutral-900;
   }
   
-  /* Glass effect */
+  /* Minimal glass effect */
   .glass {
-    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+    @apply bg-white/90 backdrop-blur-sm border border-neutral-200;
   }
 }
 
@@ -72,20 +74,20 @@
   /* Custom scrollbar styling */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.gray.300') theme('colors.gray.100');
+    scrollbar-color: theme('colors.neutral.300') theme('colors.neutral.100');
   }
   
   .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-gray-100 rounded-full;
+    @apply bg-neutral-100;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+    @apply bg-neutral-300 rounded-full hover:bg-neutral-400;
   }
   
   /* Animation delays */
@@ -143,20 +145,20 @@
 /* Page transition animations */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.3s ease-out;
+  transition: all 0.2s ease-out;
 }
 
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px);
 }
 
 /* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -165,18 +167,18 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* Staggered animation for children */
 .stagger-children > * {
   opacity: 0;
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }

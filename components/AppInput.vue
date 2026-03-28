@@ -43,16 +43,16 @@ const inputClasses = computed(() => ({
 
 <style scoped>
 .app-input {
-  @apply w-full rounded-xl border-2 border-gray-200 bg-white
-         px-4 py-3 text-gray-900 placeholder-gray-400
+  @apply w-full rounded-lg border border-neutral-200 bg-white
+         px-4 py-3 text-neutral-900 placeholder-neutral-400
          transition-all duration-200
-         focus:border-primary-400 focus:outline-none focus:ring-4 focus:ring-primary-100
-         hover:border-gray-300
+         focus:border-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-200
+         hover:border-neutral-300
          disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .app-input-error {
-  @apply border-red-400 focus:border-red-500 focus:ring-red-100;
+  @apply border-neutral-900 focus:border-neutral-900 focus:ring-neutral-200;
 }
 
 /* Search input styling */
