@@ -1,14 +1,16 @@
 <template>
-  <div class="container">
-    <ChartEditor />
+  <div class="container h-full">
+    <EditorShell />
   </div>
 </template>
 
 <script setup lang="ts">
+import EditorShell from '~/components/EditorShell.vue'
+
+// Initialize stores
 const chartStore = useChartStore()
 const iconsStore = useIconsStore()
 
-// Initialize stores on page load
 onMounted(async () => {
   await iconsStore.loadIcons()
   chartStore.initializeChart()
