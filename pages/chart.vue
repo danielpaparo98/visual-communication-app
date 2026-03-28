@@ -1,6 +1,6 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <ChartContainer />
+  <div class="container">
+    <ChartEditor />
   </div>
 </template>
 
@@ -22,3 +22,11 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+</style>

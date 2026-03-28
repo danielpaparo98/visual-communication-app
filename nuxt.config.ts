@@ -6,7 +6,19 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/google-fonts',
   ],
+  
+  googleFonts: {
+    families: {
+      Inter: [400, 500, 600, 700],
+      Roboto: [400, 500, 700],
+      'Open+Sans': [400, 500, 600, 700],
+      Lato: [400, 500, 700],
+      Poppins: [400, 500, 600, 700],
+    },
+    display: 'swap',
+  },
   
   // GitHub Pages deployment
   ssr: false, // SPA mode for static hosting
