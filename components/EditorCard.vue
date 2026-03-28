@@ -12,13 +12,23 @@
     <div class="card-content">
       <!-- Icon -->
       <div class="card-icon" v-if="card.iconId || card.customIconId">
+        <!-- New icon system: use Icon component for iconify/tabler icons -->
+        <Icon
+          v-if="card.iconId && isIconifyIcon(card.iconId)"
+          :name="getMigratedIconName(card.iconId)"
+          :alt="`${card.heading} icon`"
+          class="icon-svg"
+          :size="48"
+        />
+        <!-- Fallback to old SVG system for backward compatibility -->
         <img
-          v-if="card.iconId"
+          v-else-if="card.iconId && !isIconifyIcon(card.iconId)"
           :src="`/icons/${getIconFilename(card.iconId)}`"
           :alt="`${card.heading} icon`"
           class="icon-image"
           loading="lazy"
         />
+        <!-- Custom icon -->
         <img
           v-else-if="card.customIconId && customIconUrl"
           :src="customIconUrl"
@@ -79,6 +89,7 @@ import CardActions from '~/components/CardActions.vue'
 import TextFormattingToolbar from '~/components/TextFormattingToolbar.vue'
 import { useIconsStore } from '~/stores/icons'
 import { useChartStore } from '~/stores/chart'
+import { migrateIconName } from '~/utils/migrateIcons'
 
 interface Props {
   card: Card
@@ -152,9 +163,22 @@ const subtitleStyle = computed(() => {
 })
 
 // Methods
+function isIconifyIcon(iconId: string): boolean {
+  // Check if it's an iconify icon (contains colon like "tabler:home")
+  const migratedName = migrateIconName(iconId)
+  return migratedName.includes(':')
+}
+
+function getMigratedIconName(iconId: string): string {
+  return migrateIconName(iconId)
+}
+
 function getIconFilename(iconId: string): string {
-  const icon = iconsStore.icons.find(i => i.id === iconId)
-  return icon?.filename || ''
+  // Fallback for old SVG icons
+  const icon = iconsStore.getIcon(iconId)
+  // For backward compatibility, try to get filename from old format
+  // This is a fallback that should rarely be used
+  return iconId
 }
 
 const customIconUrl = computed(() => {

@@ -5,9 +5,7 @@
       <!-- Search Input -->
       <div class="relative">
         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <Icon name="lucide:search" class="w-5 h-5" />
         </div>
         <AppInput
           id="icon-search"
@@ -26,15 +24,76 @@
           v-for="category in categories"
           :key="category.id"
           class="category-pill"
-          :class="selectedCategory === category.id ? 'category-pill-active' : ''"
+          :class="[
+            selectedCategory === category.id ? 'category-pill-active' : '',
+            showFavorites ? 'opacity-50' : ''
+          ]"
           @click="toggleCategory(category.id)"
           role="tab"
           :aria-selected="selectedCategory === category.id"
           :aria-controls="`category-${category.id}`"
-          :aria-label="`Filter by ${category.label} icons`"
+          :aria-label="`Filter by ${category.name} icons`"
+          :disabled="showFavorites"
         >
           <span>{{ category.icon }}</span>
-          <span>{{ category.label }}</span>
+          <span>{{ category.name }}</span>
+        </button>
+      </div>
+      
+      <!-- Favorites Toggle -->
+      <div class="flex items-center gap-2">
+        <button
+          @click="toggleShowFavorites"
+          class="favorites-toggle"
+          :class="{ 'favorites-toggle-active': showFavorites }"
+          :aria-label="showFavorites ? 'Show all icons' : 'Show favorites only'"
+        >
+          <Icon :name="showFavorites ? 'tabler:star-filled' : 'tabler:star'" class="w-5 h-5" />
+          <span>{{ showFavorites ? 'All Icons' : 'Favorites' }}</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Recent Icons -->
+    <div v-if="!showFavorites && !searchQuery && !selectedCategory && recentIconItems.length > 0" class="mb-6">
+      <h3 class="section-title">Recent</h3>
+      <div class="icon-grid">
+        <button
+          v-for="icon in recentIconItems"
+          :key="icon.id"
+          @click="selectIcon(icon)"
+          class="icon-item group"
+          :class="{ 'icon-item-selected': selectedIconId === icon.id }"
+          :aria-label="`${icon.name} icon`"
+          :aria-pressed="selectedIconId === icon.id"
+          role="option"
+        >
+          <Icon :name="icon.name" :size="48" />
+          <div v-if="selectedIconId === icon.id" class="icon-check-overlay">
+            <Icon name="lucide:check" class="w-5 h-5 text-white" />
+          </div>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Favorite Icons -->
+    <div v-if="showFavorites && favoriteIconItems.length > 0" class="mb-6">
+      <h3 class="section-title">Favorites</h3>
+      <div class="icon-grid">
+        <button
+          v-for="icon in favoriteIconItems"
+          :key="icon.id"
+          @click="selectIcon(icon)"
+          class="icon-item group"
+          :class="{ 'icon-item-selected': selectedIconId === icon.id }"
+          :aria-label="`${icon.name} icon`"
+          :aria-pressed="selectedIconId === icon.id"
+          role="option"
+        >
+          <Icon :name="icon.name" :size="48" />
+          <div v-if="selectedIconId === icon.id" class="icon-check-overlay">
+            <Icon name="lucide:check" class="w-5 h-5 text-white" />
+          </div>
         </button>
       </div>
     </div>
@@ -67,40 +126,24 @@
             class="icon-item group"
             :class="{ 'icon-item-selected': selectedIconId === icon.id }"
             @click="selectIcon(icon)"
-            :aria-label="`${icon.alt} icon`"
+            :aria-label="`${icon.name} icon`"
             :aria-pressed="selectedIconId === icon.id"
             role="option"
             tabindex="-1"
           >
-            <img
-              :src="`/icons/${icon.filename}`"
-              :alt="icon.alt"
-              class="icon-image"
-              loading="lazy"
-              :data-icon-id="icon.id"
-            />
+            <Icon :name="icon.name" :size="48" />
             <div class="icon-check-overlay">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
+              <Icon name="lucide:check" class="w-5 h-5 text-white" />
             </div>
           </button>
         </div>
-      </div>
-      
-      <!-- Loading indicator -->
-      <div v-if="isLoading" class="loading-indicator" role="status" :aria-label="'Loading icons'">
-        <LoadingSpinner size="sm" />
-        <span>Loading icons...</span>
       </div>
     </div>
     
     <!-- Empty State -->
     <div v-else class="empty-state" role="status" :aria-live="'polite'">
       <div class="empty-icon">
-        <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <Icon name="lucide:search-x" class="w-8 h-8 text-neutral-400" />
       </div>
       <p class="empty-title">No icons found</p>
       <p class="empty-description">Try a different search term or category</p>
@@ -128,9 +171,7 @@
             :aria-label="!selectedIconId ? 'Select an icon first' : 'Confirm icon selection'"
           >
             <template #icon-left>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <Icon name="lucide:check" class="w-4 h-4" />
             </template>
             Select Icon
           </AppButton>
@@ -141,8 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Icon, IconCategory } from '~/types'
-import LoadingSpinner from '~/components/LoadingSpinner.vue'
+import type { IconCatalogItem } from '~/utils/iconCatalog'
 
 interface Props {
   modelValue: boolean
@@ -163,15 +203,13 @@ const iconsStore = useIconsStore()
 
 // Local state
 const searchQuery = ref('')
-const selectedCategory = ref<IconCategory | null>(null)
 const selectedIconId = ref<string | null>(null)
-const isLoading = ref(false)
+const offsetY = ref(0)
 
 // Virtual scrolling state
 const scrollContainer = ref<HTMLElement>()
 const ITEM_HEIGHT = 72 // Height of each icon item in pixels
 const VISIBLE_BUFFER = 4 // Number of extra items to render above/below viewport
-const offsetY = ref(0)
 
 // Computed
 const isOpen = computed({
@@ -180,24 +218,11 @@ const isOpen = computed({
 })
 
 const categories = computed(() => iconsStore.categories)
-
-const filteredIcons = computed(() => {
-  let icons = iconsStore.icons
-  
-  if (selectedCategory.value) {
-    icons = icons.filter(i => i.category === selectedCategory.value)
-  }
-  
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    icons = icons.filter(i => 
-      i.alt.toLowerCase().includes(query) ||
-      i.keywords.some(k => k.includes(query))
-    )
-  }
-  
-  return icons
-})
+const filteredIcons = computed(() => iconsStore.filteredIcons)
+const selectedCategory = computed(() => iconsStore.selectedCategory)
+const showFavorites = computed(() => iconsStore.showFavorites)
+const recentIconItems = computed(() => iconsStore.recentIconItems)
+const favoriteIconItems = computed(() => iconsStore.favoriteIconItems)
 
 // Virtual scrolling computed
 const totalHeight = computed(() => filteredIcons.value.length * ITEM_HEIGHT)
@@ -237,18 +262,29 @@ function handleSearchInput() {
   }, 300)
 }
 
-function toggleCategory(categoryId: IconCategory) {
-  selectedCategory.value = selectedCategory.value === categoryId ? null : categoryId
+function toggleCategory(categoryId: string) {
+  if (iconsStore.selectedCategory === categoryId) {
+    iconsStore.setSelectedCategory(null)
+  } else {
+    iconsStore.setSelectedCategory(categoryId)
+  }
   offsetY.value = 0
 }
 
-function selectIcon(icon: Icon) {
+function toggleShowFavorites() {
+  iconsStore.toggleShowFavorites()
+  offsetY.value = 0
+}
+
+function selectIcon(icon: IconCatalogItem) {
   selectedIconId.value = icon.id
+  // Add to recent icons
+  iconsStore.addToRecent(icon.id)
 }
 
 function getSelectedIconName(): string {
   const icon = filteredIcons.value.find(i => i.id === selectedIconId.value)
-  return icon?.alt || ''
+  return icon?.name || ''
 }
 
 function confirm() {
@@ -263,7 +299,8 @@ function handleClose() {
   // Reset state after modal closes
   setTimeout(() => {
     searchQuery.value = ''
-    selectedCategory.value = null
+    iconsStore.setSelectedCategory(null)
+    iconsStore.showFavorites = false
     selectedIconId.value = null
     offsetY.value = 0
   }, 200)
@@ -331,14 +368,12 @@ function scrollToIcon(index: number) {
 watch(() => props.modelValue, (isOpen) => {
   if (isOpen) {
     selectedIconId.value = props.currentIconId
-    // Load icons if not already loaded
-    if (iconsStore.icons.length === 0) {
-      isLoading.value = true
-      iconsStore.loadIcons().finally(() => {
-        isLoading.value = false
-      })
-    }
   }
+})
+
+// Watch for search query changes
+watch(searchQuery, (query) => {
+  iconsStore.setSearchQuery(query)
 })
 
 // Cleanup
@@ -362,6 +397,24 @@ onUnmounted(() => {
 
 .category-pill-active {
   @apply bg-neutral-900 text-white ring-2 ring-neutral-400;
+}
+
+.category-pill:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.favorites-toggle {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
+         bg-neutral-100 text-neutral-600 hover:bg-neutral-200
+         transition-all duration-200 cursor-pointer;
+}
+
+.favorites-toggle-active {
+  @apply bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400;
+}
+
+.section-title {
+  @apply text-sm font-semibold text-neutral-700 mb-3;
 }
 
 .icons-scroll-container {
@@ -398,7 +451,6 @@ onUnmounted(() => {
 @media (min-width: 640px) {
   .icons-grid {
     grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
   }
 }
 
@@ -408,77 +460,50 @@ onUnmounted(() => {
   }
 }
 
-.icons-viewport {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-@media (min-width: 640px) {
-  .icons-viewport {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-  }
-}
-
-@media (min-width: 768px) {
-  .icons-viewport {
-    grid-template-columns: repeat(8, 1fr);
-  }
-}
-
 .icon-item {
-  @apply relative aspect-square rounded-lg border border-neutral-200 bg-white
-         hover:border-neutral-400 hover:bg-neutral-50 hover:shadow-sm
-         transition-all duration-200 cursor-pointer overflow-hidden
-         focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2;
-  height: 72px;
+  @apply relative flex items-center justify-center p-4 rounded-lg
+         bg-white border-2 border-neutral-200
+         hover:border-neutral-400 hover:bg-neutral-50
+         transition-all duration-200;
+  aspect-ratio: 1;
+}
+
+.icon-item:focus-visible {
+  @apply outline-none ring-2 ring-neutral-400 ring-offset-2;
 }
 
 .icon-item-selected {
-  @apply border-neutral-900 ring-2 ring-neutral-400 ring-offset-1 bg-neutral-50;
-}
-
-.icon-image {
-  @apply w-full h-full object-contain p-1.5 transition-transform duration-200 group-hover:scale-110;
+  @apply border-neutral-900 bg-neutral-100;
 }
 
 .icon-check-overlay {
   @apply absolute inset-0 flex items-center justify-center
-         bg-neutral-900 rounded-lg
-         opacity-0 group-hover:opacity-100 transition-opacity duration-200;
+         bg-neutral-900/80 rounded-lg opacity-0
+         transition-opacity duration-200;
 }
 
 .icon-item-selected .icon-check-overlay {
   @apply opacity-100;
 }
 
-.loading-indicator {
-  @apply flex items-center justify-center gap-2 py-4 text-sm text-neutral-600;
-}
-
 .empty-state {
-  @apply py-16 text-center;
+  @apply flex flex-col items-center justify-center py-12 text-center;
 }
 
 .empty-icon {
-  @apply w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-100 flex items-center justify-center;
+  @apply mb-4;
 }
 
 .empty-title {
-  @apply text-neutral-600 font-medium text-lg;
+  @apply text-lg font-medium text-neutral-700 mb-2;
 }
 
 .empty-description {
-  @apply text-neutral-500 text-sm mt-1;
+  @apply text-sm text-neutral-500;
 }
 
 .footer-content {
-  @apply flex justify-between items-center w-full;
+  @apply flex items-center justify-between w-full;
 }
 
 .footer-info {
@@ -486,20 +511,6 @@ onUnmounted(() => {
 }
 
 .footer-actions {
-  @apply flex gap-3;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .category-pill,
-  .icon-item,
-  .icon-image,
-  .icon-check-overlay {
-    transition: none;
-  }
-  
-  .icon-image:hover {
-    transform: none;
-  }
+  @apply flex items-center gap-3;
 }
 </style>

@@ -1,89 +1,69 @@
 import { defineStore } from 'pinia'
-import type { Icon, IconCategory, CategoryInfo } from '~/types'
-import { CATEGORIES } from '~/utils/icons'
+import { ICON_CATALOG, searchIcons, getIconById, getAllIcons, type IconCatalogItem } from '~/utils/iconCatalog'
+
+const STORAGE_KEY_RECENT = 'recent-icons'
+const STORAGE_KEY_FAVORITES = 'favorite-icons'
 
 export const useIconsStore = defineStore('icons', () => {
   // State
-  const icons = ref<Icon[]>([])
   const isLoading = ref(false)
   const searchQuery = ref('')
-  const selectedCategory = ref<IconCategory | null>(null)
+  const selectedCategory = ref<string | null>(null)
+  const recentIcons = ref<string[]>([])
+  const favoriteIcons = ref<string[]>([])
+  const showFavorites = ref(false)
   
-  // Getters
-  const categories = computed<CategoryInfo[]>(() => CATEGORIES)
-  
+  // Computed
   const filteredIcons = computed(() => {
-    let result = icons.value
-    
-    // Filter by category
+    if (searchQuery.value) {
+      return searchIcons(searchQuery.value)
+    }
     if (selectedCategory.value) {
-      result = result.filter(icon => icon.category === selectedCategory.value)
+      const category = ICON_CATALOG.find(c => c.id === selectedCategory.value)
+      return category?.icons || []
     }
-    
-    // Filter by search query
-    if (searchQuery.value.trim()) {
-      const query = searchQuery.value.toLowerCase().trim()
-      result = result.filter(icon => 
-        icon.alt.toLowerCase().includes(query) ||
-        icon.keywords.some(kw => kw.includes(query))
-      )
-    }
-    
-    return result
+    return ICON_CATALOG.flatMap(c => c.icons)
   })
   
-  const iconsByCategory = computed(() => {
-    const grouped: Record<IconCategory, Icon[]> = {
-      alphabet: [],
-      disability: [],
-      family: [],
-      'feminine-hygiene': [],
-      health: [],
-    }
-    
-    for (const icon of icons.value) {
-      grouped[icon.category].push(icon)
-    }
-    
-    return grouped
+  const categories = computed(() => ICON_CATALOG)
+  
+  const recentIconItems = computed(() => {
+    return recentIcons.value
+      .map(id => getIconById(id))
+      .filter((icon): icon is IconCatalogItem => icon !== undefined)
   })
   
-  const getIconById = (id: string): Icon | undefined => {
-    return icons.value.find(icon => icon.id === id)
-  }
-  
-  const getRandomIcon = (): Icon | undefined => {
-    if (icons.value.length === 0) return undefined
-    return icons.value[Math.floor(Math.random() * icons.value.length)]
-  }
-  
-  const getRandomIcons = (count: number): Icon[] => {
-    const shuffled = [...icons.value].sort(() => Math.random() - 0.5)
-    return shuffled.slice(0, count)
-  }
+  const favoriteIconItems = computed(() => {
+    return favoriteIcons.value
+      .map(id => getIconById(id))
+      .filter((icon): icon is IconCatalogItem => icon !== undefined)
+  })
   
   // Actions
-  async function loadIcons() {
-    if (icons.value.length > 0) return // Already loaded
-    
-    isLoading.value = true
-    try {
-      const response = await fetch('/visual-communication-app/icons-manifest.json')
-      const data = await response.json()
-      icons.value = data
-    } catch (error) {
-      console.error('Failed to load icons:', error)
-    } finally {
-      isLoading.value = false
-    }
-  }
-  
   function setSearchQuery(query: string) {
     searchQuery.value = query
   }
   
-  function setSelectedCategory(category: IconCategory | null) {
-    selectedCategory.value = category
+  function setSelectedCategory(categoryId: string | null) {
+    selectedCategory.value = categoryId
+  }
+  
+  function addToRecent(iconId: string) {
+    recentIcons.value = [iconId, ...recentIcons.value.filter(id => id !== iconId)].slice(0, 20)
+    saveRecentIcons()
+  }
+  
+  function toggleFavorite(iconId: string) {
+    if (favoriteIcons.value.includes(iconId)) {
+      favoriteIcons.value = favoriteIcons.value.filter(id => id !== iconId)
+    } else {
+      favoriteIcons.value = [iconId, ...favoriteIcons.value]
+    }
+    saveFavoriteIcons()
+  }
+  
+  function isFavorite(iconId: string): boolean {
+    return favoriteIcons.value.includes(iconId)
   }
   
   function clearFilters() {
@@ -91,25 +71,104 @@ export const useIconsStore = defineStore('icons', () => {
     selectedCategory.value = null
   }
   
+  function getIcon(iconId: string): IconCatalogItem | undefined {
+    return getIconById(iconId)
+  }
+  
+  // Backward compatibility methods
+  async function loadIcons() {
+    // Icons are now loaded from the catalog, no async loading needed
+    // This method exists for backward compatibility
+    isLoading.value = false
+  }
+  
+  function getRandomIcon(): IconCatalogItem | undefined {
+    const allIcons = getAllIcons()
+    if (allIcons.length === 0) return undefined
+    return allIcons[Math.floor(Math.random() * allIcons.length)]
+  }
+  
+  function getRandomIcons(count: number): IconCatalogItem[] {
+    const allIcons = getAllIcons()
+    if (allIcons.length === 0) return []
+    const shuffled = [...allIcons].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, count)
+  }
+  
+  function toggleShowFavorites() {
+    showFavorites.value = !showFavorites.value
+    if (showFavorites.value) {
+      selectedCategory.value = null
+      searchQuery.value = ''
+    }
+  }
+  
+  // Persistence
+  function saveRecentIcons() {
+    if (import.meta.client) {
+      localStorage.setItem(STORAGE_KEY_RECENT, JSON.stringify(recentIcons.value))
+    }
+  }
+  
+  function saveFavoriteIcons() {
+    if (import.meta.client) {
+      localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(favoriteIcons.value))
+    }
+  }
+  
+  function loadRecentIcons() {
+    if (import.meta.client) {
+      const saved = localStorage.getItem(STORAGE_KEY_RECENT)
+      if (saved) {
+        try {
+          recentIcons.value = JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to load recent icons:', e)
+        }
+      }
+    }
+  }
+  
+  function loadFavoriteIcons() {
+    if (import.meta.client) {
+      const saved = localStorage.getItem(STORAGE_KEY_FAVORITES)
+      if (saved) {
+        try {
+          favoriteIcons.value = JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to load favorite icons:', e)
+        }
+      }
+    }
+  }
+  
+  // Initialize
+  onMounted(() => {
+    loadRecentIcons()
+    loadFavoriteIcons()
+  })
+  
   return {
-    // State
-    icons,
     isLoading,
     searchQuery,
     selectedCategory,
-    
-    // Getters
-    categories,
+    recentIcons,
+    favoriteIcons,
+    recentIconItems,
+    favoriteIconItems,
+    showFavorites,
     filteredIcons,
-    iconsByCategory,
-    getIconById,
-    getRandomIcon,
-    getRandomIcons,
-    
-    // Actions
-    loadIcons,
+    categories,
     setSearchQuery,
     setSelectedCategory,
+    addToRecent,
+    toggleFavorite,
+    isFavorite,
     clearFilters,
+    getIcon,
+    getRandomIcon,
+    getRandomIcons,
+    loadIcons,
+    toggleShowFavorites,
   }
 })
