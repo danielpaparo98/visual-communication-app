@@ -47,6 +47,7 @@
             @update="handleCardUpdate"
             @delete="handleCardDelete"
             @duplicate="handleCardDuplicate"
+            @icon-click="handleIconClick"
           />
         </div>
       </template>
@@ -103,6 +104,7 @@ const emit = defineEmits<{
   'duplicate-card': [cardId: string]
   'reorder-cards': [cards: Card[]]
   'add-card': []
+  'icon-click': [cardId: string]
 }>()
 
 const exportStore = useExportStore()
@@ -197,6 +199,10 @@ function handleCardDuplicate(cardId: string) {
 
 function handleAddCard() {
   emit('add-card')
+}
+
+function handleIconClick(cardId: string) {
+  emit('icon-click', cardId)
 }
 
 function handleDragEnd() {

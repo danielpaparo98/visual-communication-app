@@ -277,6 +277,7 @@ function toggleShowFavorites() {
 }
 
 function selectIcon(icon: IconCatalogItem) {
+  console.log('[IconPicker] selectIcon:', icon)
   selectedIconId.value = icon.id
   // Add to recent icons
   iconsStore.addToRecent(icon.id)
@@ -288,8 +289,14 @@ function getSelectedIconName(): string {
 }
 
 function confirm() {
+  console.log('[IconPicker] confirm, selectedIconId:', selectedIconId.value)
   if (selectedIconId.value) {
-    emit('select', { cardId: props.cardId, iconId: selectedIconId.value })
+    // Use the icon name (with colon) instead of ID
+    const icon = filteredIcons.value.find(i => i.id === selectedIconId.value)
+    if (icon) {
+      console.log('[IconPicker] Emitting select:', { cardId: props.cardId, iconId: icon.name })
+      emit('select', { cardId: props.cardId, iconId: icon.name })
+    }
     handleClose()
   }
 }
@@ -366,8 +373,10 @@ function scrollToIcon(index: number) {
 
 // Watch for modal open to set initial selection
 watch(() => props.modelValue, (isOpen) => {
-  if (isOpen) {
-    selectedIconId.value = props.currentIconId
+  if (isOpen && props.currentIconId) {
+    // Find the icon by name (currentIconId is the name with colon)
+    const icon = filteredIcons.value.find(i => i.name === props.currentIconId)
+    selectedIconId.value = icon?.id || null
   }
 })
 

@@ -111,6 +111,10 @@ export const useChartStore = defineStore('chart', () => {
     if (saved) {
       title.value = saved.title
       cards.value = saved.cards
+      console.log('[ChartStore] Loaded from storage:', saved.cards.length, 'cards')
+      saved.cards.forEach((card: any, i: number) => {
+        console.log(`[ChartStore] Card ${i}:`, { id: card.id, iconId: card.iconId, customIconId: card.customIconId })
+      })
       
       // Load new settings if available (v2 or v3)
       if ('version' in saved && (saved.version === 2 || saved.version === 3)) {
@@ -138,11 +142,13 @@ export const useChartStore = defineStore('chart', () => {
     title.value = 'My Communication Chart'
     cards.value = Array.from({ length: CARD_COUNT }, (_, i) => createEmptyCard(i))
     
-    // Assign random icons
+    // Assign random icons (use name with colon for Icon component)
     const randomIcons = iconsStore.getRandomIcons(CARD_COUNT)
+    console.log('[ChartStore] Random icons:', randomIcons)
     cards.value.forEach((card, i) => {
       if (randomIcons[i]) {
-        card.iconId = randomIcons[i].id
+        card.iconId = randomIcons[i].name
+        console.log(`[ChartStore] Setting card ${i} iconId to:`, randomIcons[i].name)
       }
     })
     
@@ -219,11 +225,11 @@ export const useChartStore = defineStore('chart', () => {
     title.value = 'My Communication Chart'
     cards.value = Array.from({ length: CARD_COUNT }, (_, i) => createEmptyCard(i))
     
-    // Assign new random icons
+    // Assign new random icons (use name with colon for Icon component)
     const randomIcons = iconsStore.getRandomIcons(CARD_COUNT)
     cards.value.forEach((card, i) => {
       if (randomIcons[i]) {
-        card.iconId = randomIcons[i].id
+        card.iconId = randomIcons[i].name
       }
     })
     

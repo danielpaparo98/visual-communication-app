@@ -10,8 +10,21 @@
   >
     <!-- Card Content -->
     <div class="card-content">
+      <!-- Debug: Check if Icon component exists -->
+      <div v-if="!checkIconComponent()" class="debug-no-icon" style="color: red; font-size: 10px; margin-bottom: 4px;">
+        Icon component not available
+      </div>
       <!-- Icon -->
-      <div class="card-icon" v-if="card.iconId || card.customIconId">
+      <div
+        class="card-icon"
+        v-if="card.iconId || card.customIconId"
+        @click="handleIconClick"
+        :class="{ 'icon-clickable': !isPreviewMode }"
+      >
+        <!-- Debug: Show icon ID -->
+        <div v-if="card.iconId" class="debug-icon-id" style="font-size: 10px; color: #999; margin-bottom: 4px;">
+          iconId: {{ card.iconId }}
+        </div>
         <!-- New icon system: use Icon component for iconify/tabler icons -->
         <Icon
           v-if="card.iconId && isIconifyIcon(card.iconId)"
@@ -20,6 +33,10 @@
           class="icon-svg"
           :size="48"
         />
+        <!-- Fallback text if Icon component doesn't render -->
+        <div v-else-if="card.iconId && !isIconifyIcon(card.iconId)" class="icon-fallback">
+          {{ card.iconId }}
+        </div>
         <!-- Fallback to old SVG system for backward compatibility -->
         <img
           v-else-if="card.iconId && !isIconifyIcon(card.iconId)"
@@ -108,6 +125,7 @@ const emit = defineEmits<{
   'delete': [cardId: string]
   'duplicate': [cardId: string]
   'select': [cardId: string]
+  'icon-click': [cardId: string]
 }>()
 
 const iconsStore = useIconsStore()
@@ -166,11 +184,22 @@ const subtitleStyle = computed(() => {
 function isIconifyIcon(iconId: string): boolean {
   // Check if it's an iconify icon (contains colon like "tabler:home")
   const migratedName = migrateIconName(iconId)
-  return migratedName.includes(':')
+  const result = migratedName.includes(':')
+  console.log('[EditorCard] isIconifyIcon:', iconId, '->', migratedName, 'result:', result)
+  return result
 }
 
 function getMigratedIconName(iconId: string): string {
-  return migrateIconName(iconId)
+  const result = migrateIconName(iconId)
+  console.log('[EditorCard] getMigratedIconName:', iconId, '->', result)
+  return result
+}
+
+// Check if Icon component is available
+function checkIconComponent(): boolean {
+  const iconExists = typeof Icon !== 'undefined'
+  console.log('[EditorCard] Icon component available:', iconExists)
+  return iconExists
 }
 
 function getIconFilename(iconId: string): string {
@@ -252,6 +281,13 @@ function handleDuplicate() {
   emit('duplicate', props.card.id)
 }
 
+function handleIconClick(event: Event) {
+  event.stopPropagation() // Prevent card selection
+  if (!props.isPreviewMode) {
+    emit('icon-click', props.card.id)
+  }
+}
+
 function handleApplyFormatting(formatting: Partial<TextFormatting>) {
   emit('update', props.card.id, {
     textFormatting: { ...props.card.textFormatting, ...formatting },
@@ -325,6 +361,18 @@ watch(() => props.isSelected, (isSelected) => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.icon-clickable {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px;
+  transition: all 0.2s ease;
+}
+
+.icon-clickable:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.05);
 }
 
 .icon-image {

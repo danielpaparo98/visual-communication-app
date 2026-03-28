@@ -70,6 +70,7 @@
           @duplicate-card="handleDuplicateCard"
           @reorder-cards="handleReorderCards"
           @add-card="handleAddCard"
+          @icon-click="handleIconClick"
         />
       </div>
     </div>
@@ -317,7 +318,14 @@ function handleReorderCards(cards: Card[]) {
   chartStore.reorderCards(cards)
 }
 
+function handleIconClick(cardId: string) {
+  console.log('[ChartEditor] handleIconClick:', cardId)
+  activeCardId.value = cardId
+  showIconPicker.value = true
+}
+
 function handleIconSelect({ cardId, iconId }: { cardId: string; iconId: string }) {
+  console.log('[ChartEditor] handleIconSelect:', { cardId, iconId })
   chartStore.updateCardIcon(cardId, iconId)
   showIconPicker.value = false
   addNotification('success', 'Icon Updated', 'The card icon has been updated successfully.')
@@ -360,10 +368,12 @@ function handleZoomUpdate(zoom: number) {
 }
 
 async function handleExport() {
+  console.log('[ChartEditor] handleExport called')
   showExportModal.value = true
 }
 
 async function handleExportWithFormat(format: 'pdf' | 'png' | 'jpg' | 'svg') {
+  console.log('[ChartEditor] handleExportWithFormat:', format)
   try {
     exportError.value = null
     isExporting.value = true

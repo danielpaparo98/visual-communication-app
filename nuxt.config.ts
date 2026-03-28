@@ -10,6 +10,20 @@ export default defineNuxtConfig({
     '@nuxt/icon',
   ],
   
+  icon: {
+    // Configure icon component to be globally available
+    customCollections: {
+      default: ['lucide', 'tabler', 'heroicons', 'phosphor']
+    },
+    // Enable auto-importing of icons
+    autoImport: true,
+    // Disable compatibility check to allow use with Nuxt 3.x
+    compatibility: {
+      strict: false,
+    strictMode: false,
+    },
+  },
+  
   googleFonts: {
     families: {
       Inter: [400, 500, 600, 700],
