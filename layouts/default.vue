@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-neutral-50">
+  <div class="min-h-screen flex flex-col bg-white">
     <AppHeader />
-    <main class="flex-1">
+    <main class="flex-1 pt-16">
       <NuxtPage :transition="{
         name: 'page',
         mode: 'out-in'
