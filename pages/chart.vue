@@ -5,6 +5,11 @@
 </template>
 
 <script setup lang="ts">
+// Use the dedicated editor layout (no header/footer)
+definePageMeta({
+  layout: 'editor'
+})
+
 import EditorShell from '~/components/EditorShell.vue'
 
 // Initialize stores
