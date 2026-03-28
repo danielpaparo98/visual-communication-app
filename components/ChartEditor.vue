@@ -5,10 +5,28 @@
       :title="chartStore.title"
       :is-preview-mode="chartStore.isPreviewMode"
       :is-dirty="chartStore.isDirty"
-      :is-exporting="chartStore.isExporting"
+      :is-exporting="isExporting"
       @update:title="handleTitleUpdate"
       @toggle-preview="handleTogglePreview"
       @export="handleExport"
+    />
+
+    <!-- Export Feedback -->
+    <div v-if="exportError" class="export-error">
+      <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ exportError }}</span>
+    </div>
+
+    <ExportControls
+      :canvas-ref="canvasRef"
+      :filename="chartStore.exportSettings.filename"
+      :quality="chartStore.exportSettings.quality"
+      :is-exporting="isExporting"
+      @exporting="handleExportingChange"
+      @success="handleExportSuccess"
+      @error="handleExportError"
     />
 
     <!-- Main Layout -->
@@ -60,14 +78,18 @@
 <script setup lang="ts">
 import type { Card } from '~/types'
 import { useKeyboardShortcuts } from '~/composables/useKeyboardShortcuts'
+import { usePdfExport } from '~/composables/usePdfExport'
 
 const chartStore = useChartStore()
 const iconsStore = useIconsStore()
+const { exportToPdf } = usePdfExport()
 
 // State
 const showIconPicker = ref(false)
 const activeCardId = ref('')
 const canvasContainerRef = ref<any>()
+const exportError = ref<string | null>(null)
+const isExporting = ref(false)
 
 // Initialize keyboard shortcuts
 useKeyboardShortcuts()
@@ -76,6 +98,10 @@ useKeyboardShortcuts()
 const currentIconId = computed(() => {
   const card = chartStore.cards.find(c => c.id === activeCardId.value)
   return card?.iconId || null
+})
+
+const canvasRef = computed(() => {
+  return canvasContainerRef.value?.$el?.querySelector('.wysiwyg-canvas') as HTMLElement | undefined
 })
 
 // Methods
@@ -139,36 +165,49 @@ function handleIconSelect({ cardId, iconId }: { cardId: string; iconId: string }
   showIconPicker.value = false
 }
 
-function handleExport() {
-  // Get canvas element from container
-  const canvasElement = canvasContainerRef.value?.$el?.querySelector('.wysiwyg-canvas') as HTMLElement
-  if (canvasElement) {
-    import('html2canvas').then(({ default: html2canvas }) => {
-      import('jspdf').then(({ default: jsPDF }) => {
-        const scale = chartStore.exportSettings.quality === 'high' ? 3 : 2
-        
-        html2canvas(canvasElement, {
-          scale,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          allowTaint: true,
-        }).then(canvas => {
-          const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'mm',
-            format: 'a4',
-          })
-          
-          const imgWidth = 297
-          const imgHeight = (canvas.height * imgWidth) / canvas.width
-          
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight)
-          pdf.save(`${chartStore.exportSettings.filename}.pdf`)
-        })
-      })
-    })
+async function handleExport() {
+  try {
+    exportError.value = null
+    isExporting.value = true
+    
+    // Get canvas element from container
+    const canvasElement = canvasContainerRef.value?.$el?.querySelector('.wysiwyg-canvas') as HTMLElement
+    if (!canvasElement) {
+      throw new Error('Canvas element not found')
+    }
+    
+    // Use the composable for PDF export
+    await exportToPdf(
+      canvasElement,
+      chartStore.exportSettings.filename,
+      chartStore.exportSettings.quality
+    )
+  } catch (error) {
+    console.error('Export failed:', error)
+    exportError.value = error instanceof Error ? error.message : 'Failed to export PDF'
+    // Show error for 5 seconds
+    setTimeout(() => {
+      exportError.value = null
+    }, 5000)
+  } finally {
+    isExporting.value = false
   }
+}
+
+function handleExportingChange(exporting: boolean) {
+  isExporting.value = exporting
+}
+
+function handleExportSuccess() {
+  // Success feedback is handled by ExportControls component
+  exportError.value = null
+}
+
+function handleExportError(error: Error) {
+  exportError.value = error.message
+  setTimeout(() => {
+    exportError.value = null
+  }, 5000)
 }
 </script>
 
@@ -178,6 +217,31 @@ function handleExport() {
   flex-direction: column;
   height: 100vh;
   background: #f9fafb;
+}
+
+.export-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 0.875rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .editor-layout {
@@ -195,6 +259,17 @@ function handleExport() {
   
   .editor-layout {
     overflow: visible;
+  }
+  
+  .export-error {
+    display: none;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .export-error {
+    animation: none;
   }
 }
 </style>
