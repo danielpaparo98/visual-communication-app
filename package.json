@@ -20,7 +20,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "nuxt": "^4.0.0",
-    "pinia": "^2.2.6",
+    "pinia": "^3.0.4",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "vue-toastification": "^2.0.0-rc.5",
