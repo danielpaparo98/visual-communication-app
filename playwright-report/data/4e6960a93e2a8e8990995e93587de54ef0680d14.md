@@ -1,0 +1,256 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e7]:
+        - 'textbox "Chart title: My Communication Chart" [ref=e9]':
+          - /placeholder: Chart Title
+          - text: My Communication Chart
+        - paragraph [ref=e10]: Click on any card to customize
+      - generic [ref=e12]:
+        - button "Undo last action (disabled)" [disabled] [ref=e13]:
+          - img [ref=e14]
+        - button "Redo last action (disabled)" [disabled] [ref=e17]:
+          - img [ref=e18]
+      - generic [ref=e21]:
+        - button "Switch to preview mode" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+          - generic [ref=e26]: Preview
+        - button "Export chart as PDF" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+          - text: Export PDF
+    - generic [ref=e30]:
+      - complementary [ref=e31]:
+        - button "Collapse toolbar" [expanded] [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - button "Layout" [expanded] [ref=e37] [cursor=pointer]:
+              - img [ref=e38]
+              - generic [ref=e40]: Layout
+              - img [ref=e41]
+            - region [ref=e43]:
+              - generic [ref=e44]:
+                - 'button "Select 2 Columns layout: 2 columns × 10 rows - Large cards" [ref=e45] [cursor=pointer]':
+                  - generic [ref=e46]: 2 Columns
+                - 'button "Select 4 Columns layout: 4 columns × 5 rows - Balanced" [pressed] [ref=e47] [cursor=pointer]':
+                  - generic [ref=e48]: 4 Columns
+                - 'button "Select 5 Columns layout: 5 columns × 4 rows - Compact" [ref=e49] [cursor=pointer]':
+                  - generic [ref=e50]: 5 Columns
+                - 'button "Select 3 Columns layout: 3 columns × 7 rows - Medium" [ref=e51] [cursor=pointer]':
+                  - generic [ref=e52]: 3 Columns
+                - 'button "Select Custom layout: Custom layout" [ref=e53] [cursor=pointer]':
+                  - generic [ref=e54]: Custom
+          - generic [ref=e55]:
+            - button "Cards" [expanded] [ref=e56] [cursor=pointer]:
+              - img [ref=e57]
+              - generic [ref=e59]: Cards
+              - img [ref=e60]
+            - region [ref=e62]:
+              - generic [ref=e63]:
+                - button "Add new card" [ref=e64] [cursor=pointer]:
+                  - img [ref=e65]
+                  - text: Add Card
+                - generic [ref=e67]:
+                  - button "Duplicate card (select a card first)" [disabled] [ref=e68]:
+                    - img [ref=e69]
+                    - text: Duplicate
+                  - button "Remove card (select a card first)" [disabled] [ref=e71]:
+                    - img [ref=e72]
+                    - text: Remove
+          - button "Spacing" [ref=e75] [cursor=pointer]:
+            - img [ref=e76]
+            - generic [ref=e78]: Spacing
+            - img [ref=e79]
+          - button "Style" [ref=e82] [cursor=pointer]:
+            - img [ref=e83]
+            - generic [ref=e85]: Style
+            - img [ref=e86]
+          - button "Zoom" [ref=e89] [cursor=pointer]:
+            - img [ref=e90]
+            - generic [ref=e92]: Zoom
+            - img [ref=e93]
+      - region "Chart editor canvas" [ref=e96]:
+        - heading "My Communication Chart" [level=1] [ref=e97]
+        - generic "Draggable cards grid" [ref=e98]:
+          - listitem [ref=e99] [cursor=pointer]:
+            - article "-" [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]: Icon component not available
+                - generic [ref=e104]: "iconId: tabler:mountain"
+                - generic [ref=e108]:
+                  - generic "Card heading:" [ref=e109]
+                  - generic "Card subtitle:" [ref=e110]
+          - listitem [ref=e111] [cursor=pointer]:
+            - article "-" [ref=e112]:
+              - generic [ref=e113]:
+                - generic [ref=e114]: Icon component not available
+                - generic [ref=e116]: "iconId: tabler:traffic-light"
+                - generic [ref=e117]:
+                  - generic "Card heading:" [ref=e118]
+                  - generic "Card subtitle:" [ref=e119]
+          - listitem [ref=e120] [cursor=pointer]:
+            - article "-" [ref=e121]:
+              - generic [ref=e122]:
+                - generic [ref=e123]: Icon component not available
+                - generic [ref=e125]: "iconId: tabler:ramp"
+                - generic [ref=e126]:
+                  - generic "Card heading:" [ref=e127]
+                  - generic "Card subtitle:" [ref=e128]
+          - listitem [ref=e129] [cursor=pointer]:
+            - article "-" [ref=e130]:
+              - generic [ref=e131]:
+                - generic [ref=e132]: Icon component not available
+                - generic [ref=e134]: "iconId: tabler:elevator"
+                - generic [ref=e138]:
+                  - generic "Card heading:" [ref=e139]
+                  - generic "Card subtitle:" [ref=e140]
+          - listitem [ref=e141] [cursor=pointer]:
+            - article "-" [ref=e142]:
+              - generic [ref=e143]:
+                - generic [ref=e144]: Icon component not available
+                - generic [ref=e146]: "iconId: tabler:bread"
+                - generic [ref=e148]:
+                  - generic "Card heading:" [ref=e149]
+                  - generic "Card subtitle:" [ref=e150]
+          - listitem [ref=e151] [cursor=pointer]:
+            - article "-" [ref=e152]:
+              - generic [ref=e153]:
+                - generic [ref=e154]: Icon component not available
+                - generic [ref=e156]: "iconId: emoji:0️⃣"
+                - generic [ref=e157]:
+                  - generic "Card heading:" [ref=e158]
+                  - generic "Card subtitle:" [ref=e159]
+          - listitem [ref=e160] [cursor=pointer]:
+            - article "-" [ref=e161]:
+              - generic [ref=e162]:
+                - generic [ref=e163]: Icon component not available
+                - generic [ref=e165]: "iconId: tabler:crutch"
+                - generic [ref=e166]:
+                  - generic "Card heading:" [ref=e167]
+                  - generic "Card subtitle:" [ref=e168]
+          - listitem [ref=e169] [cursor=pointer]:
+            - article "-" [ref=e170]:
+              - generic [ref=e171]:
+                - generic [ref=e172]: Icon component not available
+                - generic [ref=e174]: "iconId: lucide:scale"
+                - generic [ref=e178]:
+                  - generic "Card heading:" [ref=e179]
+                  - generic "Card subtitle:" [ref=e180]
+          - listitem [ref=e181] [cursor=pointer]:
+            - article "-" [ref=e182]:
+              - generic [ref=e183]:
+                - generic [ref=e184]: Icon component not available
+                - generic [ref=e186]: "iconId: tabler:wine"
+                - generic [ref=e187]:
+                  - generic "Card heading:" [ref=e188]
+                  - generic "Card subtitle:" [ref=e189]
+          - listitem [ref=e190] [cursor=pointer]:
+            - article "-" [ref=e191]:
+              - generic [ref=e192]:
+                - generic [ref=e193]: Icon component not available
+                - generic [ref=e195]: "iconId: tabler:stethoscope"
+                - generic [ref=e200]:
+                  - generic "Card heading:" [ref=e201]
+                  - generic "Card subtitle:" [ref=e202]
+          - listitem [ref=e203] [cursor=pointer]:
+            - article "-" [ref=e204]:
+              - generic [ref=e205]:
+                - generic [ref=e206]: Icon component not available
+                - generic [ref=e207]:
+                  - generic [ref=e208]: "iconId: emoji:😍"
+                  - img [ref=e209]
+                - generic [ref=e210]:
+                  - generic "Card heading:" [ref=e211]
+                  - generic "Card subtitle:" [ref=e212]
+          - listitem [ref=e213] [cursor=pointer]:
+            - article "-" [ref=e214]:
+              - generic [ref=e215]:
+                - generic [ref=e216]: Icon component not available
+                - generic [ref=e218]: "iconId: tabler:plug"
+                - generic [ref=e220]:
+                  - generic "Card heading:" [ref=e221]
+                  - generic "Card subtitle:" [ref=e222]
+          - listitem [ref=e223] [cursor=pointer]:
+            - article "-" [ref=e224]:
+              - generic [ref=e225]:
+                - generic [ref=e226]: Icon component not available
+                - generic [ref=e228]: "iconId: tabler:crutch"
+                - generic [ref=e229]:
+                  - generic "Card heading:" [ref=e230]
+                  - generic "Card subtitle:" [ref=e231]
+          - listitem [ref=e232] [cursor=pointer]:
+            - article "-" [ref=e233]:
+              - generic [ref=e234]:
+                - generic [ref=e235]: Icon component not available
+                - generic [ref=e237]: "iconId: tabler:bug"
+                - generic [ref=e239]:
+                  - generic "Card heading:" [ref=e240]
+                  - generic "Card subtitle:" [ref=e241]
+          - listitem [ref=e242] [cursor=pointer]:
+            - article "-" [ref=e243]:
+              - generic [ref=e244]:
+                - generic [ref=e245]: Icon component not available
+                - generic [ref=e246]:
+                  - generic [ref=e247]: "iconId: emoji:😀"
+                  - img [ref=e248]
+                - generic [ref=e249]:
+                  - generic "Card heading:" [ref=e250]
+                  - generic "Card subtitle:" [ref=e251]
+          - listitem [ref=e252] [cursor=pointer]:
+            - article "-" [ref=e253]:
+              - generic [ref=e254]:
+                - generic [ref=e255]: Icon component not available
+                - generic [ref=e256]:
+                  - generic [ref=e257]: "iconId: emoji:😉"
+                  - img [ref=e258]
+                - generic [ref=e259]:
+                  - generic "Card heading:" [ref=e260]
+                  - generic "Card subtitle:" [ref=e261]
+          - listitem [ref=e262] [cursor=pointer]:
+            - article "-" [ref=e263]:
+              - generic [ref=e264]:
+                - generic [ref=e265]: Icon component not available
+                - generic [ref=e267]: "iconId: tabler:hearing"
+                - generic [ref=e268]:
+                  - generic "Card heading:" [ref=e269]
+                  - generic "Card subtitle:" [ref=e270]
+          - listitem [ref=e271] [cursor=pointer]:
+            - article "-" [ref=e272]:
+              - generic [ref=e273]:
+                - generic [ref=e274]: Icon component not available
+                - generic [ref=e276]: "iconId: tabler:water"
+                - generic [ref=e277]:
+                  - generic "Card heading:" [ref=e278]
+                  - generic "Card subtitle:" [ref=e279]
+          - listitem [ref=e280] [cursor=pointer]:
+            - article "-" [ref=e281]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: Icon component not available
+                - generic [ref=e285]: "iconId: tabler:cloud-lightning"
+                - generic [ref=e286]:
+                  - generic "Card heading:" [ref=e287]
+                  - generic "Card subtitle:" [ref=e288]
+          - listitem [ref=e289] [cursor=pointer]:
+            - article "-" [ref=e290]:
+              - generic [ref=e291]:
+                - generic [ref=e292]: Icon component not available
+                - generic [ref=e293]:
+                  - generic [ref=e294]: "iconId: emoji:😂"
+                  - img [ref=e295]
+                - generic [ref=e296]:
+                  - generic "Card heading:" [ref=e297]
+                  - generic "Card subtitle:" [ref=e298]
+  - generic:
+    - img
+  - generic [ref=e299]:
+    - button "Toggle Nuxt DevTools" [ref=e300] [cursor=pointer]:
+      - img [ref=e301]
+    - generic "Page load time" [ref=e304]:
+      - generic [ref=e305]: "343"
+      - generic [ref=e306]: ms
+    - button "Toggle Component Inspector" [ref=e308] [cursor=pointer]:
+      - img [ref=e309]
+```

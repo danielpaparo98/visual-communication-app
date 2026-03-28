@@ -42,6 +42,7 @@ const inputClasses = computed(() => ({
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .app-input {
   @apply w-full rounded-lg border border-neutral-200 bg-white
          px-4 py-3 text-neutral-900 placeholder-neutral-400

@@ -36,6 +36,7 @@
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .nav-link {
   @apply text-sm font-medium text-neutral-500 hover:text-neutral-900
          transition-all duration-200 cursor-pointer relative;

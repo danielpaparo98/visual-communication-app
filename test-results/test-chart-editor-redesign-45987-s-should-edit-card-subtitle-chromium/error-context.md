@@ -1,0 +1,347 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e7]:
+        - 'textbox "Chart title: My Communication Chart" [ref=e9]':
+          - /placeholder: Chart Title
+          - text: My Communication Chart
+        - paragraph [ref=e10]: Click on any card to customize
+      - generic [ref=e12]:
+        - button "Undo last action (disabled)" [disabled] [ref=e13]:
+          - img [ref=e14]
+        - button "Redo last action (disabled)" [disabled] [ref=e17]:
+          - img [ref=e18]
+      - generic [ref=e21]:
+        - button "Switch to preview mode" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+          - generic [ref=e26]: Preview
+        - button "Export chart as PDF" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+          - text: Export PDF
+    - generic [ref=e30]:
+      - complementary [ref=e31]:
+        - button "Collapse toolbar" [expanded] [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - button "Layout" [expanded] [ref=e37] [cursor=pointer]:
+              - img [ref=e38]
+              - generic [ref=e40]: Layout
+              - img [ref=e41]
+            - region [ref=e43]:
+              - generic [ref=e44]:
+                - 'button "Select 2 Columns layout: 2 columns × 10 rows - Large cards" [ref=e45] [cursor=pointer]':
+                  - generic [ref=e46]: 2 Columns
+                - 'button "Select 4 Columns layout: 4 columns × 5 rows - Balanced" [pressed] [ref=e47] [cursor=pointer]':
+                  - generic [ref=e48]: 4 Columns
+                - 'button "Select 5 Columns layout: 5 columns × 4 rows - Compact" [ref=e49] [cursor=pointer]':
+                  - generic [ref=e50]: 5 Columns
+                - 'button "Select 3 Columns layout: 3 columns × 7 rows - Medium" [ref=e51] [cursor=pointer]':
+                  - generic [ref=e52]: 3 Columns
+                - 'button "Select Custom layout: Custom layout" [ref=e53] [cursor=pointer]':
+                  - generic [ref=e54]: Custom
+          - generic [ref=e55]:
+            - button "Cards" [expanded] [ref=e56] [cursor=pointer]:
+              - img [ref=e57]
+              - generic [ref=e59]: Cards
+              - img [ref=e60]
+            - region [ref=e62]:
+              - generic [ref=e63]:
+                - button "Add new card" [ref=e64] [cursor=pointer]:
+                  - img [ref=e65]
+                  - text: Add Card
+                - generic [ref=e67]:
+                  - button "Duplicate card (select a card first)" [disabled] [ref=e68]:
+                    - img [ref=e69]
+                    - text: Duplicate
+                  - button "Remove card (select a card first)" [disabled] [ref=e71]:
+                    - img [ref=e72]
+                    - text: Remove
+          - button "Spacing" [ref=e75] [cursor=pointer]:
+            - img [ref=e76]
+            - generic [ref=e78]: Spacing
+            - img [ref=e79]
+          - button "Style" [ref=e82] [cursor=pointer]:
+            - img [ref=e83]
+            - generic [ref=e85]: Style
+            - img [ref=e86]
+          - button "Zoom" [ref=e89] [cursor=pointer]:
+            - img [ref=e90]
+            - generic [ref=e92]: Zoom
+            - img [ref=e93]
+      - region "Chart editor canvas" [ref=e96]:
+        - heading "My Communication Chart" [level=1] [ref=e97]
+        - generic "Draggable cards grid" [ref=e98]:
+          - listitem [ref=e99] [cursor=pointer]:
+            - article "-" [active] [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]: Icon component not available
+                - generic [ref=e103]:
+                  - generic [ref=e104]: "iconId: emoji:🤩"
+                  - img [ref=e105]
+                - generic [ref=e106]:
+                  - generic "Card heading:" [ref=e107]
+                  - generic "Card subtitle:" [ref=e108]
+          - listitem [ref=e109] [cursor=pointer]:
+            - article "-" [ref=e110]:
+              - generic [ref=e111]:
+                - generic [ref=e112]: Icon component not available
+                - generic [ref=e114]: "iconId: tabler:bread"
+                - generic [ref=e116]:
+                  - generic "Card heading:" [ref=e117]
+                  - generic "Card subtitle:" [ref=e118]
+          - listitem [ref=e119] [cursor=pointer]:
+            - article "-" [ref=e120]:
+              - generic [ref=e121]:
+                - generic [ref=e122]: Icon component not available
+                - generic [ref=e124]: "iconId: tabler:wine"
+                - generic [ref=e125]:
+                  - generic "Card heading:" [ref=e126]
+                  - generic "Card subtitle:" [ref=e127]
+          - listitem [ref=e128] [cursor=pointer]:
+            - article "-" [ref=e129]:
+              - generic [ref=e130]:
+                - generic [ref=e131]: Icon component not available
+                - generic [ref=e133]: "iconId: tabler:sign-language"
+                - generic [ref=e134]:
+                  - generic "Card heading:" [ref=e135]
+                  - generic "Card subtitle:" [ref=e136]
+          - listitem [ref=e137] [cursor=pointer]:
+            - article "-" [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e140]: Icon component not available
+                - generic [ref=e142]: "iconId: tabler:utensils"
+                - generic [ref=e143]:
+                  - generic "Card heading:" [ref=e144]
+                  - generic "Card subtitle:" [ref=e145]
+          - listitem [ref=e146] [cursor=pointer]:
+            - article "-" [ref=e147]:
+              - generic [ref=e148]:
+                - generic [ref=e149]: Icon component not available
+                - generic [ref=e150]:
+                  - generic [ref=e151]: "iconId: emoji:😮"
+                  - img [ref=e152]
+                - generic [ref=e153]:
+                  - generic "Card heading:" [ref=e154]
+                  - generic "Card subtitle:" [ref=e155]
+          - listitem [ref=e156] [cursor=pointer]:
+            - article "-" [ref=e157]:
+              - generic [ref=e158]:
+                - generic [ref=e159]: Icon component not available
+                - generic [ref=e161]: "iconId: tabler:mountain"
+                - generic [ref=e165]:
+                  - generic "Card heading:" [ref=e166]
+                  - generic "Card subtitle:" [ref=e167]
+          - listitem [ref=e168] [cursor=pointer]:
+            - article "-" [ref=e169]:
+              - generic [ref=e170]:
+                - generic [ref=e171]: Icon component not available
+                - generic [ref=e173]: "iconId: tabler:cookie"
+                - generic [ref=e175]:
+                  - generic "Card heading:" [ref=e176]
+                  - generic "Card subtitle:" [ref=e177]
+          - listitem [ref=e178] [cursor=pointer]:
+            - article "-" [ref=e179]:
+              - generic [ref=e180]:
+                - generic [ref=e181]: Icon component not available
+                - generic [ref=e183]: "iconId: tabler:dog"
+                - generic [ref=e187]:
+                  - generic "Card heading:" [ref=e188]
+                  - generic "Card subtitle:" [ref=e189]
+          - listitem [ref=e190] [cursor=pointer]:
+            - article "-" [ref=e191]:
+              - generic [ref=e192]:
+                - generic [ref=e193]: Icon component not available
+                - generic [ref=e195]: "iconId: tabler:charging"
+                - generic [ref=e196]:
+                  - generic "Card heading:" [ref=e197]
+                  - generic "Card subtitle:" [ref=e198]
+          - listitem [ref=e199] [cursor=pointer]:
+            - article "-" [ref=e200]:
+              - generic [ref=e201]:
+                - generic [ref=e202]: Icon component not available
+                - generic [ref=e204]: "iconId: tabler:braille"
+                - generic [ref=e206]:
+                  - generic "Card heading:" [ref=e207]
+                  - generic "Card subtitle:" [ref=e208]
+          - listitem [ref=e209] [cursor=pointer]:
+            - article "-" [ref=e210]:
+              - generic [ref=e211]:
+                - generic [ref=e212]: Icon component not available
+                - generic [ref=e214]: "iconId: tabler:home"
+                - generic [ref=e218]:
+                  - generic "Card heading:" [ref=e219]
+                  - generic "Card subtitle:" [ref=e220]
+          - listitem [ref=e221] [cursor=pointer]:
+            - article "-" [ref=e222]:
+              - generic [ref=e223]:
+                - generic [ref=e224]: Icon component not available
+                - generic [ref=e226]: "iconId: lucide:sun"
+                - generic [ref=e230]:
+                  - generic "Card heading:" [ref=e231]
+                  - generic "Card subtitle:" [ref=e232]
+          - listitem [ref=e233] [cursor=pointer]:
+            - article "-" [ref=e234]:
+              - generic [ref=e235]:
+                - generic [ref=e236]: Icon component not available
+                - generic [ref=e238]: "iconId: tabler:utensils"
+                - generic [ref=e239]:
+                  - generic "Card heading:" [ref=e240]
+                  - generic "Card subtitle:" [ref=e241]
+          - listitem [ref=e242] [cursor=pointer]:
+            - article "-" [ref=e243]:
+              - generic [ref=e244]:
+                - generic [ref=e245]: Icon component not available
+                - generic [ref=e247]: "iconId: tabler:mouse"
+                - generic [ref=e249]:
+                  - generic "Card heading:" [ref=e250]
+                  - generic "Card subtitle:" [ref=e251]
+          - listitem [ref=e252] [cursor=pointer]:
+            - article "-" [ref=e253]:
+              - generic [ref=e254]:
+                - generic [ref=e255]: Icon component not available
+                - generic [ref=e257]: "iconId: tabler:thermometer"
+                - generic [ref=e259]:
+                  - generic "Card heading:" [ref=e260]
+                  - generic "Card subtitle:" [ref=e261]
+          - listitem [ref=e262] [cursor=pointer]:
+            - article "-" [ref=e263]:
+              - generic [ref=e264]:
+                - generic [ref=e265]: Icon component not available
+                - generic [ref=e267]: "iconId: tabler:music"
+                - generic [ref=e271]:
+                  - generic "Card heading:" [ref=e272]
+                  - generic "Card subtitle:" [ref=e273]
+          - listitem [ref=e274] [cursor=pointer]:
+            - article "-" [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e277]: Icon component not available
+                - generic [ref=e279]: "iconId: tabler:armchair"
+                - generic [ref=e283]:
+                  - generic "Card heading:" [ref=e284]
+                  - generic "Card subtitle:" [ref=e285]
+          - listitem [ref=e286] [cursor=pointer]:
+            - article "-" [ref=e287]:
+              - generic [ref=e288]:
+                - generic [ref=e289]: Icon component not available
+                - generic [ref=e291]: "iconId: tabler:calendar"
+                - generic [ref=e293]:
+                  - generic "Card heading:" [ref=e294]
+                  - generic "Card subtitle:" [ref=e295]
+          - listitem [ref=e296] [cursor=pointer]:
+            - article "-" [ref=e297]:
+              - generic [ref=e298]:
+                - generic [ref=e299]: Icon component not available
+                - generic [ref=e301]: "iconId: tabler:wheelchair"
+                - generic [ref=e305]:
+                  - generic "Card heading:" [ref=e306]
+                  - generic "Card subtitle:" [ref=e307]
+  - dialog "Choose an Icon" [ref=e308]:
+    - generic [ref=e310]:
+      - generic [ref=e311]:
+        - heading "Choose an Icon" [level=2] [ref=e312]
+        - button "Close modal" [ref=e313] [cursor=pointer]:
+          - img [ref=e314]
+      - generic [ref=e316]:
+        - generic [ref=e317]:
+          - generic [ref=e318]:
+            - img [ref=e320]
+            - searchbox "Search icons" [ref=e324]
+          - tablist "Icon categories" [ref=e325]:
+            - tab "Filter by Medical icons" [ref=e326] [cursor=pointer]:
+              - generic [ref=e327]: 🏥
+              - generic [ref=e328]: Medical
+            - tab "Filter by Health icons" [ref=e329] [cursor=pointer]:
+              - generic [ref=e330]: ❤️
+              - generic [ref=e331]: Health
+            - tab "Filter by Family icons" [ref=e332] [cursor=pointer]:
+              - generic [ref=e333]: 👨‍👩‍👧‍👦
+              - generic [ref=e334]: Family
+            - tab "Filter by Alphabet & Numbers icons" [ref=e335] [cursor=pointer]:
+              - generic [ref=e336]: 🔤
+              - generic [ref=e337]: Alphabet & Numbers
+            - tab "Filter by Daily Activities icons" [ref=e338] [cursor=pointer]:
+              - generic [ref=e339]: 🏠
+              - generic [ref=e340]: Daily Activities
+            - tab "Filter by Accessibility icons" [ref=e341] [cursor=pointer]:
+              - generic [ref=e342]: ♿
+              - generic [ref=e343]: Accessibility
+            - tab "Filter by Food & Drink icons" [ref=e344] [cursor=pointer]:
+              - generic [ref=e345]: 🍔
+              - generic [ref=e346]: Food & Drink
+            - tab "Filter by Nature icons" [ref=e347] [cursor=pointer]:
+              - generic [ref=e348]: 🌳
+              - generic [ref=e349]: Nature
+            - tab "Filter by Emotions icons" [ref=e350] [cursor=pointer]:
+              - generic [ref=e351]: 😀
+              - generic [ref=e352]: Emotions
+            - tab "Filter by Technology icons" [ref=e353] [cursor=pointer]:
+              - generic [ref=e354]: 💻
+              - generic [ref=e355]: Technology
+          - button "Show favorites only" [ref=e357] [cursor=pointer]:
+            - img [ref=e358]
+            - generic [ref=e360]: Favorites
+        - region "Icon selection grid" [ref=e361]:
+          - generic [ref=e363]:
+            - option "tabler:stethoscope icon" [ref=e364] [cursor=pointer]:
+              - img [ref=e365]
+              - img [ref=e371]
+            - option "tabler:hospital icon" [ref=e373] [cursor=pointer]:
+              - img [ref=e374]
+              - img [ref=e377]
+            - option "tabler:pill icon" [ref=e379] [cursor=pointer]:
+              - img [ref=e380]
+              - img [ref=e383]
+            - option "tabler:ambulance icon" [ref=e385] [cursor=pointer]:
+              - img [ref=e386]
+              - img [ref=e391]
+            - option "tabler:heart-pulse icon" [ref=e393] [cursor=pointer]:
+              - img [ref=e394]
+              - img [ref=e396]
+            - option "tabler:vaccine icon" [ref=e398] [cursor=pointer]:
+              - img [ref=e399]
+              - img [ref=e402]
+            - option "tabler:thermometer icon" [ref=e404] [cursor=pointer]:
+              - img [ref=e405]
+              - img [ref=e408]
+            - option "tabler:bandage icon" [ref=e410] [cursor=pointer]:
+              - img [ref=e411]
+              - img [ref=e414]
+            - option "tabler:crutch icon" [ref=e416] [cursor=pointer]:
+              - img [ref=e417]
+              - img [ref=e419]
+            - option "tabler:wheelchair icon" [ref=e421] [cursor=pointer]:
+              - img [ref=e422]
+              - img [ref=e427]
+            - option "tabler:needle icon" [ref=e429] [cursor=pointer]:
+              - img [ref=e430]
+              - img [ref=e433]
+            - option "tabler:microscope icon" [ref=e435] [cursor=pointer]:
+              - img [ref=e436]
+              - img [ref=e439]
+            - option "tabler:test-tubes icon" [ref=e441] [cursor=pointer]:
+              - img [ref=e442]
+              - img [ref=e444]
+      - generic [ref=e447]:
+        - generic [ref=e448]:
+          - generic [ref=e449]: 200 icons found
+          - generic [ref=e450]: "Selected: emoji:🤩"
+        - generic [ref=e451]:
+          - button "Cancel icon selection" [ref=e452] [cursor=pointer]: Cancel
+          - button "Confirm icon selection" [ref=e453] [cursor=pointer]:
+            - img [ref=e454]
+            - text: Select Icon
+  - generic:
+    - img
+  - generic [ref=e456]:
+    - button "Toggle Nuxt DevTools" [ref=e457] [cursor=pointer]:
+      - img [ref=e458]
+    - generic "Page load time" [ref=e461]:
+      - generic [ref=e462]: "576"
+      - generic [ref=e463]: ms
+    - button "Toggle Component Inspector" [ref=e465] [cursor=pointer]:
+      - img [ref=e466]
+```

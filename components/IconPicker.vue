@@ -394,6 +394,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .category-pill {
   @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
          bg-neutral-100 text-neutral-600 hover:bg-neutral-200

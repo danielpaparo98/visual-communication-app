@@ -1,6 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4 Theme Configuration */
+@theme {
+  /* Custom color palette from tailwind.config.ts */
+  --color-primary-50: #f5f3f7;
+  --color-primary-100: #ebe7ef;
+  --color-primary-200: #d6cfe0;
+  --color-primary-300: #b8a9c7;
+  --color-primary-400: #9881a7;
+  --color-primary-500: #7d628c;
+  --color-primary-600: #655071;
+  --color-primary-700: #54425d;
+  --color-primary-800: #47384f;
+  --color-primary-900: #3e3144;
+  --color-primary-950: #2a1f2d;
+
+  --color-accent-50: #fff5f5;
+  --color-accent-100: #ffe0e0;
+  --color-accent-200: #ffc5c5;
+  --color-accent-300: #ff9e9e;
+  --color-accent-400: #ff6666;
+  --color-accent-500: #f53b3b;
+  --color-accent-600: #e62525;
+  --color-accent-700: #c01919;
+  --color-accent-800: #9f1818;
+  --color-accent-900: #831b1b;
+  --color-accent-950: #480909;
+
+  /* Custom font families */
+  --font-family-heading: 'Fredoka', sans-serif;
+  --font-family-body: 'Inter', sans-serif;
+}
 
 /* Custom base styles */
 @layer base {

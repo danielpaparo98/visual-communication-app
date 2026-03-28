@@ -51,6 +51,7 @@ const buttonClasses = computed(() => {
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .btn-base {
   @apply inline-flex items-center justify-center gap-2 rounded-lg
          font-semibold transition-all duration-200

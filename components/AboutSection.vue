@@ -98,6 +98,7 @@
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .feature-card {
   @apply bg-white p-8 rounded-lg border border-neutral-200
          transition-all duration-200 hover:border-neutral-400;

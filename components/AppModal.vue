@@ -90,6 +90,7 @@ function handleEscape(e: KeyboardEvent) {
 </script>
 
 <style scoped>
+@import "tailwindcss";
 .modal-content {
   @apply bg-white rounded-xl shadow-xl;
   box-shadow:
