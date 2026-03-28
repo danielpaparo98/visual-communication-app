@@ -475,6 +475,9 @@ export const CATEGORIES: CategoryInfo[] = [
 
 // ===== NEW TYPES FOR CHARTS PAGE REDESIGN =====
 
+// Viewport size type
+export type ViewportSize = 'desktop' | 'tablet' | 'mobile'
+
 // Editor Layout Types
 export interface EditorLayoutState {
   sidePanelOpen: boolean
@@ -482,6 +485,7 @@ export interface EditorLayoutState {
   floatingControlsVisible: boolean
   bottomSheetOpen: boolean
   bottomSheetExpanded: boolean
+  viewportSize: ViewportSize
 }
 
 export type EditorSection = 'layout' | 'cards' | 'style' | 'export'

@@ -5,11 +5,14 @@ A free, open-source visual communication chart builder for individuals with comm
 ## Features
 
 -🎨 Create 20-card visual communication charts
-- 🔤 180+ icons across 5 categories
-- ✏️ Customizable headings and subtitles
-- 💾 Auto-saves to browser storage
-- 🖨️ Print-ready output
-- 📱 Works offline after first load
+- 🔤 200+ icons across 6 categories with @nuxt/icon and @tabler/icons-vue
+- ✏️ Customizable headings and subtitles with text formatting
+- 💾 Auto-saves to browser storage with version control
+- 🖨️ Export to PDF, PNG, JPG with customizable settings
+- 📱 Responsive design for desktop, tablet, and mobile
+- 🎭 Watermark support for branding
+- 📋 Export history and templates
+- 🔄 Undo/redo functionality
 - 🆓 100% free and open source
 
 ## Tech Stack

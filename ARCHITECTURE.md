@@ -4,6 +4,44 @@
 
 This document outlines the architecture for rebuilding "The Talking Chart" - a visual communication chart builder for individuals with communication difficulties. The rebuild modernizes the stack from Vue 2 + BootstrapVue to Nuxt 3 + Vue 3 + Tailwind CSS.
 
+## Charts Page Redesign (2026)
+
+The charts page underwent a comprehensive redesign in 2026 with the following major improvements:
+
+### New Icon System
+- Migrated from local SVG files to `@nuxt/icon` and `@tabler/icons-vue`
+- Created [`utils/iconCatalog.ts`](utils/iconCatalog.ts) with 200+ icons across 6 categories
+- Implemented [`utils/migrateIcons.ts`](utils/migrateIcons.ts) for backward compatibility
+- Updated [`stores/icons.ts`](stores/icons.ts) for new icon system
+- Rewrote [`components/IconPicker.vue`](components/IconPicker.vue) with virtual scrolling
+- Updated [`components/EditorCard.vue`](components/EditorCard.vue) for new icons
+
+### New Layout System
+- Created dedicated [`layouts/editor.vue`](layouts/editor.vue) for full-screen editing
+- Created [`stores/editorLayout.ts`](stores/editorLayout.ts) for layout state management
+- Implemented responsive breakpoints (desktop ≥1024px, tablet 768-1023px, mobile <768px)
+- Created 10 new layout components for the editor
+
+### Enhanced Export System
+- Created [`stores/export.ts`](stores/export.ts) for export settings and history
+- Created 5 new export components:
+  - [`components/WatermarkConfig.vue`](components/WatermarkConfig.vue) - Watermark settings
+  - [`components/PrintPreviewModal.vue`](components/PrintPreviewModal.vue) - Print preview
+  - [`components/ExportHistory.vue`](components/ExportHistory.vue) - Export history tracking
+  - [`components/ExportTemplates.vue`](components/ExportTemplates.vue) - Template management
+  - [`components/ExportProgress.vue`](components/ExportProgress.vue) - Progress indicator
+- Enhanced [`components/ExportModal.vue`](components/ExportModal.vue) with new options
+- Added print button to [`components/EditorTopBar.vue`](components/EditorTopBar.vue)
+- Added watermark rendering to [`components/EditorCanvas.vue`](components/EditorCanvas.vue)
+- Created [`assets/css/print.css`](assets/css/print.css) for print styling
+
+### Type System Updates
+- Added `ViewportSize` type ('desktop' | 'tablet' | 'mobile')
+- Added `EditorLayoutState` interface with viewport tracking
+- Added `ExtendedExportSettings` interface with paper sizes, margins, scale
+- Added `WatermarkSettings` interface with position, font, opacity options
+- Added `ExportHistoryItem` and `ExportTemplate` interfaces
+
 ---
 
 ## Table of Contents
@@ -17,6 +55,7 @@ This document outlines the architecture for rebuilding "The Talking Chart" - a v
 7. [Icon Management](#7-icon-management)
 8. [Accessibility Guidelines](#8-accessibility-guidelines)
 9. [Development Workflow](#9-development-workflow)
+10. [Charts Page Redesign Components](#10-charts-page-redesign-components)
 
 ---
 
@@ -1323,6 +1362,217 @@ git push origin feature/new-feature
 | Stores | camelCase | `chart.ts` |
 | Types | PascalCase | `chart.ts` |
 | Utils | camelCase | `iconManifest.ts` |
+
+---
+
+## 10. Charts Page Redesign Components
+
+### Editor Layout Components
+
+#### [`layouts/editor.vue`](layouts/editor.vue)
+**Responsibility**: Dedicated editor layout without header/footer for full-screen editing
+
+```vue
+<template>
+  <div class="editor-layout min-h-screen bg-gray-50">
+    <slot />
+  </div>
+</template>
+```
+
+#### [`stores/editorLayout.ts`](stores/editorLayout.ts)
+**Responsibility**: Manage editor layout state and responsive breakpoints
+
+```typescript
+export const useEditorLayoutStore = defineStore('editorLayout', () => {
+  const state = reactive<EditorLayoutState>({
+    sidePanelOpen: true,
+    activeSection: 'layout',
+    floatingControlsVisible: true,
+    bottomSheetOpen: false,
+    bottomSheetExpanded: false,
+    viewportSize: 'desktop',
+  })
+
+  // Computed viewport size
+  const viewportSize = computed<ViewportSize>(() => {
+    if (import.meta.client) {
+      const width = window.innerWidth
+      if (width >= 1024) return 'desktop'
+      if (width >= 768) return 'tablet'
+      return 'mobile'
+    }
+    return 'desktop'
+  })
+
+  return {
+    state,
+    toggleSidePanel,
+    setActiveSection,
+    toggleFloatingControls,
+    toggleBottomSheet,
+    setBottomSheetExpanded,
+    resetState,
+  }
+})
+```
+
+#### [`components/EditorShell.vue`](components/EditorShell.vue)
+**Responsibility**: Main editor shell containing top bar, workspace, and bottom sheet
+
+#### [`components/EditorWorkspace.vue`](components/EditorWorkspace.vue)
+**Responsibility**: Container for side panel, canvas, and floating controls
+
+#### [`components/SidePanel.vue`](components/SidePanel.vue)
+**Responsibility**: Collapsible side panel with tabbed sections (Layout, Cards, Style, Export)
+
+#### [`components/BottomSheet.vue`](components/BottomSheet.vue)
+**Responsibility**: Mobile/tablet bottom sheet for editor controls
+
+#### [`components/FloatingControls.vue`](components/FloatingControls.vue)
+**Responsibility**: Floating action buttons (add card, delete card, etc.)
+
+#### [`components/EditorTopBar.vue`](components/EditorTopBar.vue)
+**Responsibility**: Top navigation bar with title, undo/redo, print, export buttons
+
+### Export System Components
+
+#### [`stores/export.ts`](stores/export.ts)
+**Responsibility**: Manage export settings, watermark, history, and templates
+
+```typescript
+export const useExportStore = defineStore('export', () => {
+  const settings = reactive<ExtendedExportSettings>({ ...DEFAULT_EXPORT_SETTINGS })
+  const watermark = reactive<WatermarkSettings>({ ...DEFAULT_WATERMARK_SETTINGS })
+  const history = ref<ExportHistoryItem[]>([])
+  const templates = ref<ExportTemplate[]>([])
+  const isExporting = ref(false)
+  const exportProgress = ref(0)
+
+  return {
+    settings,
+    watermark,
+    history,
+    templates,
+    isExporting,
+    exportProgress,
+    updateSettings,
+    updateWatermark,
+    addToHistory,
+    clearHistory,
+    saveTemplate,
+    deleteTemplate,
+    loadTemplate,
+    resetSettings,
+  }
+})
+```
+
+#### [`components/WatermarkConfig.vue`](components/WatermarkConfig.vue)
+**Responsibility**: Watermark configuration UI (toggle, text, position, font, opacity)
+
+#### [`components/PrintPreviewModal.vue`](components/PrintPreviewModal.vue)
+**Responsibility**: Print preview modal with zoom controls
+
+#### [`components/ExportHistory.vue`](components/ExportHistory.vue)
+**Responsibility**: Display export history with download/re-export options
+
+#### [`components/ExportTemplates.vue`](components/ExportTemplates.vue)
+**Responsibility**: Template management UI (save, load, delete templates)
+
+#### [`components/ExportProgress.vue`](components/ExportProgress.vue)
+**Responsibility**: Export progress indicator with percentage
+
+### Icon System Components
+
+#### [`utils/iconCatalog.ts`](utils/iconCatalog.ts)
+**Responsibility**: Icon catalog with 200+ icons from @nuxt/icon and @tabler/icons-vue
+
+```typescript
+export const ICON_CATALOG: IconCategory[] = [
+  {
+    id: 'medical',
+    name: 'Medical',
+    icon: '🏥',
+    color: 'red',
+    icons: [
+      { id: 'tabler-stethoscope', name: 'tabler:stethoscope', category: 'medical', keywords: ['doctor', 'health', 'medical', 'checkup'], source: 'tabler' },
+      // ... more icons
+    ]
+  },
+  // ... more categories
+]
+```
+
+#### [`utils/migrateIcons.ts`](utils/migrateIcons.ts)
+**Responsibility**: Backward compatibility utility for migrating old icon paths to new icon system
+
+#### [`components/IconPicker.vue`](components/IconPicker.vue)
+**Responsibility**: Icon picker modal with virtual scrolling, search, categories, favorites
+
+```vue
+<template>
+  <AppModal v-model="isOpen" title="Choose an Icon" size="lg">
+    <!-- Search and Filters -->
+    <div class="mb-6 space-y-4">
+      <AppInput v-model="searchQuery" type="search" placeholder="Search icons..." />
+      <div class="flex flex-wrap gap-2">
+        <button v-for="category in categories" @click="toggleCategory(category.id)">
+          {{ category.icon }} {{ category.name }}
+        </button>
+      </div>
+    </div>
+    
+    <!-- Virtual Scrolling Icon Grid -->
+    <div ref="scrollContainer" class="icons-scroll-container">
+      <div class="icons-grid" :style="{ height: `${totalHeight}px` }">
+        <div class="icons-viewport" :style="{ transform: `translateY(${offsetY}px)` }">
+          <button v-for="icon in visibleIcons" @click="selectIcon(icon)">
+            <Icon :name="icon.name" :size="48" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </AppModal>
+</template>
+```
+
+### Enhanced Composables
+
+#### [`composables/usePdfExport.ts`](composables/usePdfExport.ts)
+**Responsibility**: Enhanced PDF export with watermark support and print options
+
+```typescript
+export function usePdfExport() {
+  async function exportToPdf(options: ExportOptions) {
+    const canvas = document.getElementById('chart-canvas')
+    const dataUrl = await html2canvas(canvas, { scale: options.scale || 2 })
+    
+    const pdf = new jsPDF({
+      orientation: exportStore.settings.orientation,
+      unit: 'mm',
+      format: exportStore.settings.paperSize,
+    })
+    
+    // Add watermark if enabled
+    if (exportStore.watermark.enabled) {
+      addWatermark(pdf, dataUrl)
+    }
+    
+    pdf.save(filename)
+  }
+  
+  return { exportToPdf }
+}
+```
+
+### Responsive Breakpoints
+
+| Breakpoint | Min Width | Layout Behavior |
+|------------|-----------|-----------------|
+| Desktop | ≥1024px | Side panel visible, floating controls |
+| Tablet | 768-1023px | Collapsible side panel, bottom sheet available |
+| Mobile | <768px | No side panel, bottom sheet only |
 
 ---
 

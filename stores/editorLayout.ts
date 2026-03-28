@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { EditorLayoutState, EditorSection } from '~/types'
+import type { EditorLayoutState, EditorSection, ViewportSize } from '~/types'
 
 const STORAGE_KEY = 'editor-layout-state'
 
@@ -9,11 +9,32 @@ const DEFAULT_STATE: EditorLayoutState = {
   floatingControlsVisible: true,
   bottomSheetOpen: false,
   bottomSheetExpanded: false,
+  viewportSize: 'desktop',
 }
 
 export const useEditorLayoutStore = defineStore('editorLayout', () => {
   // State
   const state = reactive<EditorLayoutState>({ ...DEFAULT_STATE })
+
+  // Computed viewport size
+  const viewportSize = computed<ViewportSize>(() => {
+    if (import.meta.client) {
+      const width = window.innerWidth
+      if (width >= 1024) return 'desktop'
+      if (width >= 768) return 'tablet'
+      return 'mobile'
+    }
+    return 'desktop'
+  })
+
+  // Watch viewport size changes
+  watch(viewportSize, (newSize) => {
+    state.viewportSize = newSize
+    // Auto-hide side panel on mobile/tablet
+    if (newSize !== 'desktop') {
+      state.sidePanelOpen = false
+    }
+  })
 
   // Actions
   function toggleSidePanel() {
