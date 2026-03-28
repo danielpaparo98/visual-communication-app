@@ -1,6 +1,6 @@
 <template>
   <div class="container h-full">
-    <EditorShell />
+    <ChartEditor />
   </div>
 </template>
 
@@ -10,16 +10,7 @@ definePageMeta({
   layout: 'editor'
 })
 
-import EditorShell from '~/components/EditorShell.vue'
-
-// Initialize stores
-const chartStore = useChartStore()
-const iconsStore = useIconsStore()
-
-onMounted(async () => {
-  await iconsStore.loadIcons()
-  chartStore.initializeChart()
-})
+import ChartEditor from '~/components/ChartEditor.vue'
 
 // SEO
 useHead({
