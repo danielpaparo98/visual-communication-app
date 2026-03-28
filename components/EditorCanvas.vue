@@ -62,17 +62,24 @@
     />
 
     <!-- Watermark (only in preview/export) -->
-    <div v-if="isPreviewMode" class="canvas-watermark" role="contentinfo">
-      Created with The Talking Chart
+    <div
+      v-if="isPreviewMode && watermark.enabled"
+      class="canvas-watermark"
+      role="contentinfo"
+      :style="watermarkStyles"
+    >
+      {{ watermark.text }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
 import type { Card, CanvasSettings, StyleSettings, CustomIcon } from '~/types'
 import EditorCard from '~/components/EditorCard.vue'
 import EmptyState from '~/components/EmptyState.vue'
+import { useExportStore } from '~/stores/export'
 
 interface Props {
   cards: Card[]
@@ -98,6 +105,7 @@ const emit = defineEmits<{
   'add-card': []
 }>()
 
+const exportStore = useExportStore()
 const canvasRef = ref<HTMLElement>()
 
 // Computed
@@ -132,6 +140,40 @@ const localCards = computed({
   set: (value) => {
     emit('reorder-cards', value)
   },
+})
+
+const watermark = computed(() => exportStore.watermark)
+
+const watermarkStyles = computed(() => {
+  const pos = watermark.value.position
+  const baseStyle = {
+    fontFamily: watermark.value.fontFamily,
+    fontSize: `${watermark.value.fontSize}px`,
+    fontWeight: watermark.value.fontWeight,
+    color: watermark.value.color,
+    opacity: watermark.value.opacity,
+    margin: `${watermark.value.margin}px`,
+  }
+
+  const positionStyles: Record<string, Record<string, string>> = {
+    'top-left': { top: '6mm', left: '6mm', right: 'auto', bottom: 'auto', transform: 'none' },
+    'top-center': { top: '6mm', left: '50%', right: 'auto', bottom: 'auto', transform: 'translateX(-50%)' },
+    'top-right': { top: '6mm', left: 'auto', right: '6mm', bottom: 'auto', transform: 'none' },
+    'bottom-left': { top: 'auto', left: '6mm', right: 'auto', bottom: '6mm', transform: 'none' },
+    'bottom-center': { top: 'auto', left: '50%', right: 'auto', bottom: '6mm', transform: 'translateX(-50%)' },
+    'bottom-right': { top: 'auto', left: 'auto', right: '6mm', bottom: '6mm', transform: 'none' },
+    'center': { top: '50%', left: '50%', right: 'auto', bottom: 'auto', transform: 'translate(-50%, -50%)' },
+  }
+
+  const rotation = watermark.value.rotation !== 0
+    ? ` rotate(${watermark.value.rotation}deg)`
+    : ''
+
+  return {
+    ...baseStyle,
+    ...positionStyles[pos],
+    transform: `${positionStyles[pos].transform}${rotation}`,
+  }
 })
 
 // Methods
