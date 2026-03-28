@@ -91,17 +91,18 @@ function handleExport() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: white;
+  padding: 1.25rem 2rem;
+  background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.375rem;
   flex: 1;
+  min-width: 0;
 }
 
 .title-input-wrapper {
@@ -111,24 +112,29 @@ function handleExport() {
 }
 
 .title-input {
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   font-weight: 700;
-  color: #111827;
+  color: #0f172a;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  padding: 0.25rem 0;
+  padding: 0.375rem 0;
   width: 100%;
   transition: border-color 0.2s ease;
+  line-height: 1.3;
 }
 
 .title-input:hover {
-  border-color: #d1d5db;
+  border-color: #cbd5e1;
 }
 
 .title-input:focus {
   outline: none;
-  border-color: #111827;
+  border-color: #0f172a;
+}
+
+.title-input::placeholder {
+  color: #94a3b8;
 }
 
 .title-icon {
@@ -136,36 +142,40 @@ function handleExport() {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .header-hint {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.875rem;
+  flex-shrink: 0;
 }
 
 .preview-toggle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: white;
+  gap: 0.625rem;
+  padding: 0.625rem 1.125rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
   cursor: pointer;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-weight: 600;
+  color: #475569;
   transition: all 0.2s ease;
 }
 
 .preview-toggle:hover {
-  background: #f9fafb;
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 .preview-toggle.active {
@@ -183,11 +193,12 @@ function handleExport() {
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .editor-header {
     flex-direction: column;
     align-items: stretch;
-    padding: 1rem;
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
   }
   
   .header-left {
@@ -196,6 +207,11 @@ function handleExport() {
   
   .header-right {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .title-input {
+    font-size: 1.375rem;
   }
 }
 </style>

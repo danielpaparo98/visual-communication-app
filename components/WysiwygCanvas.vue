@@ -128,62 +128,67 @@ defineExpose({
 .wysiwyg-canvas {
   width: 1123px;  /* 297mm at 96 DPI */
   height: 794px; /* 210mm at 96 DPI */
-  background: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
   position: relative;
   overflow: hidden;
 }
 
 .canvas-title {
   text-align: center;
-  font-size: 24pt;
+  font-size: 26pt;
   font-weight: 700;
-  margin-bottom: 10mm;
-  color: #111827;
+  margin-bottom: 12mm;
+  color: #0f172a;
+  line-height: 1.3;
 }
 
 .canvas-grid {
   display: grid;
   width: 100%;
-  height: calc(100% - 40mm);
+  height: calc(100% - 45mm);
 }
 
 .canvas-card-wrapper {
   position: relative;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: all 0.2s ease;
+  padding: 2px;
 }
 
 .canvas-card-wrapper:hover:not(.preview-mode) {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(15, 23, 42, 0.03);
 }
 
 .canvas-card-wrapper.selected {
   outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  outline-offset: 3px;
+  background-color: rgba(59, 130, 246, 0.04);
 }
 
 /* Drag and drop styles */
 .card-ghost {
-  opacity: 0.5;
-  background: #e5e7eb;
+  opacity: 0.4;
+  background: #f1f5f9;
 }
 
 .card-dragging {
   opacity: 1;
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px -4px rgba(0, 0, 0, 0.15);
 }
 
 .canvas-watermark {
   position: absolute;
-  bottom: 5mm;
+  bottom: 6mm;
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 8pt;
-  color: #9ca3af;
+  font-size: 9pt;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 /* Print styles */
@@ -194,6 +199,7 @@ defineExpose({
   
   .canvas-card-wrapper.selected {
     outline: none;
+    background-color: transparent;
   }
 }
 
@@ -201,6 +207,10 @@ defineExpose({
 @media (prefers-reduced-motion: reduce) {
   .canvas-card-wrapper {
     transition: none;
+  }
+  
+  .card-dragging {
+    transform: none;
   }
 }
 </style>

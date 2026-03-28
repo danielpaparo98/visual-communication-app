@@ -159,31 +159,31 @@ function handleDuplicate() {
 <style scoped>
 .canvas-card {
   position: relative;
-  background: white;
+  background: #ffffff;
   border: 2px solid;
-  border-radius: 12px;
-  padding: 8px;
+  border-radius: 14px;
+  padding: 10px;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-height: 120px;
+  gap: 6px;
+  min-height: 130px;
 }
 
 .canvas-card:hover:not(.is-preview) {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
 }
 
 .canvas-card.is-selected {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 .card-icon-button {
   position: relative;
   width: 100%;
   aspect-square: 1 / 1;
-  border-radius: 8px;
-  background: #f9fafb;
+  border-radius: 10px;
+  background: #f8fafc;
   overflow: hidden;
   cursor: pointer;
   border: none;
@@ -191,17 +191,18 @@ function handleDuplicate() {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s ease;
 }
 
 .card-icon-button:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: #f1f5f9;
 }
 
 .card-icon {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 12px;
+  padding: 14px;
 }
 
 .card-icon-placeholder {
@@ -219,9 +220,10 @@ function handleDuplicate() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(15, 23, 42, 0.85);
   opacity: 0;
   transition: opacity 0.2s ease;
+  backdrop-filter: blur(2px);
 }
 
 .card-icon-button:hover .icon-overlay {
@@ -235,27 +237,30 @@ function handleDuplicate() {
   border: none;
   background: transparent;
   outline: none;
-  padding: 2px 4px;
-  border-radius: 4px;
+  padding: 3px 6px;
+  border-radius: 6px;
   transition: background 0.2s ease;
 }
 
 .card-heading {
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .card-subtitle {
   font-weight: 400;
+  line-height: 1.4;
 }
 
 .card-heading:hover:not(:disabled),
 .card-subtitle:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(15, 23, 42, 0.03);
 }
 
 .card-heading:focus:not(:disabled),
 .card-subtitle:focus:not(:disabled) {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.08);
+  outline: none;
 }
 
 /* Print styles */
@@ -267,11 +272,16 @@ function handleDuplicate() {
   .icon-overlay {
     display: none;
   }
+  
+  .canvas-card:hover:not(.is-preview) {
+    box-shadow: none;
+  }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .canvas-card,
+  .card-icon-button,
   .icon-overlay,
   .card-heading,
   .card-subtitle {

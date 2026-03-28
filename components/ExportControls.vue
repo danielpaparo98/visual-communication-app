@@ -64,24 +64,27 @@ watch(() => props.isExporting, async (isExporting) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 48px;
 }
 
 .export-progress,
 .export-success {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: #f9fafb;
+  gap: 0.625rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
 }
 
 .export-success {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   pointer-events: none;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 .export-success.show {
@@ -92,15 +95,15 @@ watch(() => props.isExporting, async (isExporting) => {
 .export-progress-text,
 .export-success-text {
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .export-progress-text {
-  color: #6b7280;
+  color: #475569;
 }
 
 .export-success-text {
-  color: #059669;
+  color: #16a34a;
 }
 
 /* Reduced motion */
