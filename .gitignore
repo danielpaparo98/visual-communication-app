@@ -35,3 +35,7 @@ Thumbs.db
 
 # Temp icons backup
 temp_icons
+
+# Test artifacts
+playwright-report/
+test-results/
