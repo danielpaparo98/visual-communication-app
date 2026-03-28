@@ -119,7 +119,7 @@ export type BackgroundType = 'solid' | 'gradient' | 'image'
 export type ExportFormat = 'pdf' | 'png' | 'jpg' | 'svg'
 
 // Export quality
-export type ExportQuality = 'standard' | 'high' | 'ultra'
+export type ExportQuality = 'draft' | 'standard' | 'high' | 'ultra'
 
 // Canvas settings
 export interface CanvasSettings {
@@ -472,3 +472,114 @@ export const CATEGORIES: CategoryInfo[] = [
   { id: 'health', label: 'Health', icon: '🏥', color: 'bg-green-500' },
   { id: 'custom', label: 'Custom', icon: '📷', color: 'bg-orange-500' },
 ]
+
+// ===== NEW TYPES FOR CHARTS PAGE REDESIGN =====
+
+// Editor Layout Types
+export interface EditorLayoutState {
+  sidePanelOpen: boolean
+  activeSection: EditorSection | null
+  floatingControlsVisible: boolean
+  bottomSheetOpen: boolean
+  bottomSheetExpanded: boolean
+}
+
+export type EditorSection = 'layout' | 'cards' | 'style' | 'export'
+
+// Extended Export Types
+export type PaperSize = 'a4' | 'letter' | 'legal' | 'a3' | 'a5' | 'custom'
+
+export interface ExtendedExportSettings {
+  format: ExportFormat
+  quality: ExportQuality
+  paperSize: PaperSize
+  orientation: 'portrait' | 'landscape'
+  margins: PrintMargins
+  scale: number
+  colorMode: 'color' | 'grayscale' | 'black-white'
+}
+
+export interface PrintMargins {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
+// Watermark Types
+export interface WatermarkSettings {
+  enabled: boolean
+  text: string
+  position: WatermarkPosition
+  fontFamily: string
+  fontSize: number
+  fontWeight: 'normal' | 'bold' | 'light'
+  color: string
+  opacity: number
+  rotation: number
+  margin: number
+}
+
+export type WatermarkPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right'
+  | 'center'
+
+// Export History Types
+export interface ExportHistoryItem {
+  id: string
+  timestamp: number
+  filename: string
+  format: ExportFormat
+  quality: ExportQuality
+  paperSize: PaperSize
+  chartTitle: string
+}
+
+// Export Template Types
+export interface ExportTemplate {
+  id: string
+  name: string
+  settings: ExtendedExportSettings
+  watermark: WatermarkSettings
+  createdAt: number
+}
+
+// Paper size dimensions (in mm)
+export const PAPER_SIZES: Record<PaperSize, { width: number; height: number; name: string }> = {
+  a4: { width: 210, height: 297, name: 'A4' },
+  letter: { width: 216, height: 279, name: 'Letter' },
+  legal: { width: 216, height: 356, name: 'Legal' },
+  a3: { width: 297, height: 420, name: 'A3' },
+  a5: { width: 148, height: 210, name: 'A5' },
+  custom: { width: 210, height: 297, name: 'Custom' },
+}
+
+// Default extended export settings
+export const DEFAULT_EXTENDED_EXPORT_SETTINGS: ExtendedExportSettings = {
+  format: 'pdf',
+  quality: 'standard',
+  paperSize: 'a4',
+  orientation: 'landscape',
+  margins: { top: 10, right: 10, bottom: 10, left: 10 },
+  scale: 1,
+  colorMode: 'color',
+}
+
+// Default watermark settings
+export const DEFAULT_WATERMARK_SETTINGS: WatermarkSettings = {
+  enabled: true,
+  text: 'Created with The Talking Chart',
+  position: 'bottom-center',
+  fontFamily: 'Inter',
+  fontSize: 12,
+  fontWeight: 'normal',
+  color: '#94a3b8',
+  opacity: 0.7,
+  rotation: 0,
+  margin: 10,
+}

@@ -28,7 +28,7 @@
           <!-- Links -->
           <div class="flex items-center gap-6">
             <a
-              href="https://github.com/paparazzi/visual-communication-app"
+              href="https://github.com/danielpaparo98/visual-communication-app"
               target="_blank"
               rel="noopener noreferrer"
               class="group flex items-center gap-2 text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer text-sm font-medium"
