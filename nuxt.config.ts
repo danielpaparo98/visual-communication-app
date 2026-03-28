@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
-    '@nuxt/icon',
+    // '@nuxt/icon', // Temporarily disabled for Nuxt 4 migration
   ],
   
   icon: {
@@ -17,11 +17,6 @@ export default defineNuxtConfig({
     },
     // Enable auto-importing of icons
     autoImport: true,
-    // Disable compatibility check to allow use with Nuxt 3.x
-    compatibility: {
-      strict: false,
-    strictMode: false,
-    },
   },
   
   googleFonts: {
