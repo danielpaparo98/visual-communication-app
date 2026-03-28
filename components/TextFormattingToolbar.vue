@@ -76,7 +76,7 @@
         <button
           class="color-button"
           @click="toggleBgColorPicker"
-          :aria-label="'Background color: ' + (formatting.backgroundColor || 'none')'"
+          :aria-label="'Background color: ' + (formatting.backgroundColor || 'none')"
           :style="{ backgroundColor: formatting.backgroundColor || '#ffffff' }"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
