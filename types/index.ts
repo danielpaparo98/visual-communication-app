@@ -1,5 +1,5 @@
 // Icon categories
-export type IconCategory = 'alphabet' | 'disability' | 'family' | 'feminine-hygiene' | 'health'
+export type IconCategory = 'alphabet' | 'disability' | 'family' | 'feminine-hygiene' | 'health' | 'custom'
 
 // Icon interface
 export interface Icon {
@@ -8,20 +8,71 @@ export interface Icon {
   category: IconCategory
   alt: string
   keywords: string[]
+  svg?: string // Inline SVG for faster loading
+}
+
+// Custom icon interface
+export interface CustomIcon {
+  id: string
+  filename: string
+  originalFilename: string
+  dataUrl: string
+  thumbnailUrl: string
+  size: number
+  createdAt: Date
 }
 
 // Card interface
 export interface Card {
   id: string
   iconId: string | null
+  customIconId: string | null
   heading: string
   subtitle: string
+  textFormatting: TextFormatting
+  position?: { x: number; y: number }
+  zIndex?: number
+}
+
+// Text formatting interface
+export interface TextFormatting {
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  color: string
+  backgroundColor?: string
+  fontSize: number
+  alignment: 'left' | 'center' | 'right'
+  lineHeight: number
 }
 
 // Chart state for localStorage (v1 - backward compatible)
 export interface ChartSaveData {
   title: string
   cards: Card[]
+}
+
+// Chart state for localStorage (v3 - current)
+export interface ChartSaveDataV3 {
+  version: 3
+  id: string
+  title: string
+  cards: Card[]
+  canvasSettings: CanvasSettings
+  styleSettings: StyleSettings
+  exportSettings: ExportSettings
+  customIcons: CustomIcon[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+// History state for undo/redo
+export interface HistoryState {
+  cards: Card[]
+  canvasSettings: CanvasSettings
+  styleSettings: StyleSettings
+  timestamp: number
+  description: string
 }
 
 // Category metadata
@@ -35,12 +86,20 @@ export interface CategoryInfo {
 // Local storage keys
 export const STORAGE_KEYS = {
   CHART: 'talking-chart-data',
+  HISTORY: 'talking-chart-history',
+  UI: 'talking-chart-ui',
+  CUSTOM_ICONS: 'talking-chart-custom-icons',
+  ONBOARDING: 'talking-chart-onboarding',
 } as const
 
 // Constants
 export const CARD_COUNT = 20
 export const MAX_HEADING_LENGTH = 12
 export const MAX_SUBTITLE_LENGTH = 19
+export const MAX_CARDS = 50
+export const MAX_HISTORY_SIZE = 50
+export const MAX_CUSTOM_ICON_SIZE = 5 * 1024 * 1024 // 5MB
+export const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
 
 // ===== NEW TYPES FOR WYSIWYG EDITOR =====
 
@@ -54,10 +113,13 @@ export type FontFamily = 'Inter' | 'Roboto' | 'Open Sans' | 'Lato' | 'Poppins'
 export type ColorTheme = 'neutral' | 'colorful' | 'high-contrast' | 'pastel' | 'dark'
 
 // Background types
-export type BackgroundType = 'solid' | 'gradient'
+export type BackgroundType = 'solid' | 'gradient' | 'image'
+
+// Export format
+export type ExportFormat = 'pdf' | 'png' | 'jpg' | 'svg'
 
 // Export quality
-export type ExportQuality = 'standard' | 'high'
+export type ExportQuality = 'standard' | 'high' | 'ultra'
 
 // Canvas settings
 export interface CanvasSettings {
@@ -91,6 +153,15 @@ export interface ExportSettings {
   quality: ExportQuality
   includeWatermark: boolean
   filename: string
+  format: ExportFormat
+}
+
+// Export options
+export interface ExportOptions {
+  format: ExportFormat
+  quality?: ExportQuality
+  scale?: number
+  transparent?: boolean
 }
 
 // Extended chart save data (v2 - backward compatible)
@@ -99,6 +170,17 @@ export interface ChartSaveDataV2 extends ChartSaveData {
   canvasSettings?: CanvasSettings
   styleSettings?: StyleSettings
   exportSettings?: ExportSettings
+}
+
+// Default text formatting
+export const DEFAULT_TEXT_FORMATTING: TextFormatting = {
+  bold: false,
+  italic: false,
+  underline: false,
+  color: '#000000',
+  fontSize: 12,
+  alignment: 'center',
+  lineHeight: 1.2,
 }
 
 // Theme definitions
@@ -164,6 +246,7 @@ export const DEFAULT_EXPORT_SETTINGS: ExportSettings = {
   quality: 'standard',
   includeWatermark: true,
   filename: 'my-communication-chart',
+  format: 'pdf',
 }
 
 // A4 landscape dimensions (in mm)
@@ -256,3 +339,136 @@ export const FONT_FAMILIES: Record<FontFamily, FontFamilyDefinition> = {
   Lato: { id: 'Lato', name: 'Lato', googleFont: 'Lato', weights: [400, 500, 700] },
   Poppins: { id: 'Poppins', name: 'Poppins', googleFont: 'Poppins', weights: [400, 500, 600, 700] },
 }
+
+// ===== UI TYPES =====
+
+// Toolbar section type
+export type ToolbarSection = 'layout' | 'cards' | 'style' | 'format'
+
+// Notification type
+export interface Notification {
+  id: string
+  type: 'info' | 'success' | 'warning' | 'error'
+  title: string
+  message: string
+  duration?: number
+  actions?: NotificationAction[]
+}
+
+export interface NotificationAction {
+  label: string
+  handler: () => void
+}
+
+// Toast type
+export interface Toast {
+  id: string
+  type: 'info' | 'success' | 'warning' | 'error'
+  message: string
+  duration?: number
+}
+
+// Tour step type
+export interface TourStep {
+  id: string
+  target: string
+  title: string
+  content: string
+  position: 'top' | 'bottom' | 'left' | 'right'
+  action?: TourStepAction
+}
+
+export interface TourStepAction {
+  label: string
+  handler: () => void
+}
+
+// Validation types
+export interface ValidationError {
+  id: string
+  type: 'card' | 'canvas' | 'export'
+  message: string
+  cardId?: string
+}
+
+export interface ValidationWarning {
+  id: string
+  type: 'card' | 'canvas' | 'export'
+  message: string
+  cardId?: string
+}
+
+export interface ValidationResult {
+  isValid: boolean
+  errors: ValidationError[]
+  warnings: ValidationWarning[]
+}
+
+// Error types
+export interface EditorError {
+  code: string
+  message: string
+  details?: Record<string, unknown>
+  timestamp: Date
+}
+
+export interface UploadError {
+  type: 'size' | 'format' | 'network' | 'unknown'
+  message: string
+  file?: File
+}
+
+// Image data type
+export interface ImageData {
+  dataUrl: string
+  thumbnailUrl: string
+  width: number
+  height: number
+  originalSize: number
+  compressedSize: number
+  format: string
+}
+
+// Compressed image type
+export interface CompressedImage {
+  dataUrl: string
+  blob: Blob
+  width: number
+  height: number
+  originalSize: number
+  compressedSize: number
+  format: string
+}
+
+// Compression options
+export interface CompressionOptions {
+  maxWidth?: number
+  maxHeight?: number
+  quality?: number
+  format?: string
+}
+
+// Virtual scroll options
+export interface VirtualScrollOptions {
+  itemHeight?: number
+  buffer?: number
+}
+
+// Performance metrics
+export interface PerformanceMetrics {
+  firstContentfulPaint: number
+  largestContentfulPaint: number
+  firstInputDelay: number
+  cumulativeLayoutShift: number
+  timeToInteractive: number
+}
+
+// Category info with custom
+export const CATEGORIES: CategoryInfo[] = [
+  { id: 'alphabet', label: 'Alphabet', icon: '🔤', color: 'bg-blue-500' },
+  { id: 'disability', label: 'Disability', icon: '♿', color: 'bg-purple-500' },
+  { id: 'family', label: 'Family', icon: '👨‍👩‍👧‍👦', color: 'bg-pink-500' },
+  { id: 'feminine-hygiene', label: 'Feminine Hygiene', icon: '🌸', color: 'bg-rose-500' },
+  { id: 'health', label: 'Health', icon: '🏥', color: 'bg-green-500' },
+  { id: 'custom', label: 'Custom', icon: '📷', color: 'bg-orange-500' },
+]
