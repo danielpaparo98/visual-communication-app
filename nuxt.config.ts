@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
-    '@nuxt/icon',
+    // '@nuxt/icon', // Disabled - use @iconify/vue directly for Nuxt 4 compatibility
   ],
   
   googleFonts: {
