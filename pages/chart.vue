@@ -3,180 +3,179 @@
     <!-- Main Content -->
     <main class="chart-main">
       <div class="chart-layout">
-          <!-- Icon Sidebar -->
-          <aside class="icon-sidebar">
-            <div class="sidebar-header">
-              <h2 class="sidebar-title">Icons</h2>
-              <div class="sidebar-tabs">
-                <button
-                  v-for="category in iconCategories"
-                  :key="category.id"
-                  @click="selectedCategory = category.id"
-                  class="sidebar-tab"
-                  :class="{ 'active': selectedCategory === category.id }"
-                  :aria-label="`Filter by ${category.name}`"
-                >
-                  {{ category.icon }}
-                </button>
-              </div>
+        <!-- Icon Sidebar -->
+        <aside class="icon-sidebar">
+          <div class="sidebar-header">
+            <h2 class="sidebar-title">Icons</h2>
+            <div class="sidebar-tabs">
+              <button
+                v-for="category in iconCategories"
+                :key="category.id"
+                @click="selectedCategory = category.id"
+                class="sidebar-tab"
+                :class="{ 'active': selectedCategory === category.id }"
+                :aria-label="`Filter by ${category.name}`"
+              >
+                {{ category.icon }}
+              </button>
             </div>
+          </div>
 
-            <!-- Search -->
-            <div class="sidebar-search">
-              <Icon name="lucide:search" class="w-4 h-4 text-neutral-400" />
+          <!-- Search -->
+          <div class="sidebar-search">
+            <Icon name="lucide:search" class="w-4 h-4 text-neutral-400" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search icons..."
+              class="search-input"
+              :aria-label="'Search icons'"
+            />
+          </div>
+
+          <!-- Icon Grid -->
+          <div class="icon-grid">
+            <div
+              v-for="icon in filteredIcons"
+              :key="icon.id"
+              draggable="true"
+              @dragstart="handleIconDragStart(icon)"
+              @click="handleIconClick(icon)"
+              class="icon-item"
+              role="button"
+              :aria-label="`${icon.name} icon`"
+              tabindex="0"
+            >
+              <Icon :name="icon.name" :size="32" class="icon-display" />
+            </div>
+          </div>
+        </aside>
+
+        <!-- A4 Canvas -->
+        <div class="canvas-area">
+          <div
+            ref="canvasRef"
+            class="a4-canvas"
+            :class="{ 'preview-mode': isPreviewMode }"
+            @dragover.prevent
+            @drop="handleDrop"
+            @click="handleCanvasClick"
+          >
+            <!-- Chart Title on Canvas -->
+            <div v-if="!isPreviewMode" class="canvas-title-section">
               <input
-                v-model="searchQuery"
+                v-model="canvasTitle"
                 type="text"
-                placeholder="Search icons..."
-                class="search-input"
-                :aria-label="'Search icons'"
+                class="canvas-title-input"
+                placeholder="Add a title..."
+                :aria-label="'Canvas title'"
               />
             </div>
+            <div v-else class="canvas-title-display">
+              {{ canvasTitle }}
+            </div>
 
-            <!-- Icon Grid -->
-            <div class="icon-grid">
+            <!-- Cards Grid -->
+            <div class="cards-grid" :style="gridStyle">
               <div
-                v-for="icon in filteredIcons"
-                :key="icon.id"
-                draggable="true"
-                @dragstart="handleIconDragStart(icon)"
-                @click="handleIconClick(icon)"
-                class="icon-item"
+                v-for="(card, index) in cards"
+                :key="card.id"
+                class="chart-card"
+                :class="{ 'selected': selectedCardId === card.id && !isPreviewMode }"
+                @click="handleCardClick(card.id)"
                 role="button"
-                :aria-label="`${icon.name} icon`"
                 tabindex="0"
               >
-                <Icon :name="icon.name" :size="32" class="icon-display" />
-              </div>
-            </div>
-          </aside>
-
-          <!-- A4 Canvas -->
-          <div class="canvas-area">
-            <div
-              ref="canvasRef"
-              class="a4-canvas"
-              :class="{ 'preview-mode': isPreviewMode }"
-              @dragover.prevent
-              @drop="handleDrop"
-              @click="handleCanvasClick"
-            >
-              <!-- Chart Title on Canvas -->
-              <div v-if="!isPreviewMode" class="canvas-title-section">
-                <input
-                  v-model="canvasTitle"
-                  type="text"
-                  class="canvas-title-input"
-                  placeholder="Add a title..."
-                  :aria-label="'Canvas title'"
-                />
-              </div>
-              <div v-else class="canvas-title-display">
-                {{ canvasTitle }}
-              </div>
-
-              <!-- Cards Grid -->
-              <div class="cards-grid" :style="gridStyle">
-                <div
-                  v-for="(card, index) in cards"
-                  :key="card.id"
-                  class="chart-card"
-                  :class="{ 'selected': selectedCardId === card.id && !isPreviewMode }"
-                  @click.stop="handleCardClick(card.id)"
-                  role="button"
-                  tabindex="0"
-                >
-                  <!-- Icon Display -->
-                  <div class="card-icon">
-                    <Icon
-                      v-if="card.iconId"
-                      :name="getIconName(card.iconId)"
-                      :size="48"
-                      class="card-icon-image"
-                    />
-                    <div v-else class="card-icon-placeholder">
-                      <Icon name="lucide:image" class="w-8 h-8 text-neutral-300" />
-                    </div>
+                <!-- Icon Display -->
+                <div class="card-icon">
+                  <Icon
+                    v-if="card.iconId"
+                    :name="getIconName(card.iconId)"
+                    :size="48"
+                    class="card-icon-image"
+                  />
+                  <div v-else class="card-icon-placeholder">
+                    <Icon name="lucide:image" class="w-8 h-8 text-neutral-300" />
                   </div>
-
-                  <!-- Text Inputs -->
-                  <div class="card-text">
-                    <input
-                      v-if="!isPreviewMode"
-                      v-model="card.heading"
-                      type="text"
-                      class="card-heading-input"
-                      placeholder="Heading"
-                      :aria-label="`Card ${index + 1} heading`"
-                    />
-                    <div v-else class="card-heading-display">
-                      {{ card.heading }}
-                    </div>
-
-                    <input
-                      v-if="!isPreviewMode"
-                      v-model="card.subtitle"
-                      type="text"
-                      class="card-subtitle-input"
-                      placeholder="Subtitle"
-                      :aria-label="`Card ${index + 1} subtitle`"
-                    />
-                    <div v-else class="card-subtitle-display">
-                      {{ card.subtitle }}
-                    </div>
-                  </div>
-
-                  <!-- Delete Button (edit mode only) -->
-                  <button
-                    v-if="!isPreviewMode && selectedCardId === card.id"
-                    @click.stop="handleDeleteCard(card.id)"
-                    class="card-delete-btn"
-                    :aria-label="'Delete card'"
-                  >
-                    <Icon name="lucide:x" class="w-4 h-4" />
-                  </button>
                 </div>
 
-                <!-- Add Card Button (edit mode only) -->
+                <!-- Text Inputs -->
+                <div class="card-text">
+                  <input
+                    v-if="!isPreviewMode"
+                    v-model="card.heading"
+                    type="text"
+                    class="card-heading-input"
+                    placeholder="Heading"
+                    :aria-label="`Card ${index + 1} heading`"
+                  />
+                  <div v-else class="card-heading-display">
+                    {{ card.heading }}
+                  </div>
+
+                  <input
+                    v-if="!isPreviewMode"
+                    v-model="card.subtitle"
+                    type="text"
+                    class="card-subtitle-input"
+                    placeholder="Subtitle"
+                    :aria-label="`Card ${index + 1} subtitle`"
+                  />
+                  <div v-else class="card-subtitle-display">
+                    {{ card.subtitle }}
+                  </div>
+                </div>
+
+                <!-- Delete Button (edit mode only) -->
                 <button
-                  v-if="!isPreviewMode && cards.length < maxCards"
-                  @click="handleAddCard"
-                  class="add-card-btn"
-                  :aria-label="'Add new card'"
+                  v-if="!isPreviewMode && selectedCardId === card.id"
+                  @click.stop="handleDeleteCard(card.id)"
+                  class="card-delete-btn"
+                  :aria-label="'Delete card'"
                 >
-                  <Icon name="lucide:plus" class="w-8 h-8 text-neutral-400" />
+                  <Icon name="lucide:x" class="w-4 h-4" />
                 </button>
               </div>
 
-              <!-- Empty State -->
-              <div v-if="cards.length === 0 && !isPreviewMode" class="empty-state">
-                <Icon name="lucide:layout-grid" class="w-16 h-16 text-neutral-300 mb-4" />
-                <p class="text-neutral-500 mb-4">Drag icons here or click to add cards</p>
-                <button @click="handleAddCard" class="add-first-card-btn">
-                  Add First Card
-                </button>
-              </div>
+              <!-- Add Card Button (edit mode only) -->
+              <button
+                v-if="!isPreviewMode && cards.length < maxCards"
+                @click="handleAddCard"
+                class="add-card-btn"
+                :aria-label="'Add new card'"
+              >
+                <Icon name="lucide:plus" class="w-8 h-8 text-neutral-400" />
+              </button>
             </div>
 
-            <!-- Canvas Controls -->
-            <div class="canvas-controls">
-              <div class="control-group">
-                <label class="control-label">Columns</label>
-                <select v-model="columns" class="control-select" :aria-label="'Number of columns'">
-                  <option :value="2">2</option>
-                  <option :value="3">3</option>
-                  <option :value="4">4</option>
-                  <option :value="5">5</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label class="control-label">Rows</label>
-                <select v-model="rows" class="control-select" :aria-label="'Number of rows'">
-                  <option :value="5">5</option>
-                  <option :value="7">7</option>
-                  <option :value="10">10</option>
-                </select>
-              </div>
+            <!-- Empty State -->
+            <div v-if="cards.length === 0 && !isPreviewMode" class="empty-state">
+              <Icon name="lucide:layout-grid" class="w-16 h-16 text-neutral-300 mb-4" />
+              <p class="text-neutral-500 mb-4">Drag icons here or click to add cards</p>
+              <button @click="handleAddCard" class="add-first-card-btn">
+                Add First Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Controls -->
+          <div class="canvas-controls">
+            <div class="control-group">
+              <label class="control-label">Columns</label>
+              <select v-model="columns" class="control-select" :aria-label="'Number of columns'">
+                <option :value="2">2</option>
+                <option :value="3">3</option>
+                <option :value="4">4</option>
+                <option :value="5">5</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="control-label">Rows</label>
+              <select v-model="rows" class="control-select" :aria-label="'Number of rows'">
+                <option :value="5">5</option>
+                <option :value="7">7</option>
+                <option :value="10">10</option>
+              </select>
             </div>
           </div>
         </div>
@@ -227,6 +226,7 @@
 definePageMeta({
   layout: 'editor'
 })
+
 import type { Card } from '~/types'
 import type { IconCatalogItem } from '~/utils/iconCatalog'
 
@@ -463,81 +463,6 @@ onMounted(() => {
   background: #FAFAFA;
 }
 
-/* Header */
-.chart-header {
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.chart-header .container {
-  height: 100%;
-}
-
-.chart-title-input {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #0F172A;
-  border: none;
-  background: transparent;
-  text-align: center;
-  width: 300px;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 200ms;
-}
-
-.chart-title-input:hover {
-  background: #F3F4F6;
-}
-
-.chart-title-input:focus {
-  outline: none;
-  background: #F3F4F6;
-}
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: 1px solid #E5E7EB;
-  background: white;
-  color: #0F172A;
-  cursor: pointer;
-  transition: all 200ms;
-}
-
-.action-btn:hover:not(:disabled) {
-  background: #F3F4F6;
-  border-color: #D1D5DB;
-}
-
-.action-btn.active {
-  background: #F3F4F6;
-  border-color: #0F172A;
-}
-
-.action-btn.primary {
-  background: #0F172A;
-  color: white;
-  border-color: #0F172A;
-}
-
-.action-btn.primary:hover:not(:disabled) {
-  background: #1E293B;
-}
-
-.action-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Main Content */
 .chart-main {
   padding: 2rem 0;
@@ -560,7 +485,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 6rem;
+  top: 2rem;
 }
 
 .sidebar-header {
@@ -662,10 +587,12 @@ onMounted(() => {
   cursor: grabbing;
 }
 
-.icon-image {
+.icon-display {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Canvas Area */
@@ -764,7 +691,9 @@ onMounted(() => {
 .card-icon-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-icon-placeholder {
@@ -1056,15 +985,6 @@ onMounted(() => {
 @media (max-width: 640px) {
   .chart-main {
     padding: 1rem 0;
-  }
-
-  .chart-title-input {
-    width: 150px;
-    font-size: 1rem;
-  }
-
-  .action-btn span {
-    display: none;
   }
 
   .sidebar-tabs {
