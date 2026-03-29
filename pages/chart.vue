@@ -1,53 +1,8 @@
 <template>
   <div class="chart-page">
-    <!-- Header -->
-    <header class="chart-header">
-      <div class="container mx-auto px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <!-- Logo/Back -->
-          <NuxtLink to="/" class="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer">
-            <Icon name="lucide:arrow-left" class="w-5 h-5" />
-            <span class="text-sm font-medium">Back to Home</span>
-          </NuxtLink>
-
-          <!-- Title -->
-          <input
-            v-model="chartTitle"
-            type="text"
-            class="chart-title-input"
-            placeholder="Untitled Chart"
-            :aria-label="'Chart title'"
-          />
-
-          <!-- Actions -->
-          <div class="flex items-center gap-3">
-            <button
-              @click="handlePreview"
-              class="action-btn"
-              :class="{ 'active': isPreviewMode }"
-              :aria-label="isPreviewMode ? 'Edit mode' : 'Preview mode'"
-            >
-              <Icon v-if="!isPreviewMode" name="lucide:eye" class="w-5 h-5" />
-              <Icon v-else name="lucide:edit" class="w-5 h-5" />
-            </button>
-            <button
-              @click="handleExport"
-              class="action-btn primary"
-              :disabled="!hasCards"
-              :aria-label="'Export chart'"
-            >
-              <Icon name="lucide:download" class="w-5 h-5" />
-              <span>Export</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <!-- Main Content -->
     <main class="chart-main">
-      <div class="container mx-auto px-6 lg:px-8">
-        <div class="chart-layout">
+      <div class="chart-layout">
           <!-- Icon Sidebar -->
           <aside class="icon-sidebar">
             <div class="sidebar-header">
@@ -268,6 +223,10 @@
 </template>
 
 <script setup lang="ts">
+// Use editor layout (no header/footer)
+definePageMeta({
+  layout: 'editor'
+})
 import type { Card } from '~/types'
 import type { IconCatalogItem } from '~/utils/iconCatalog'
 
@@ -284,7 +243,6 @@ const chartStore = useChartStore()
 const iconsStore = useIconsStore()
 
 // State
-const chartTitle = ref('My Communication Chart')
 const canvasTitle = ref('Communication Chart')
 const isPreviewMode = ref(false)
 const selectedCardId = ref<string | null>(null)
@@ -298,6 +256,53 @@ const canvasRef = ref<HTMLElement>()
 const columns = ref(4)
 const rows = ref(7)
 const maxCards = 50
+
+// Initialize with default cards
+onMounted(() => {
+  if (cards.value.length === 0) {
+    initializeDefaultCards()
+  }
+})
+
+// Initialize default cards
+const initializeDefaultCards = () => {
+  const defaultIcons = [
+    'tabler-stethoscope',
+    'tabler-hospital',
+    'tabler-pill',
+    'tabler-ambulance',
+    'tabler-heart-pulse',
+    'tabler-vaccine',
+    'tabler-thermometer',
+    'tabler-bandage',
+    'tabler-crutch',
+    'tabler-wheelchair',
+    'tabler-users',
+    'tabler-user',
+    'tabler-baby',
+    'tabler-home',
+    'tabler-heart',
+  ]
+  
+  const newCards: Card[] = defaultIcons.map((iconName, index) => ({
+    id: `card-${Date.now()}-${index}`,
+    iconId: iconName,
+    customIconId: null,
+    heading: '',
+    subtitle: '',
+    textFormatting: {
+      bold: false,
+      italic: false,
+      underline: false,
+      color: '#0F172A',
+      fontSize: 14,
+      alignment: 'center',
+      lineHeight: 1.5,
+    },
+  }))
+  
+  cards.value = newCards
+}
 
 // Computed
 const iconCategories = computed(() => iconsStore.categories)

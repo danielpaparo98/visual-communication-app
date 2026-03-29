@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
-    // '@nuxt/icon', // Temporarily disabled for Nuxt 4 migration
+    '@nuxt/icon',
   ],
   
   googleFonts: {
@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   // GitHub Pages deployment
   ssr: false, // SPA mode for static hosting
   app: {
-    baseURL: '/visual-communication-app/', // GitHub repo name
+    baseURL: '/', // GitHub repo name
     buildAssetsDir: 'assets',
   },
   

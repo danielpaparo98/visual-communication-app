@@ -10,7 +10,10 @@
     "postinstall": "node node_modules/nuxt/bin/nuxt.mjs prepare"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.100",
+    "@iconify-json/tabler": "^1.2.33",
     "@iconify/vue": "^5.0.0",
+    "@nuxt/icon": "^2.2.1",
     "@pinia/nuxt": "^0.11.3",
     "@tabler/icons-vue": "^3.41.0",
     "compressorjs": "^1.2.1",

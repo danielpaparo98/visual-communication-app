@@ -10,10 +10,6 @@
   >
     <!-- Card Content -->
     <div class="card-content">
-      <!-- Debug: Check if Icon component exists -->
-      <div v-if="!checkIconComponent()" class="debug-no-icon" style="color: red; font-size: 10px; margin-bottom: 4px;">
-        Icon component not available
-      </div>
       <!-- Icon -->
       <div
         class="card-icon"
@@ -21,11 +17,6 @@
         @click="handleIconClick"
         :class="{ 'icon-clickable': !isPreviewMode }"
       >
-        <!-- Debug: Show icon ID -->
-        <div v-if="card.iconId" class="debug-icon-id" style="font-size: 10px; color: #999; margin-bottom: 4px;">
-          iconId: {{ card.iconId }}
-        </div>
-        <!-- New icon system: use Icon component for iconify/tabler icons -->
         <Icon
           v-if="card.iconId && isIconifyIcon(card.iconId)"
           :name="getMigratedIconName(card.iconId)"
@@ -33,19 +24,6 @@
           class="icon-svg"
           :size="48"
         />
-        <!-- Fallback text if Icon component doesn't render -->
-        <div v-else-if="card.iconId && !isIconifyIcon(card.iconId)" class="icon-fallback">
-          {{ card.iconId }}
-        </div>
-        <!-- Fallback to old SVG system for backward compatibility -->
-        <img
-          v-else-if="card.iconId && !isIconifyIcon(card.iconId)"
-          :src="`/icons/${getIconFilename(card.iconId)}`"
-          :alt="`${card.heading} icon`"
-          class="icon-image"
-          loading="lazy"
-        />
-        <!-- Custom icon -->
         <img
           v-else-if="card.customIconId && customIconUrl"
           :src="customIconUrl"
@@ -128,7 +106,6 @@ const emit = defineEmits<{
   'icon-click': [cardId: string]
 }>()
 
-const iconsStore = useIconsStore()
 const chartStore = useChartStore()
 
 // Local state
@@ -182,32 +159,11 @@ const subtitleStyle = computed(() => {
 
 // Methods
 function isIconifyIcon(iconId: string): boolean {
-  // Check if it's an iconify icon (contains colon like "tabler:home")
-  const migratedName = migrateIconName(iconId)
-  const result = migratedName.includes(':')
-  console.log('[EditorCard] isIconifyIcon:', iconId, '->', migratedName, 'result:', result)
-  return result
+  return migrateIconName(iconId).includes(':')
 }
 
 function getMigratedIconName(iconId: string): string {
-  const result = migrateIconName(iconId)
-  console.log('[EditorCard] getMigratedIconName:', iconId, '->', result)
-  return result
-}
-
-// Check if Icon component is available
-function checkIconComponent(): boolean {
-  const iconExists = typeof Icon !== 'undefined'
-  console.log('[EditorCard] Icon component available:', iconExists)
-  return iconExists
-}
-
-function getIconFilename(iconId: string): string {
-  // Fallback for old SVG icons
-  const icon = iconsStore.getIcon(iconId)
-  // For backward compatibility, try to get filename from old format
-  // This is a fallback that should rarely be used
-  return iconId
+  return migrateIconName(iconId)
 }
 
 const customIconUrl = computed(() => {

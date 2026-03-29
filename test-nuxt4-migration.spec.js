@@ -361,8 +361,7 @@ test.describe('Nuxt 4 Migration - Phase 6: Store Functionality', () => {
     
     // Check if Pinia is loaded
     const piniaLoaded = await page.evaluate(() => {
-      return typeof window.$nuxt !== 'undefined' && 
-             typeof window.$nuxt.$pinia !== 'undefined';
+      return typeof window.__pinia !== 'undefined';
     });
     
     console.log('Pinia loaded:', piniaLoaded);
@@ -379,8 +378,8 @@ test.describe('Nuxt 4 Migration - Phase 6: Store Functionality', () => {
     // Try to access chart store
     const chartStoreData = await page.evaluate(() => {
       try {
-        if (window.$nuxt && window.$nuxt.$pinia) {
-          const stores = window.$nuxt.$pinia.state.value;
+        if (window.__pinia) {
+          const stores = window.__pinia.state.value;
           return JSON.stringify(stores, null, 2);
         }
         return null;
