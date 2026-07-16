@@ -1,6 +1,6 @@
 <template>
   <!-- Sticky header bar -->
-  <div class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 no-print">
+  <div class="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
       <ChartHeader
         v-model:zoom="zoom"
@@ -124,7 +124,7 @@
 
       <!-- Icon picker — second on mobile, left on desktop (hidden in preview) -->
       <div v-if="!previewMode" data-tour-target="icon-picker" class="order-2 lg:order-1 lg:col-span-2">
-        <div class="lg:sticky lg:top-24">
+        <div class="lg:sticky lg:top-32">
           <div class="flex items-center justify-between mb-3">
             <h2 class="font-heading font-bold text-lg text-slate-800">Icon library</h2>
             <button
