@@ -1,1008 +1,912 @@
 <template>
-  <div class="chart-page">
-    <!-- Main Content -->
-    <main class="chart-main">
-      <div class="chart-layout">
-        <!-- Icon Sidebar -->
-        <aside class="icon-sidebar">
-          <div class="sidebar-header">
-            <h2 class="sidebar-title">Icons</h2>
-            <div class="sidebar-tabs">
-              <button
-                v-for="category in iconCategories"
-                :key="category.id"
-                @click="selectedCategory = category.id"
-                class="sidebar-tab"
-                :class="{ 'active': selectedCategory === category.id }"
-                :aria-label="`Filter by ${category.name}`"
-              >
-                {{ category.icon }}
-              </button>
-            </div>
-          </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <ChartHeader
+      v-model:zoom="zoom"
+      :fit-zoom="fitZoom"
+      v-model:preview-mode="previewMode"
+      @toggle-customize="showCustomizationPanel = !showCustomizationPanel"
+      @export="showExportDialog = true"
+      @show-preview="showPrintPreview = true"
+      @show-shortcuts="showShortcuts = true"
+      @start-tour="onboarding.startTour()"
+    />
 
-          <!-- Search -->
-          <div class="sidebar-search">
-            <Icon name="lucide:search" class="w-4 h-4 text-neutral-400" />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search icons..."
-              class="search-input"
-              :aria-label="'Search icons'"
-            />
-          </div>
+    <!-- Corruption warning banner -->
+    <div
+      v-if="corrupted"
+      class="mt-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 no-print"
+      role="alert"
+    >
+      <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div class="flex-1">
+        <p class="font-semibold">Your previous chart data was corrupted</p>
+        <p class="mt-1 text-amber-700">We recovered a backup, but you may have lost recent changes.</p>
+      </div>
+      <button
+        @click="dismissCorruptionWarning"
+        class="shrink-0 rounded-lg px-3 py-1.5 font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+        aria-label="Dismiss corruption warning"
+      >
+        Dismiss
+      </button>
+    </div>
 
-          <!-- Icon Grid -->
-          <div class="icon-grid">
-            <div
-              v-for="icon in filteredIcons"
-              :key="icon.id"
-              draggable="true"
-              @dragstart="handleIconDragStart(icon)"
-              @click="handleIconClick(icon)"
-              class="icon-item"
-              role="button"
-              :aria-label="`${icon.name} icon`"
-              tabindex="0"
+    <!-- Save error banner -->
+    <div
+      v-if="saveStatus.state === 'error'"
+      class="mt-4 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 no-print"
+      role="alert"
+    >
+      <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="flex-1">{{ saveStatus.message }}</p>
+      <button
+        @click="saveNow(chartStore, chartManager)"
+        class="shrink-0 rounded-lg px-3 py-1.5 font-medium text-red-700 hover:bg-red-100 transition-colors"
+        aria-label="Retry saving"
+      >
+        Retry
+      </button>
+    </div>
+
+    <!-- Icon loading error state -->
+    <div
+      v-if="!loading && iconError"
+      class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-8 text-center no-print"
+      role="alert"
+    >
+      <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+        <svg class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <p class="text-lg font-semibold text-red-800">Failed to load icons</p>
+      <p class="mt-2 text-red-600">{{ iconError }}</p>
+      <button
+        @click="retryLoadIcons"
+        class="btn-primary mt-4 !inline-flex"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Retry
+      </button>
+    </div>
+
+    <!-- Main editor — shown when icons loaded and no error (hidden in print) -->
+    <div
+      v-else-if="!loading && !iconError"
+      class="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 no-print"
+    >
+      <!-- Chart canvas — first on mobile, right/center on desktop -->
+      <div
+        ref="canvasContainerRef"
+        data-tour-target="canvas"
+        :class="[
+          'order-1 flex items-start justify-center',
+          previewMode ? 'lg:col-span-5' : 'lg:order-2 lg:col-span-3',
+        ]"
+      >
+        <ChartCanvas
+          ref="canvasComponentRef"
+          :slots="chartStore.slots"
+          :title="chartStore.title"
+          :layout-preset="chartStore.layoutPreset"
+          :theme="chartStore.activeTheme"
+          :active-index="activeSlotIndex"
+          :selected-slots="selectedSlots"
+          :loading="loading"
+          v-model:zoom="zoom"
+          :preview-mode="previewMode"
+          :heading-font-family="chartStore.activeHeadingFont.cssFamily"
+          :body-font-family="chartStore.activeBodyFont.cssFamily"
+          :margin="chartStore.margin"
+          :card-gap="chartStore.cardGap"
+          @select="onSlotSelect"
+          @set-card-style="onSetCardStyle"
+          @clear-card-style="onClearCardStyle"
+          @reorder="onReorder"
+          @assign-icon-drop="onIconDrop"
+          @update-label="onLabelUpdate"
+        />
+      </div>
+
+      <!-- Icon picker — second on mobile, left on desktop (hidden in preview) -->
+      <div v-if="!previewMode" data-tour-target="icon-picker" class="order-2 lg:order-1 lg:col-span-2">
+        <div class="lg:sticky lg:top-24">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-heading font-bold text-lg text-slate-800">Icon library</h2>
+            <button
+              type="button"
+              @click="toggleMultiSelectMode"
+              :class="[
+                'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs sm:text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-1',
+                multiSelectMode
+                  ? 'border-blue-400 bg-blue-50 text-blue-700'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800',
+              ]"
+              :aria-pressed="multiSelectMode"
+              :title="multiSelectMode ? 'Exit multi-select mode' : 'Enter multi-select mode'"
             >
-              <Icon :name="icon.name" :size="32" class="icon-display" />
-            </div>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              <span class="hidden sm:inline">Multi-select</span>
+            </button>
           </div>
-        </aside>
 
-        <!-- A4 Canvas -->
-        <div class="canvas-area">
+          <!-- Multi-select toolbar -->
           <div
-            ref="canvasRef"
-            class="a4-canvas"
-            :class="{ 'preview-mode': isPreviewMode }"
-            @dragover.prevent
-            @drop="handleDrop"
-            @click="handleCanvasClick"
+            v-if="multiSelectMode"
+            class="mb-3 rounded-xl border border-blue-200 bg-blue-50/70 p-2.5 text-sm"
           >
-            <!-- Chart Title on Canvas -->
-            <div v-if="!isPreviewMode" class="canvas-title-section">
-              <input
-                v-model="canvasTitle"
-                type="text"
-                class="canvas-title-input"
-                placeholder="Add a title..."
-                :aria-label="'Canvas title'"
-              />
-            </div>
-            <div v-else class="canvas-title-display">
-              {{ canvasTitle }}
-            </div>
-
-            <!-- Cards Grid -->
-            <div class="cards-grid" :style="gridStyle">
-              <div
-                v-for="(card, index) in cards"
-                :key="card.id"
-                class="chart-card"
-                :class="{ 'selected': selectedCardId === card.id && !isPreviewMode }"
-                @click="handleCardClick(card.id)"
-                role="button"
-                tabindex="0"
-              >
-                <!-- Icon Display -->
-                <div class="card-icon">
-                  <Icon
-                    v-if="card.iconId"
-                    :name="getIconName(card.iconId)"
-                    :size="48"
-                    class="card-icon-image"
-                  />
-                  <div v-else class="card-icon-placeholder">
-                    <Icon name="lucide:image" class="w-8 h-8 text-neutral-300" />
-                  </div>
-                </div>
-
-                <!-- Text Inputs -->
-                <div class="card-text">
-                  <input
-                    v-if="!isPreviewMode"
-                    v-model="card.heading"
-                    type="text"
-                    class="card-heading-input"
-                    placeholder="Heading"
-                    :aria-label="`Card ${index + 1} heading`"
-                  />
-                  <div v-else class="card-heading-display">
-                    {{ card.heading }}
-                  </div>
-
-                  <input
-                    v-if="!isPreviewMode"
-                    v-model="card.subtitle"
-                    type="text"
-                    class="card-subtitle-input"
-                    placeholder="Subtitle"
-                    :aria-label="`Card ${index + 1} subtitle`"
-                  />
-                  <div v-else class="card-subtitle-display">
-                    {{ card.subtitle }}
-                  </div>
-                </div>
-
-                <!-- Delete Button (edit mode only) -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 font-semibold text-blue-800">
+                <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-xs text-white">
+                  {{ selectedSlots.length }}
+                </span>
+                <template v-if="selectedSlots.length === 0">No cards selected</template>
+                <template v-else>Assigning to {{ selectedSlots.length }} slot{{ selectedSlots.length === 1 ? '' : 's' }}</template>
+              </span>
+              <div class="ml-auto flex items-center gap-1">
                 <button
-                  v-if="!isPreviewMode && selectedCardId === card.id"
-                  @click.stop="handleDeleteCard(card.id)"
-                  class="card-delete-btn"
-                  :aria-label="'Delete card'"
+                  type="button"
+                  @click="selectAll(chartStore.preset.totalSlots)"
+                  class="rounded-lg px-2.5 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
                 >
-                  <Icon name="lucide:x" class="w-4 h-4" />
+                  Select all
+                </button>
+                <button
+                  v-if="selectedSlots.length > 0"
+                  type="button"
+                  @click="clearSelection"
+                  class="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  @click="exitMultiSelect"
+                  class="rounded-lg bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+                >
+                  Done
                 </button>
               </div>
-
-              <!-- Add Card Button (edit mode only) -->
-              <button
-                v-if="!isPreviewMode && cards.length < maxCards"
-                @click="handleAddCard"
-                class="add-card-btn"
-                :aria-label="'Add new card'"
-              >
-                <Icon name="lucide:plus" class="w-8 h-8 text-neutral-400" />
-              </button>
             </div>
-
-            <!-- Empty State -->
-            <div v-if="cards.length === 0 && !isPreviewMode" class="empty-state">
-              <Icon name="lucide:layout-grid" class="w-16 h-16 text-neutral-300 mb-4" />
-              <p class="text-neutral-500 mb-4">Drag icons here or click to add cards</p>
-              <button @click="handleAddCard" class="add-first-card-btn">
-                Add First Card
-              </button>
-            </div>
+            <p v-if="selectedSlots.length === 0" class="mt-1.5 text-xs text-blue-600/80">
+              Click one or more cards on the chart, then pick an icon to fill them all at once. Press Esc to exit.
+            </p>
           </div>
 
-          <!-- Canvas Controls -->
-          <div class="canvas-controls">
-            <div class="control-group">
-              <label class="control-label">Columns</label>
-              <select v-model="columns" class="control-select" :aria-label="'Number of columns'">
-                <option :value="2">2</option>
-                <option :value="3">3</option>
-                <option :value="4">4</option>
-                <option :value="5">5</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Rows</label>
-              <select v-model="rows" class="control-select" :aria-label="'Number of rows'">
-                <option :value="5">5</option>
-                <option :value="7">7</option>
-                <option :value="10">10</option>
-              </select>
-            </div>
+          <!-- Single-select status -->
+          <div v-else class="mb-3 flex items-center justify-end">
+            <span v-if="activeSlotIndex !== null" class="text-xs sm:text-sm font-medium text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full">
+              Slot {{ activeSlotIndex + 1 }} selected
+            </span>
+            <span v-else class="text-xs sm:text-sm text-slate-400">
+              Select a card to start
+            </span>
           </div>
+
+          <IconPicker
+            :categories="categories"
+            :selected-icon="selectedIconId"
+            @select="onIconSelect"
+          />
         </div>
       </div>
-    </main>
+    </div>
 
-    <!-- Export Modal -->
-    <Teleport to="body">
-      <div v-if="showExportModal" class="modal-overlay" @click="showExportModal = false">
-        <div class="modal-content" @click.stop>
-          <div class="modal-header">
-            <h3 class="modal-title">Export Chart</h3>
-            <button @click="showExportModal = false" class="modal-close" :aria-label="'Close modal'">
-              <Icon name="lucide:x" class="w-5 h-5" />
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="export-options">
-              <button
-                @click="handleExportPdf"
-                class="export-option"
-                :class="{ 'selected': exportFormat === 'pdf' }"
-              >
-                <Icon name="lucide:file-text" class="w-8 h-8" />
-                <span>PDF</span>
-              </button>
-              <button
-                @click="handleExportPng"
-                class="export-option"
-                :class="{ 'selected': exportFormat === 'png' }"
-              >
-                <Icon name="lucide:image" class="w-8 h-8" />
-                <span>PNG</span>
-              </button>
-            </div>
-            <button @click="handleDownload" class="download-btn">
-              Download {{ exportFormat.toUpperCase() }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <!-- Loading state -->
+    <div
+      v-else-if="loading"
+      class="flex flex-col items-center justify-center py-24 sm:py-32"
+    >
+      <div class="w-10 h-10 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mb-4" role="status" aria-label="Loading icons"></div>
+      <p class="text-slate-500 text-lg">Loading icons…</p>
+    </div>
   </div>
+
+  <!-- Print preview modal — full-screen A4 preview before printing -->
+  <PrintPreviewModal v-model="showPrintPreview" />
+
+  <!-- Export dialog — format / quality selection + batch export -->
+  <ExportDialog
+    v-model="showExportDialog"
+    :exporting="exportDialogExporting"
+    :result="exportDialogResult"
+    :batch-progress="exportDialogBatchProgress"
+    :chart-count="chartManager.chartCount"
+    @export="handleExport"
+    @dismiss-result="exportDialogResult = null"
+  />
+
+  <!-- Customization panel (slide-over drawer) -->
+  <CustomizationPanel
+    v-model="showCustomizationPanel"
+    :selected-card-index="activeSlotIndex"
+  />
+
+  <!-- Floating quick-actions toolbar (anchored to the selected card) -->
+  <FloatingToolbar
+    :show="activeSlotIndex !== null && !previewMode"
+    :trigger-selector="toolbarTriggerSelector"
+    :can-undo="historyStore.canUndo"
+    :can-redo="historyStore.canRedo"
+    :can-clear="toolbarCanClear"
+    :can-paste="hasClipboard"
+    @undo="onToolbarUndo"
+    @redo="onToolbarRedo"
+    @clear="onToolbarClear"
+    @copy="onToolbarCopy"
+    @paste="onToolbarPaste"
+  />
+
+  <!-- Keyboard shortcuts cheat sheet -->
+  <ShortcutsCheatSheet v-model="showShortcuts" />
+
+  <!-- Progressive onboarding tour overlay -->
+  <OnboardingTour />
 </template>
 
 <script setup lang="ts">
-// Use editor layout (no header/footer)
-definePageMeta({
-  layout: 'editor'
-})
+import { useChartStore } from '~/stores/chart'
+import { useChartManagerStore } from '~/stores/chartManager'
+import { useHistoryStore } from '~/stores/history'
+import { useIconPreferencesStore } from '~/stores/iconPreferences'
+import { useNotificationsStore } from '~/stores/notifications'
+import { useSlotClipboard } from '~/composables/useSlotClipboard'
+import { loadIconCategories } from '~/utils/iconLoader'
+import { exportToPng } from '~/utils/exportPng'
+import { exportToPdf } from '~/utils/exportPdf'
+import { exportFilename, sanitizeFilename } from '~/utils/exportFilename'
+import type { IconCategory } from '~/types/icons'
+import type { ChartSlotStyle } from '~/types/chart'
+import type { BatchProgress, ExportConfig, ExportResult } from '~/types/export'
+import type ChartCanvas from '~/components/ChartCanvas.vue'
+import { useGoogleFonts } from '~/composables/useGoogleFonts'
 
-import type { Card } from '~/types'
-import type { IconCatalogItem } from '~/utils/iconCatalog'
-
-// SEO
-useHead({
-  title: 'Create Chart - The Talking Chart',
-  meta: [
-    { name: 'description', content: 'Create your visual communication chart with customizable icons and text.' }
-  ]
-})
-
-// Store
 const chartStore = useChartStore()
-const iconsStore = useIconsStore()
+const chartManager = useChartManagerStore()
+const prefsStore = useIconPreferencesStore()
+const historyStore = useHistoryStore()
+const notifications = useNotificationsStore()
+const onboarding = useOnboarding()
 
-// State
-const canvasTitle = ref('Communication Chart')
-const isPreviewMode = ref(false)
-const selectedCardId = ref<string | null>(null)
-const selectedCategory = ref<string | null>(null)
-const searchQuery = ref('')
-const showExportModal = ref(false)
-const exportFormat = ref<'pdf' | 'png'>('pdf')
-const canvasRef = ref<HTMLElement>()
+// ── Customization panel state ──────────────────────────────────────────────
 
-// Layout settings
-const columns = ref(4)
-const rows = ref(7)
-const maxCards = 50
+const showCustomizationPanel = ref(false)
 
-// Initialize with default cards
-onMounted(() => {
-  if (cards.value.length === 0) {
-    initializeDefaultCards()
+// ── Print preview modal state ──────────────────────────────────────────────
+
+/** Controls visibility of the full-screen print preview modal. */
+const showPrintPreview = ref(false)
+const {
+  loading,
+  loadError,
+  corrupted,
+  saveStatus,
+  dismissCorruptionWarning,
+  startAutoSave,
+  stopAutoSave,
+  markDirty,
+  saveNow,
+} = useChartStatus()
+
+// ── Export dialog state ─────────────────────────────────────────────────────
+
+/** Controls visibility of the export dialog. */
+const showExportDialog = ref(false)
+/** True while an export is in flight — drives the dialog progress bar. */
+const exportDialogExporting = ref(false)
+/** Outcome of the last export attempt, surfaced inside the dialog. */
+const exportDialogResult = ref<ExportResult | null>(null)
+/** Current chart index while exporting multiple charts, otherwise `null`. */
+const exportDialogBatchProgress = ref<BatchProgress | null>(null)
+
+const categories = ref<IconCategory[]>([])
+const iconError = ref<string | null>(null)
+
+// ── Zoom state ──────────────────────────────────────────────────────────
+
+/**
+ * Reference to the container holding ChartCanvas, used for Fit calculation.
+ */
+const canvasContainerRef = ref<HTMLElement | null>(null)
+
+/**
+ * Reference to the ChartCanvas component instance, used to read the
+ * natural canvas-page width for Fit zoom calculation.
+ */
+const canvasComponentRef = ref<InstanceType<typeof ChartCanvas> | null>(null)
+
+/** Current zoom level (0.25–1.5). Initialised to Fit on mount. */
+const zoom = ref(1.0)
+
+/**
+ * The zoom level that makes the canvas fill the available container width,
+ * capped at 1.0 (never zooms beyond natural size).
+ */
+const fitZoom = computed(() => {
+  const container = canvasContainerRef.value
+  const canvas = canvasComponentRef.value
+  if (!container || !canvas?.canvasPageRef) return 1.0
+  const naturalWidth = canvas.canvasPageRef.offsetWidth
+  if (naturalWidth <= 0) return 1.0
+  return Math.min(1.0, container.offsetWidth / naturalWidth)
+})
+
+/** Recalculate the current zoom to Fit (e.g. after resize). */
+function applyFitZoom() {
+  zoom.value = fitZoom.value
+}
+
+// ── Export (PDF / PNG, single + batch) ──────────────────────────────────────
+
+/** Small promise-based delay used to let the DOM / fonts settle before capture. */
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Export whichever chart is currently loaded in the chart store, in the
+ * chosen format and quality.
+ *
+ * For **PNG** the on-screen canvas is forced into preview mode at natural
+ * size (zoom 1) so the capture is a faithful 1:1 of the A4 page with no
+ * editing chrome, then restored afterwards. The preview-mode watcher also
+ * re-asserts a "fit" zoom on its own tick, so we re-apply zoom 1 after a
+ * short beat to win that race deterministically.
+ *
+ * For **PDF** we delegate to the browser's native print pipeline
+ * (`window.print()`); the `ChartPrint` component renders the print version
+ * straight from the store, so no mode switch is needed.
+ *
+ * @returns The download filename (or suggested print name).
+ */
+async function exportActiveChart(config: ExportConfig, title: string): Promise<string> {
+  if (config.format === 'png') {
+    const canvasEl = canvasComponentRef.value?.canvasPageRef
+    if (!canvasEl) {
+      throw new Error('The chart is not ready yet — please try again in a moment.')
+    }
+
+    const prevZoom = zoom.value
+    const prevPreview = previewMode.value
+    previewMode.value = true
+    zoom.value = 1
+    try {
+      await nextTick()
+      // Let the preview-mode watcher's applyFitZoom run first, then re-assert
+      // the full-size zoom so the capture is not shrunken to fit.
+      await delay(80)
+      zoom.value = 1
+      // Give images + fonts a moment to paint before rasterising.
+      await delay(400)
+      await exportToPng(canvasEl, title, config.quality)
+    } finally {
+      zoom.value = prevZoom
+      previewMode.value = prevPreview
+    }
+    return exportFilename(title, 'png')
+  }
+
+  // PDF — native vector print.
+  const canvasEl = canvasComponentRef.value?.canvasPageRef ?? document.body
+  await exportToPdf(canvasEl, sanitizeFilename(title), config.quality)
+  return exportFilename(title, 'pdf')
+}
+
+/**
+ * Export every chart in the manager store sequentially.
+ *
+ * The active chart is saved first (so any pending edits aren't lost), then
+ * each chart is made active in turn via the proper `setActiveChart` path —
+ * this keeps auto-save writing to the correct chart. The originally-active
+ * chart is restored at the end. For PDF this means one print dialog per
+ * chart (the user saves each as it appears); for PNG each chart downloads.
+ *
+ * @returns The number of charts successfully exported.
+ */
+async function exportAllCharts(config: ExportConfig): Promise<{ count: number }> {
+  const originalId = chartManager.activeChartId
+  // Persist the current chart before switching away.
+  chartManager.saveCurrentChart()
+
+  const list = chartManager.chartList
+  let count = 0
+
+  try {
+    for (let i = 0; i < list.length; i++) {
+      const chart = list[i]
+      if (!chart) continue
+      exportDialogBatchProgress.value = { current: i + 1, total: list.length }
+      chartManager.setActiveChart(chart.id)
+      // Allow the canvas + print render to update to the new chart data.
+      await nextTick()
+      await delay(config.format === 'png' ? 150 : 60)
+      await exportActiveChart(config, chartStore.title)
+      count++
+    }
+  } finally {
+    // Restore the chart the user was originally editing.
+    if (originalId) {
+      chartManager.setActiveChart(originalId)
+    }
+  }
+
+  return { count }
+}
+
+/**
+ * Handle an export request emitted by the dialog.
+ *
+ * Single export → export the active chart directly.
+ * Batch export → iterate every chart in the manager.
+ * The outcome (success / error) is pushed back into the dialog via
+ * {@link exportDialogResult}.
+ */
+async function handleExport(config: ExportConfig): Promise<void> {
+  if (exportDialogExporting.value) return
+
+  exportDialogResult.value = null
+  exportDialogBatchProgress.value = null
+  exportDialogExporting.value = true
+
+  try {
+    if (config.batch && chartManager.chartCount > 1) {
+      const { count } = await exportAllCharts(config)
+      exportDialogResult.value = { ok: true, filename: `${count} charts`, count }
+    } else {
+      const filename = await exportActiveChart(config, chartStore.title)
+      exportDialogResult.value = { ok: true, filename, count: 1 }
+    }
+  } catch (e) {
+    exportDialogResult.value = {
+      ok: false,
+      error:
+        e instanceof Error
+          ? e.message
+          : 'Something went wrong while exporting. Please try again.',
+    }
+  } finally {
+    exportDialogExporting.value = false
+    exportDialogBatchProgress.value = null
+  }
+}
+
+// ── Preview mode ─────────────────────────────────────────────────────────
+
+/**
+ * Reactive preview-mode flag, synced with the URL query parameter `?mode=`.
+ * When `true` the canvas hides editing chrome and the icon picker is removed.
+ */
+const previewMode = ref(false)
+
+const route = useRoute()
+const router = useRouter()
+
+// Read initial mode from the URL query on mount
+if (import.meta.client && route.query.mode === 'preview') {
+  previewMode.value = true
+}
+
+// Keep the URL in sync with the current mode
+watch(previewMode, (newVal) => {
+  router.replace({ query: { ...route.query, mode: newVal ? 'preview' : 'edit' } })
+})
+
+// Auto-apply Fit zoom when entering preview mode
+watch(previewMode, async (isPreview) => {
+  if (isPreview) {
+    await nextTick()
+    applyFitZoom()
   }
 })
 
-// Initialize default cards
-const initializeDefaultCards = () => {
-  const defaultIcons = [
-    'tabler-stethoscope',
-    'tabler-hospital',
-    'tabler-pill',
-    'tabler-ambulance',
-    'tabler-heart-pulse',
-    'tabler-vaccine',
-    'tabler-thermometer',
-    'tabler-bandage',
-    'tabler-crutch',
-    'tabler-wheelchair',
-    'tabler-users',
-    'tabler-user',
-    'tabler-baby',
-    'tabler-home',
-    'tabler-heart',
-  ]
-  
-  const newCards: Card[] = defaultIcons.map((iconName, index) => ({
-    id: `card-${Date.now()}-${index}`,
-    iconId: iconName,
-    customIconId: null,
-    heading: '',
-    subtitle: '',
-    textFormatting: {
-      bold: false,
-      italic: false,
-      underline: false,
-      color: '#0F172A',
-      fontSize: 14,
-      alignment: 'center',
-      lineHeight: 1.5,
+// ── Dynamic Google Font loading ───────────────────────────────────────────
+
+/**
+ * Dynamically load the active heading + body fonts from Google Fonts.
+ * Reactively tracks font changes via the store's computed presets.
+ */
+const { fontsLoaded } = useGoogleFonts(
+  computed(() => [chartStore.activeHeadingFont, chartStore.activeBodyFont]),
+)
+
+async function retryLoadIcons() {
+  iconError.value = null
+  categories.value = []
+  try {
+    categories.value = await loadIconCategories()
+  } catch (e) {
+    iconError.value =
+      e instanceof Error ? e.message : 'An unexpected error occurred. Please check your connection and try again.'
+  }
+}
+
+// ── Initialisation ──────────────────────────────────────────────────────
+
+onMounted(async () => {
+  // Ensure we have an active chart — redirect to gallery if not
+  if (!chartManager.activeChartId) {
+    await navigateTo('/')
+    return
+  }
+
+  // Load active chart data into the chart store
+  chartManager.setActiveChart(chartManager.activeChartId)
+
+  // Start auto-save **after** the initial data load so the watcher
+  // doesn't trigger an unnecessary save for the just-loaded state.
+  startAutoSave(chartStore, chartManager)
+
+  // Load icon categories
+  try {
+    categories.value = await loadIconCategories()
+  } catch (e) {
+    iconError.value =
+      e instanceof Error ? e.message : 'An unexpected error occurred while loading icons.'
+  }
+
+  // Initialise zoom to Fit after mount so DOM measurements are available
+  await nextTick()
+  applyFitZoom()
+
+  // First-visit onboarding tour — auto-offer once, after the layout settles,
+  // so the spotlight targets are present and measured correctly.
+  if (!onboarding.hasSeenOnboarding.value) {
+    window.setTimeout(() => onboarding.startTour(), 450)
+  }
+})
+
+onUnmounted(() => {
+  stopAutoSave()
+})
+
+// ── Slot selection & icon assignment ────────────────────────────────────
+
+// Multi-select state for batch icon assignment (component-scoped UI state).
+const {
+  selectedSlots,
+  multiSelectMode,
+  toggleSlot,
+  selectAll,
+  clearSelection,
+  enterMultiSelect,
+  exitMultiSelect,
+} = useMultiSelect()
+
+const activeSlotIndex = ref<number | null>(null)
+const selectedIconId = ref<string | null>(null)
+
+// ── Slot clipboard (copy/paste) & floating toolbar ────────────────────────
+
+const { copySlot, pasteSlot, hasClipboard } = useSlotClipboard()
+
+/**
+ * CSS selector resolving the currently-selected card element, used by the
+ * floating toolbar to anchor itself. `undefined` when nothing is selected so
+ * the toolbar parks off-screen.
+ */
+const toolbarTriggerSelector = computed<string | undefined>(() =>
+  activeSlotIndex.value !== null ? `[data-card-index="${activeSlotIndex.value}"]` : undefined,
+)
+
+/** Whether the active slot has an icon the Clear button can remove. */
+const toolbarCanClear = computed(() => {
+  if (activeSlotIndex.value === null) return false
+  return chartStore.slots[activeSlotIndex.value]?.icon != null
+})
+
+function onSlotSelect(index: number) {
+  // In multi-select mode, clicking a card toggles its membership in the
+  // batch selection instead of performing a single selection.
+  if (multiSelectMode.value) {
+    toggleSlot(index)
+    return
+  }
+  markDirty()
+  if (activeSlotIndex.value === index) {
+    activeSlotIndex.value = null
+    selectedIconId.value = null
+  } else {
+    activeSlotIndex.value = index
+    // Pre-select the icon already in this slot
+    const slot = chartStore.slots[index]
+    selectedIconId.value = slot?.icon?.id ?? null
+  }
+}
+
+function onIconSelect(icon: { id: string; filename: string; alt: string; category: string }) {
+  // Multi-select: assign the chosen icon to EVERY selected slot at once.
+  // We deliberately stay in multi-select mode afterwards so the user can
+  // keep batch-filling other slots without re-entering the mode.
+  if (multiSelectMode.value && selectedSlots.value.length > 0) {
+    markDirty()
+    prefsStore.trackRecent(icon.id)
+    for (const slotIndex of selectedSlots.value) {
+      chartStore.assignIcon(slotIndex, icon)
+    }
+    selectedIconId.value = icon.id
+    return
+  }
+
+  markDirty()
+  if (activeSlotIndex.value !== null) {
+    // Track this icon as recently used before assigning it to the slot.
+    prefsStore.trackRecent(icon.id)
+    chartStore.assignIcon(activeSlotIndex.value, icon)
+    selectedIconId.value = icon.id
+  }
+}
+
+/** Toggle multi-select mode on/off from the toolbar button. */
+function toggleMultiSelectMode() {
+  if (multiSelectMode.value) {
+    exitMultiSelect()
+  } else {
+    // Drop any single selection so the two modes never highlight a card at once.
+    activeSlotIndex.value = null
+    selectedIconId.value = null
+    enterMultiSelect()
+  }
+}
+
+function onLabelUpdate(index: number, label: string) {
+  markDirty()
+  chartStore.updateLabel(index, label)
+}
+
+function onSetCardStyle(index: number, style: ChartSlotStyle) {
+  markDirty()
+  chartStore.setCardStyle(index, style)
+}
+
+function onClearCardStyle(index: number) {
+  markDirty()
+  chartStore.clearCardStyle(index)
+}
+
+/**
+ * Remap a slot index through an insert-move (`from` → `to`) so selection
+ * state keeps pointing at the same card after a reorder.
+ *
+ * - The moved slot itself lands at `to`.
+ * - Slots strictly between `from` and `to` shift by one to fill the gap.
+ */
+function remapIndexAfterMove(j: number, from: number, to: number): number {
+  if (j === from) return to
+  if (from < to) {
+    // Moved down: items in (from, to] shift left to fill the vacated slot.
+    if (j > from && j <= to) return j - 1
+  } else {
+    // Moved up: items in [to, from) shift right to make room.
+    if (j >= to && j < from) return j + 1
+  }
+  return j
+}
+
+/** Handle slot reordering from drag-and-drop, keeping selection in sync. */
+function onReorder(from: number, to: number) {
+  markDirty()
+  chartStore.reorderSlots(from, to)
+  // Keep the active selection and multi-selection following their cards.
+  if (activeSlotIndex.value !== null) {
+    activeSlotIndex.value = remapIndexAfterMove(activeSlotIndex.value, from, to)
+  }
+  if (selectedSlots.value.length > 0) {
+    selectedSlots.value = selectedSlots.value.map((j) => remapIndexAfterMove(j, from, to))
+  }
+}
+
+/**
+ * Handle an icon dragged from {@link IconPicker} and dropped onto a slot.
+ * Mirrors {@link onIconSelect} but targets the explicit drop index rather
+ * than the active/multi selection.
+ */
+function onIconDrop(
+  index: number,
+  icon: { id: string; filename: string; alt: string; category: string },
+) {
+  markDirty()
+  prefsStore.trackRecent(icon.id)
+  chartStore.assignIcon(index, icon)
+  // Focus the dropped card so the picker highlight and label editor follow.
+  activeSlotIndex.value = index
+  selectedIconId.value = icon.id
+}
+
+// ── Floating toolbar actions ──────────────────────────────────────────────
+
+/** Undo the last change and surface a toast. */
+function onToolbarUndo(): void {
+  historyStore.undo()
+  // The undone slot may now hold a different icon — keep the picker in sync.
+  syncSelectedIcon()
+  notifications.info('Undone')
+}
+
+/** Redo the last undone change and surface a toast. */
+function onToolbarRedo(): void {
+  historyStore.redo()
+  syncSelectedIcon()
+  notifications.info('Redone')
+}
+
+/** Remove the icon from the active slot (undoable) and notify. */
+function onToolbarClear(): void {
+  if (activeSlotIndex.value === null) return
+  const slot = chartStore.slots[activeSlotIndex.value]
+  if (!slot?.icon) return
+  const idx = activeSlotIndex.value
+  markDirty()
+  chartStore.clearIcon(idx)
+  selectedIconId.value = null
+  notifications.success(`Cleared slot ${idx + 1}`)
+}
+
+/** Copy the active slot's full data onto the clipboard. */
+function onToolbarCopy(): void {
+  if (activeSlotIndex.value === null) return
+  const slot = chartStore.slots[activeSlotIndex.value]
+  if (!slot) return
+  copySlot(slot)
+  notifications.success('Slot copied')
+}
+
+/**
+ * Paste the clipboard's slot data onto the active slot.
+ *
+ * Applies the copied icon, label, and (if present) card style via the existing
+ * store actions. Each is recorded as its own undo step, so a paste may take a
+ * few undo presses to fully revert — acceptable for a quick-action toolbar.
+ */
+function onToolbarPaste(): void {
+  if (activeSlotIndex.value === null) return
+  const data = pasteSlot()
+  if (!data) {
+    notifications.warning('Nothing to paste')
+    return
+  }
+  const idx = activeSlotIndex.value
+  markDirty()
+  if (data.icon) {
+    chartStore.assignIcon(idx, data.icon)
+    selectedIconId.value = data.icon.id
+  }
+  chartStore.updateLabel(idx, data.label)
+  if (data.style) {
+    chartStore.setCardStyle(idx, data.style)
+  }
+  notifications.success(`Pasted to slot ${idx + 1}`)
+}
+
+// ── Keyboard shortcuts ──────────────────────────────────────────────────────
+
+/** Controls visibility of the keyboard shortcuts cheat sheet. */
+const showShortcuts = ref(false)
+
+/** Sync the icon-picker highlight to whatever slot is currently active. */
+function syncSelectedIcon(): void {
+  const slot =
+    activeSlotIndex.value !== null ? chartStore.slots[activeSlotIndex.value] : null
+  selectedIconId.value = slot?.icon?.id ?? null
+}
+
+/**
+ * Escape handler, checked in priority order: close the customization drawer,
+ * exit multi-select mode, then finally deselect the active slot.
+ */
+function handleEscape(): void {
+  if (showCustomizationPanel.value) {
+    showCustomizationPanel.value = false
+    return
+  }
+  if (multiSelectMode.value) {
+    exitMultiSelect()
+    return
+  }
+  if (activeSlotIndex.value !== null) {
+    activeSlotIndex.value = null
+    selectedIconId.value = null
+  }
+}
+
+/** Remove the icon from the active slot (undoable). No-op if none selected. */
+function clearActiveSlotIcon(): void {
+  if (activeSlotIndex.value === null) return
+  const slot = chartStore.slots[activeSlotIndex.value]
+  if (!slot?.icon) return
+  markDirty()
+  chartStore.clearIcon(activeSlotIndex.value)
+  selectedIconId.value = null
+}
+
+/**
+ * Move the active selection to the grid-adjacent slot in the given direction.
+ *
+ * Row-aware: horizontal movement stops at row edges (no wrapping) and
+ * vertical movement stops at the grid bounds. If nothing is selected the
+ * first slot is selected.
+ */
+function navigateSlot(direction: 'up' | 'down' | 'left' | 'right'): void {
+  const { columns, totalSlots } = chartStore.preset
+
+  if (activeSlotIndex.value === null) {
+    activeSlotIndex.value = 0
+    syncSelectedIcon()
+    return
+  }
+
+  const i = activeSlotIndex.value
+  const col = i % columns
+  let next = i
+
+  if (direction === 'right' && col < columns - 1) next = i + 1
+  else if (direction === 'left' && col > 0) next = i - 1
+  else if (direction === 'down' && i + columns < totalSlots) next = i + columns
+  else if (direction === 'up' && i - columns >= 0) next = i - columns
+
+  if (next !== i) {
+    activeSlotIndex.value = next
+    syncSelectedIcon()
+  }
+}
+
+/**
+ * Centralised keyboard-shortcut router for the chart editor.
+ *
+ * All editor shortcuts live here (undo/redo, save, export, print, delete,
+ * arrow navigation, escape, and the `?` cheat-sheet toggle). While a modal
+ * overlay is open the router is disabled so the overlay can manage its own
+ * keyboard interaction.
+ */
+useKeyboardShortcuts(
+  {
+    onUndo: () => historyStore.undo(),
+    onRedo: () => historyStore.redo(),
+    onSave: () => saveNow(chartStore, chartManager),
+    onExport: () => {
+      if (!exportDialogExporting.value) showExportDialog.value = true
     },
-  }))
-  
-  cards.value = newCards
-}
+    onPrint: () => {
+      if (import.meta.client) window.print()
+    },
+    onEscape: handleEscape,
+    onDeleteActiveSlot: clearActiveSlotIcon,
+    onNavigate: navigateSlot,
+    onShowShortcuts: () => {
+      showShortcuts.value = true
+    },
+  },
+  {
+    // Disable editor shortcuts while a modal overlay — or the onboarding tour
+    // — is open, so each overlay owns its keyboard interaction (Escape, etc.).
+    isEnabled: () =>
+      !showShortcuts.value &&
+      !showPrintPreview.value &&
+      !showExportDialog.value &&
+      !showCustomizationPanel.value &&
+      !onboarding.isTourActive.value,
+  },
+)
 
-// Computed
-const iconCategories = computed(() => iconsStore.categories)
+// ── Title ───────────────────────────────────────────────────────────────
 
-const cards = computed({
-  get: () => chartStore.cards,
-  set: (value) => chartStore.cards = value
-})
-
-const hasCards = computed(() => cards.value.length > 0)
-
-const filteredIcons = computed(() => {
-  if (searchQuery.value) {
-    iconsStore.setSearchQuery(searchQuery.value)
-    return iconsStore.filteredIcons
-  }
-  
-  iconsStore.setSelectedCategory(selectedCategory.value)
-  return iconsStore.filteredIcons
-})
-
-const gridStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${columns.value}, 1fr)`,
-}))
-
-// Methods
-const handlePreview = () => {
-  isPreviewMode.value = !isPreviewMode.value
-  selectedCardId.value = null
-}
-
-const handleExport = () => {
-  showExportModal.value = true
-}
-
-const handleExportPdf = () => {
-  exportFormat.value = 'pdf'
-}
-
-const handleExportPng = () => {
-  exportFormat.value = 'png'
-}
-
-const handleDownload = async () => {
-  showExportModal.value = false
-  // TODO: Implement actual export
-  console.log('Exporting as', exportFormat.value)
-}
-
-const handleIconDragStart = (icon: IconCatalogItem) => {
-  // Store dragged icon for drop
-  sessionStorage.setItem('draggedIcon', JSON.stringify(icon))
-}
-
-const handleIconClick = (icon: IconCatalogItem) => {
-  // Add new card with this icon
-  if (cards.value.length < maxCards) {
-    const newCard: Card = {
-      id: `card-${Date.now()}`,
-      iconId: icon.id,
-      customIconId: null,
-      heading: '',
-      subtitle: '',
-      textFormatting: {
-        bold: false,
-        italic: false,
-        underline: false,
-        color: '#0F172A',
-        fontSize: 14,
-        alignment: 'center',
-        lineHeight: 1.5,
-      },
-    }
-    cards.value = [...cards.value, newCard]
-    selectedCardId.value = newCard.id
-  }
-}
-
-const handleDrop = (e: DragEvent) => {
-  e.preventDefault()
-  const draggedIconData = sessionStorage.getItem('draggedIcon')
-  if (draggedIconData) {
-    const icon = JSON.parse(draggedIconData) as IconCatalogItem
-    handleIconClick(icon)
-    sessionStorage.removeItem('draggedIcon')
-  }
-}
-
-const handleCanvasClick = () => {
-  selectedCardId.value = null
-}
-
-const handleCardClick = (cardId: string) => {
-  if (!isPreviewMode.value) {
-    selectedCardId.value = cardId
-  }
-}
-
-const handleAddCard = () => {
-  if (cards.value.length < maxCards) {
-    const newCard: Card = {
-      id: `card-${Date.now()}`,
-      iconId: null,
-      customIconId: null,
-      heading: '',
-      subtitle: '',
-      textFormatting: {
-        bold: false,
-        italic: false,
-        underline: false,
-        color: '#0F172A',
-        fontSize: 14,
-        alignment: 'center',
-        lineHeight: 1.5,
-      },
-    }
-    cards.value = [...cards.value, newCard]
-    selectedCardId.value = newCard.id
-  }
-}
-
-const handleDeleteCard = (cardId: string) => {
-  cards.value = cards.value.filter(c => c.id !== cardId)
-  if (selectedCardId.value === cardId) {
-    selectedCardId.value = null
-  }
-}
-
-const getIconName = (iconId: string) => {
-  const icon = iconsStore.getIcon(iconId)
-  return icon?.name || 'lucide:image'
-}
-
-// Keyboard shortcuts
-onMounted(() => {
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      isPreviewMode.value = false
-      selectedCardId.value = null
-      showExportModal.value = false
-    }
-    if (e.key === 'Delete' && selectedCardId.value) {
-      handleDeleteCard(selectedCardId.value)
-    }
-    if (e.ctrlKey && e.key === 'p') {
-      e.preventDefault()
-      handleExport()
-    }
-  }
-  window.addEventListener('keydown', handleKeydown)
-  onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
+useHead({
+  title: 'Create Your Chart',
+  meta: [
+    {
+      name: 'description',
+      content: 'Build your PECs communication chart by selecting icons and adding labels.',
+    },
+  ],
 })
 </script>
-
-<style scoped>
-.chart-page {
-  min-height: 100vh;
-  background: #FAFAFA;
-}
-
-/* Main Content */
-.chart-main {
-  padding: 2rem 0;
-}
-
-.chart-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-/* Icon Sidebar */
-.icon-sidebar {
-  background: white;
-  border-radius: 1rem;
-  border: 1px solid #E5E7EB;
-  padding: 1rem;
-  height: calc(100vh - 8rem);
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 2rem;
-}
-
-.sidebar-header {
-  margin-bottom: 1rem;
-}
-
-.sidebar-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0F172A;
-  margin-bottom: 0.75rem;
-}
-
-.sidebar-tabs {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.sidebar-tab {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  border: 1px solid #E5E7EB;
-  background: white;
-  cursor: pointer;
-  transition: all 200ms;
-  font-size: 1.25rem;
-}
-
-.sidebar-tab:hover {
-  background: #F3F4F6;
-}
-
-.sidebar-tab.active {
-  background: #0F172A;
-  color: white;
-  border-color: #0F172A;
-}
-
-.sidebar-search {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.sidebar-search svg {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.625rem 0.75rem 0.625rem 2.5rem;
-  border: 1px solid #E5E7EB;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  transition: all 200ms;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #0F172A;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
-}
-
-.icon-grid {
-  flex: 1;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  padding-right: 0.25rem;
-}
-
-.icon-item {
-  aspect-ratio: 1;
-  border: 1px solid #E5E7EB;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  cursor: grab;
-  transition: all 200ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-}
-
-.icon-item:hover {
-  border-color: #0F172A;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.icon-item:active {
-  cursor: grabbing;
-}
-
-.icon-display {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Canvas Area */
-.canvas-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.a4-canvas {
-  width: 210mm;
-  min-height: 297mm;
-  background: white;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  padding: 20mm;
-  transition: all 200ms;
-}
-
-.a4-canvas.preview-mode {
-  border: none;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.canvas-title-section {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.canvas-title-input {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0F172A;
-  border: none;
-  background: transparent;
-  text-align: center;
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  transition: background-color 200ms;
-}
-
-.canvas-title-input:hover {
-  background: #F3F4F6;
-}
-
-.canvas-title-input:focus {
-  outline: none;
-  background: #F3F4F6;
-}
-
-.canvas-title-display {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0F172A;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.cards-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.chart-card {
-  background: white;
-  border: 2px solid #E5E7EB;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 200ms;
-  position: relative;
-}
-
-.chart-card:hover {
-  border-color: #D1D5DB;
-}
-
-.chart-card.selected {
-  border-color: #0F172A;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
-}
-
-.card-icon {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.75rem;
-  background: #F9FAFB;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.card-icon-image {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-icon-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-text {
-  text-align: center;
-}
-
-.card-heading-input,
-.card-subtitle-input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  text-align: center;
-  border-radius: 0.375rem;
-  transition: background-color 200ms;
-}
-
-.card-heading-input {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0F172A;
-  padding: 0.25rem;
-}
-
-.card-heading-input:focus {
-  outline: none;
-  background: #F3F4F6;
-}
-
-.card-subtitle-input {
-  font-size: 0.875rem;
-  color: #475569;
-  padding: 0.25rem;
-}
-
-.card-subtitle-input:focus {
-  outline: none;
-  background: #F3F4F6;
-}
-
-.card-heading-display {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0F172A;
-  margin-bottom: 0.25rem;
-}
-
-.card-subtitle-display {
-  font-size: 0.875rem;
-  color: #475569;
-}
-
-.card-delete-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #EF4444;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 200ms;
-}
-
-.card-delete-btn:hover {
-  background: #DC2626;
-}
-
-.add-card-btn {
-  aspect-ratio: 1;
-  background: white;
-  border: 2px dashed #E5E7EB;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 200ms;
-}
-
-.add-card-btn:hover {
-  border-color: #0F172A;
-  background: #F9FAFB;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.add-first-card-btn {
-  padding: 0.75rem 1.5rem;
-  background: #0F172A;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 200ms;
-}
-
-.add-first-card-btn:hover {
-  background: #1E293B;
-}
-
-/* Canvas Controls */
-.canvas-controls {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 0.75rem;
-  border: 1px solid #E5E7EB;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.control-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.control-select {
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  border: 1px solid #E5E7EB;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: #0F172A;
-  background: white;
-  cursor: pointer;
-  transition: all 200ms;
-}
-
-.control-select:focus {
-  outline: none;
-  border-color: #0F172A;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 1rem;
-  width: 100%;
-  max-width: 400px;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid #E5E7EB;
-}
-
-.modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #0F172A;
-}
-
-.modal-close {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  color: #6B7280;
-  transition: all 200ms;
-}
-
-.modal-close:hover {
-  background: #F3F4F6;
-  color: #0F172A;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.export-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.export-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  border: 2px solid #E5E7EB;
-  border-radius: 0.75rem;
-  background: white;
-  cursor: pointer;
-  transition: all 200ms;
-  color: #0F172A;
-}
-
-.export-option:hover {
-  border-color: #D1D5DB;
-  background: #F9FAFB;
-}
-
-.export-option.selected {
-  border-color: #0F172A;
-  background: #F3F4F6;
-}
-
-.download-btn {
-  width: 100%;
-  padding: 0.875rem;
-  background: #0F172A;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 200ms;
-}
-
-.download-btn:hover {
-  background: #1E293B;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .chart-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .icon-sidebar {
-    position: relative;
-    top: 0;
-    height: auto;
-    max-height: 400px;
-  }
-
-  .a4-canvas {
-    width: 100%;
-    min-height: auto;
-    aspect-ratio: 210 / 297;
-  }
-}
-
-@media (max-width: 640px) {
-  .chart-main {
-    padding: 1rem 0;
-  }
-
-  .sidebar-tabs {
-    gap: 0.25rem;
-  }
-
-  .sidebar-tab {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-  }
-
-  .icon-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .canvas-controls {
-    flex-wrap: wrap;
-  }
-}
-</style>

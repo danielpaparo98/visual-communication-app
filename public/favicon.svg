@@ -1,11 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#6366f1"/>
-  <rect x="4" y="4" width="10" height="10" rx="2" fill="white"/>
-  <rect x="18" y="4" width="10" height="10" rx="2" fill="white"/>
-  <rect x="4" y="18" width="10" height="10" rx="2" fill="white"/>
-  <rect x="18" y="18" width="10" height="10" rx="2" fill="white"/>
-  <circle cx="9" cy="9" r="2" fill="#6366f1"/>
-  <circle cx="23" cy="9" r="2" fill="#6366f1"/>
-  <circle cx="9" cy="23" r="2" fill="#6366f1"/>
-  <circle cx="23" cy="23" r="2" fill="#6366f1"/>
+  <!-- Speech bubble shape -->
+  <rect x="2" y="2" width="28" height="24" rx="6" fill="oklch(0.60 0.16 245)"/>
+  <!-- Chat tail -->
+  <path d="M8 26 L6 32 L14 26" fill="oklch(0.60 0.16 245)"/>
+  <!-- Chart grid inside bubble -->
+  <rect x="8" y="7" width="7" height="6" rx="1.5" fill="white" opacity="0.9"/>
+  <rect x="17" y="7" width="7" height="6" rx="1.5" fill="white" opacity="0.9"/>
+  <rect x="8" y="15" width="7" height="6" rx="1.5" fill="white" opacity="0.9"/>
+  <rect x="17" y="15" width="7" height="6" rx="1.5" fill="white" opacity="0.9"/>
+  <!-- Dot accents -->
+  <circle cx="11.5" cy="10" r="1.5" fill="oklch(0.60 0.16 245)"/>
+  <circle cx="20.5" cy="10" r="1.5" fill="oklch(0.60 0.16 245)"/>
+  <circle cx="11.5" cy="18" r="1.5" fill="oklch(0.60 0.16 245)"/>
+  <circle cx="20.5" cy="18" r="1.5" fill="oklch(0.60 0.16 245)"/>
 </svg>

@@ -1,16 +1,15 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-white">
+  <div class="min-h-screen flex flex-col">
     <AppHeader />
-    <main class="flex-1 pt-16">
-      <NuxtPage :transition="{
-        name: 'page',
-        mode: 'out-in'
-      }" />
+    <main class="flex-1">
+      <NuxtPage />
     </main>
     <AppFooter />
+    <ChartPrint />
+    <ToastContainer />
   </div>
 </template>
 
 <script setup lang="ts">
-// Default layout with header and footer
+// Default layout — header, page content, footer, hidden print sheet
 </script>

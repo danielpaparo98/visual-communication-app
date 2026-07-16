@@ -1,40 +1,26 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
-  
-  modules: [
-    '@pinia/nuxt',
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/google-fonts',
-    // '@nuxt/icon', // Disabled - use @iconify/vue directly for Nuxt 4 compatibility
-  ],
-  
-  googleFonts: {
-    families: {
-      Inter: [400, 500, 600, 700],
-      Roboto: [400, 500, 700],
-      'Open+Sans': [400, 500, 600, 700],
-      Lato: [400, 500, 700],
-      Poppins: [400, 500, 600, 700],
-      Fredoka: [400, 500, 600, 700],
-    },
-    display: 'swap',
-  },
-  
-  // GitHub Pages deployment
-  ssr: false, // SPA mode for static hosting
+  // devtools disabled — Vue Devtools v7 __vrv_devtools conflicts in SPA mode
+  devtools: { enabled: false },
+
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+
+  // SPA mode — fully static for GitHub Pages
+  ssr: false,
+
   app: {
-    baseURL: '/', // GitHub repo name
+    // Matches GitHub repo name so deployment "just works"
+    baseURL: '/visual-communication-app/',
     buildAssetsDir: 'assets',
   },
-  
-  // Generate configuration
+
   nitro: {
     preset: 'github-pages',
   },
-  
-  // TypeScript
+
+  css: ['~/assets/css/main.css'],
+
   typescript: {
     strict: true,
   },

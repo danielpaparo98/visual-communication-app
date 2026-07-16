@@ -5,21 +5,36 @@
 </template>
 
 <script setup lang="ts">
-// Global app setup
+import { BASE_URL } from '~/utils/config'
+
 useHead({
-  titleTemplate: (title) => title ? `${title} | The Talking Chart` : 'The Talking Chart',
+  titleTemplate: (title) => title ? `${title} — The Talking Chart` : 'The Talking Chart',
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { name: 'description', content: 'Free visual communication chart builder for individuals with communication difficulties.' }
+    {
+      name: 'description',
+      content:
+        'Free, printable PECs chart generator. Pick from 400+ icons, add labels, and print. No sign-up. No cost. Ever.',
+    },
   ],
   link: [
-    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+    { rel: 'icon', type: 'image/svg+xml', href: `${BASE_URL}/favicon.svg` },
     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap' }
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.gstatic.com',
+      crossorigin: '',
+    },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap',
+    },
   ],
   htmlAttrs: {
-    lang: 'en'
-  }
+    lang: 'en',
+  },
+  bodyAttrs: {
+    class: 'bg-white text-slate-900 antialiased',
+  },
 })
 </script>

@@ -39,3 +39,6 @@ temp_icons
 # Test artifacts
 playwright-report/
 test-results/
+.kilo/
+.tmp/
+design_iterations/

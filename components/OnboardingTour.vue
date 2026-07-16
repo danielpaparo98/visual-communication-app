@@ -1,501 +1,487 @@
 <template>
   <Teleport to="body">
-    <Transition name="tour-overlay">
+    <Transition name="tour-fade">
       <div
-        v-if="isOpen"
-        class="tour-overlay"
-        @click="handleBackdropClick"
-        role="dialog"
-        :aria-label="`Onboarding tour - Step ${currentStep + 1} of ${steps.length}`"
+        v-if="isTourActive"
+        class="fixed inset-0"
+        style="z-index: 60"
       >
-        <!-- Tour Highlight -->
-        <div
-          v-if="currentStep >= 0 && currentStep < steps.length"
-          class="tour-highlight"
-          :style="highlightStyle"
-        />
+        <!--
+          Full-screen click catcher: transparent but absorbs pointer events so
+          the user can't interact with the app mid-tour. The dimming itself
+          comes from the spotlight's giant box-shadow below (so the highlighted
+          element stays bright through the "hole").
+        -->
+        <div class="tour-overlay" @click="scheduleUpdate" />
 
-        <!-- Tour Tooltip -->
-        <Transition name="tour-tooltip">
-          <div
-            v-if="isOpen && currentStep >= 0 && currentStep < steps.length"
-            class="tour-tooltip"
-            :style="tooltipStyle"
-            role="alert"
-            aria-live="polite"
-          >
-            <div class="tour-content">
-              <div class="tour-header">
-                <h3 class="tour-title">{{ currentStepData?.title }}</h3>
-                <button
-                  class="tour-close"
-                  @click="handleSkip"
-                  aria-label="Skip tour"
+        <!-- Spotlight: transparent box over the target; its huge box-shadow
+             paints the semi-opaque backdrop everywhere except the hole. -->
+        <div class="tour-spotlight" :style="spotlightStyle" aria-hidden="true" />
+
+        <!-- Tooltip card -->
+        <div
+          ref="tooltipRef"
+          tabindex="-1"
+          role="dialog"
+          aria-modal="false"
+          class="tour-tooltip w-[340px] max-w-[calc(100vw-2rem)] rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none"
+          :style="tooltipStyle"
+          :aria-label="`Onboarding tour, step ${currentStep + 1} of ${steps.length}: ${current.title}`"
+        >
+          <Transition name="tour-step" mode="out-in">
+            <div :key="currentStep" class="p-5">
+              <!-- Header: step badge + close -->
+              <div class="mb-3 flex items-center justify-between">
+                <span
+                  class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-primary-600"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div class="tour-progress">
-                <span class="tour-step-indicator">
+                  <span
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-[11px] font-extrabold text-primary-700"
+                  >
+                    {{ currentStep + 1 }}
+                  </span>
                   Step {{ currentStep + 1 }} of {{ steps.length }}
                 </span>
-                <div class="tour-progress-bar">
-                  <div
-                    class="tour-progress-fill"
-                    :style="{ width: `${((currentStep + 1) / steps.length) * 100}%` }"
-                  />
-                </div>
-              </div>
-              <p class="tour-message">{{ currentStepData?.content }}</p>
-              <div v-if="currentStepData?.action" class="tour-action">
                 <button
-                  class="tour-action-button primary"
-                  @click="handleAction"
-                  :aria-label="currentStepData.action.label"
+                  type="button"
+                  class="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 focus-visible:ring-2 focus-visible:ring-primary-400"
+                  aria-label="Skip tour"
+                  @click="handleSkip"
                 >
-                  {{ currentStepData.action.label }}
-                </button>
-              </div>
-              <div class="tour-navigation">
-                <button
-                  class="nav-button"
-                  @click="handlePrev"
-                  :disabled="currentStep === 0"
-                  aria-label="Previous step"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 5 5v5a2 2 0 012-2h10a2 2 0 012 2v5a2 2 0 01-2 2z" />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
                   </svg>
-                  Previous
+                </button>
+              </div>
+
+              <!-- Title + body -->
+              <h3 class="font-heading text-lg font-extrabold leading-tight text-slate-800">
+                {{ current.title }}
+              </h3>
+              <p class="mt-1.5 text-sm leading-relaxed text-slate-600">
+                {{ current.body }}
+              </p>
+
+              <!-- Step dots (clickable to jump) -->
+              <div class="mt-4 flex items-center justify-center gap-1.5">
+                <button
+                  v-for="(s, i) in steps"
+                  :key="i"
+                  type="button"
+                  :class="[
+                    'h-1.5 rounded-full transition-all duration-200',
+                    i === currentStep
+                      ? 'w-6 bg-primary-500'
+                      : 'w-1.5 bg-slate-300 hover:bg-slate-400',
+                  ]"
+                  :aria-label="`Go to step ${i + 1}`"
+                  :aria-current="i === currentStep ? 'step' : undefined"
+                  @click="goToStep(i)"
+                />
+              </div>
+
+              <!-- "Don't show again" — only on the final step -->
+              <label
+                v-if="isLast"
+                class="mt-4 flex cursor-pointer select-none items-center gap-2 text-xs text-slate-500"
+              >
+                <input
+                  v-model="dontShowAgain"
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 accent-primary-500"
+                />
+                Don't show this tour again
+              </label>
+
+              <!-- Footer: back / skip + next -->
+              <div class="mt-5 flex items-center justify-between gap-2">
+                <button
+                  v-if="isFirst"
+                  type="button"
+                  class="text-xs font-semibold text-slate-400 transition-colors hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 rounded-md px-1 py-0.5"
+                  @click="handleSkip"
+                >
+                  Skip
                 </button>
                 <button
-                  class="nav-button"
-                  @click="handleNext"
-                  :disabled="currentStep === steps.length - 1"
-                  aria-label="Next step"
+                  v-else
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                  @click="prevStep"
                 >
-                  {{ currentStep === steps.length - 1 ? 'Finish' : 'Next' }}
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-5 5v5a2 2 0 012 2h10a2 2 0 012 2v5a2 2 0 01-2 2z" />
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5" />
+                    <path d="m12 19-7-7 7-7" />
+                  </svg>
+                  Back
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-primary !px-5 !py-2 !text-sm focus-visible:ring-2 focus-visible:ring-primary-400"
+                  @click="handleNext"
+                >
+                  <span>{{ isLast ? 'Get started' : 'Next' }}</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
                   </svg>
                 </button>
               </div>
             </div>
-          </div>
-        </Transition>
+          </Transition>
+        </div>
       </div>
     </Transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
-import type { TourStep } from '~/types'
+/**
+ * Progressive onboarding tour overlay.
+ *
+ * Renders a 4-step guided tour that dims the page and "spotlights" key
+ * regions of the chart editor. The spotlight is a transparent box positioned
+ * exactly over the target element with an enormous `box-shadow` that paints
+ * the semi-opaque backdrop everywhere except the hole — a simple, robust
+ * technique that needs no SVG clipping.
+ *
+ * Target elements are located via CSS selectors (see {@link steps}); the page
+ * tags the relevant regions with `data-tour-target="…"` attributes, and the
+ * first canvas card already exposes `[data-card-index="0"]`.
+ *
+ * Positioning is viewport-relative (`position: fixed`) using
+ * `getBoundingClientRect()`, recalculated on step change, window resize, and
+ * scroll (rAF-throttled) so the spotlight tracks the target as the page moves.
+ */
+const {
+  isTourActive,
+  currentStep,
+  nextStep,
+  prevStep,
+  goToStep,
+  endTour,
+  dismissTour,
+  markComplete,
+  resetOnboarding,
+} = useOnboarding()
 
-interface Props {
-  modelValue: boolean
-  steps: TourStep[]
-  currentStep: number
-  showSkip?: boolean
-  showProgress?: boolean
+/** A single tour step: a CSS selector for the highlight target + copy. */
+interface TourStep {
+  selector: string
+  title: string
+  body: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  showSkip: true,
-  showProgress: true,
-})
+/** Ordered tour steps. Indices line up with `currentStep` from the composable. */
+const steps: TourStep[] = [
+  {
+    selector: '[data-tour-target="canvas"]',
+    title: 'Welcome to The Talking Chart!',
+    body: 'This is your canvas — a printable A4 communication board. Your icon cards will live here.',
+  },
+  {
+    selector: '[data-card-index="0"]',
+    title: 'Tap a card to select it',
+    body: 'Click any card on the canvas to select it (it glows blue), then pick an icon to fill it in.',
+  },
+  {
+    selector: '[data-tour-target="icon-picker"]',
+    title: 'Browse the icon library',
+    body: 'Search hundreds of icons here, or upload your own SVGs. Star your favourites for quick access later.',
+  },
+  {
+    selector: '[data-tour-target="header"]',
+    title: 'Customise, preview & export',
+    body: 'Up here you can switch layouts, tweak themes and fonts, preview your chart, and export to PDF or PNG. Enjoy!',
+  },
+]
 
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  'next-step': []
-  'prev-step': []
-  'skip': []
-  'complete': []
-}>()
+// The `?? steps[0]!` fallback guarantees a defined step even though
+// `noUncheckedIndexedAccess` types indexed access as possibly undefined.
+const current = computed<TourStep>(() => steps[currentStep.value] ?? steps[0]!)
+const isFirst = computed(() => currentStep.value === 0)
+const isLast = computed(() => currentStep.value === steps.length - 1)
 
-const currentStepData = computed(() => props.steps[props.currentStep])
+/** "Don't show again" preference on the final step (defaults to opted-out). */
+const dontShowAgain = ref(true)
 
-const highlightStyle = computed(() => {
-  if (!currentStepData.value) return {}
+// ── Spotlight + tooltip geometry ──────────────────────────────────────────
 
-  const target = document.querySelector(currentStepData.value.target)
-  if (!target) return {}
+/** Padding (px) added around the target element inside the spotlight hole. */
+const SPOTLIGHT_PAD = 8
+/** Gap (px) between the spotlight hole edge and the tooltip card. */
+const GAP = 18
 
-  const rect = target.getBoundingClientRect()
-  
-  return {
-    position: 'fixed',
-    top: `${rect.top}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-    pointerEvents: 'none',
-  } as const
-})
+/** Live spotlight rectangle (viewport-relative, for `position: fixed`). */
+const spotlight = reactive({ top: 0, left: 0, width: 0, height: 0 })
+/** Live tooltip position (viewport-relative, for `position: fixed`). */
+const tooltipPos = reactive({ top: 0, left: 0 })
 
-const tooltipStyle = computed(() => {
-  if (!currentStepData.value) return {}
+/** Ref to the tooltip card so we can measure its rendered size. */
+const tooltipRef = ref<HTMLElement | null>(null)
 
-  const target = document.querySelector(currentStepData.value.target)
-  if (!target) return {}
+/**
+ * Resolve the current step's target element from the DOM.
+ * Returns `null` if the selector matches nothing (e.g. the region is hidden).
+ */
+function getTargetEl(): HTMLElement | null {
+  if (!import.meta.client) return null
+  return document.querySelector<HTMLElement>(current.value.selector)
+}
 
-  const rect = target.getBoundingClientRect()
-  
-  let top = rect.bottom + 10
-  let left = rect.left + (rect.width / 2)
-  
-  // Adjust based on position
-  switch (currentStepData.value.position) {
-    case 'top':
-      top = rect.top - 10
-      break
-    case 'bottom':
-      top = rect.bottom + 10
-      break
-    case 'left':
-      left = rect.left - 10
-      top = rect.top + (rect.height / 2)
-      break
-    case 'right':
-      left = rect.right + 10
-      top = rect.top + (rect.height / 2)
-      break
-  }
-  
-  // Ensure tooltip stays within viewport
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-  
-  if (left + 300 > viewportWidth) {
-    left = viewportWidth - 320
-  }
-  if (top + 200 > viewportHeight) {
-    top = viewportHeight - 220
-  }
-  
-  return {
-    position: 'fixed',
-    top: `${top}px`,
-    left: `${left}px`,
-    maxWidth: '320px',
-  } as const
-})
+/**
+ * Recompute the spotlight rectangle and tooltip position for the current step.
+ *
+ * When the target is missing the spotlight expands to fill the viewport (so
+ * the page is still dimmed) and the tooltip is centred.
+ */
+function updatePositions(): void {
+  if (!import.meta.client) return
 
-function handleBackdropClick(event: MouseEvent): void {
-  // Don't close if clicking on the tooltip
-  if ((event.target as HTMLElement).closest('.tour-tooltip')) {
+  const el = getTargetEl()
+  const tip = tooltipRef.value
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  const tipW = tip?.offsetWidth ?? 340
+  const tipH = tip?.offsetHeight ?? 200
+
+  if (!el) {
+    // No target — dim everything and centre the tooltip.
+    spotlight.top = 0
+    spotlight.left = 0
+    spotlight.width = vw
+    spotlight.height = vh
+    tooltipPos.top = Math.max(16, (vh - tipH) / 2)
+    tooltipPos.left = Math.max(16, (vw - tipW) / 2)
     return
   }
-  emit('update:modelValue', false)
+
+  const r = el.getBoundingClientRect()
+
+  spotlight.top = r.top - SPOTLIGHT_PAD
+  spotlight.left = r.left - SPOTLIGHT_PAD
+  spotlight.width = r.width + SPOTLIGHT_PAD * 2
+  spotlight.height = r.height + SPOTLIGHT_PAD * 2
+
+  // Prefer the side with more room; fall back to whichever has more space.
+  const spaceBelow = vh - (r.bottom + SPOTLIGHT_PAD)
+  const spaceAbove = r.top - SPOTLIGHT_PAD
+  const placeBelow = spaceBelow >= tipH + GAP + 16 || spaceBelow >= spaceAbove
+
+  tooltipPos.top = placeBelow
+    ? r.bottom + SPOTLIGHT_PAD + GAP
+    : Math.max(16, r.top - SPOTLIGHT_PAD - GAP - tipH)
+
+  // Centre the tooltip on the target, clamped to the viewport with a margin.
+  const centerX = r.left + r.width / 2
+  const margin = 16
+  let left = centerX - tipW / 2
+  left = Math.max(margin, Math.min(left, vw - tipW - margin))
+  tooltipPos.left = left
 }
 
+/** Smoothly bring the current target into view before measuring it. */
+function scrollToTarget(): void {
+  const el = getTargetEl()
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+  }
+}
+
+// ── rAF-throttled refresh (resize + scroll) ───────────────────────────────
+
+let rafId: number | null = null
+
+/** Coalesce multiple layout-triggering events into one position update. */
+function scheduleUpdate(): void {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(() => {
+    rafId = null
+    updatePositions()
+  })
+}
+
+function onResize(): void {
+  scheduleUpdate()
+}
+
+/**
+ * Capture-phase scroll listener so we also catch scrolls inside nested
+ * containers (e.g. the canvas's own overflow-auto wrapper).
+ */
+function onScroll(): void {
+  scheduleUpdate()
+}
+
+// ── Step navigation wired to the composable ───────────────────────────────
+
+/** Next / Finish handler — persists the "seen" flag according to the checkbox. */
 function handleNext(): void {
-  if (props.currentStep < props.steps.length - 1) {
-    emit('next-step')
+  if (isLast.value) {
+    if (dontShowAgain.value) markComplete()
+    else resetOnboarding()
+    endTour()
   } else {
-    emit('complete')
-    emit('update:modelValue', false)
+    nextStep()
   }
 }
 
-function handlePrev(): void {
-  if (props.currentStep > 0) {
-    emit('prev-step')
-  }
-}
-
+/**
+ * Skip / Escape handler.
+ *
+ * Marks the tour as seen so it won't auto-offer again next visit — skipping
+ * is a strong signal the user doesn't want to be nagged. They can still
+ * relaunch it manually from the header.
+ */
 function handleSkip(): void {
-  emit('skip')
-  emit('update:modelValue', false)
+  markComplete()
+  dismissTour()
 }
 
-function handleAction(): void {
-  if (currentStepData.value?.action) {
-    currentStepData.value.action.handler()
-    handleNext()
-  }
-}
+// ── Keyboard support ──────────────────────────────────────────────────────
 
-// Handle keyboard navigation
-onMounted(() => {
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
+function onKeydown(event: KeyboardEvent): void {
+  if (!isTourActive.value) return
+  switch (event.key) {
+    case 'Escape':
+      event.preventDefault()
       handleSkip()
-    } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+      break
+    case 'ArrowRight':
+    case 'Enter':
+      event.preventDefault()
       handleNext()
-    } else if (e.key === 'ArrowLeft') {
-      handlePrev()
-    }
+      break
+    case 'ArrowLeft':
+      event.preventDefault()
+      prevStep()
+      break
   }
+}
 
-  document.addEventListener('keydown', handleKeydown)
+// ── Reactivity: (re)measure when the tour opens or the step changes ───────
+
+/**
+ * Refresh geometry after a step change / tour start.
+ *
+ * Scrolls the target in, then re-measures on two ticks (immediate + after the
+ * ~smooth-scroll settles) to stay aligned.
+ */
+async function refreshForStep(): Promise<void> {
+  await nextTick()
+  scrollToTarget()
+  updatePositions()
+  // Re-measure once the smooth-scroll animation has had time to settle.
+  window.setTimeout(updatePositions, 350)
+  // Return keyboard focus to the tooltip so screen-reader users land on it.
+  nextTick(() => tooltipRef.value?.focus())
+}
+
+watch(isTourActive, async (active) => {
+  if (active) {
+    dontShowAgain.value = true
+    window.addEventListener('resize', onResize)
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    await refreshForStep()
+  } else {
+    window.removeEventListener('resize', onResize)
+    window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions)
+  }
+})
+
+watch(currentStep, async () => {
+  if (!isTourActive.value) return
+  await refreshForStep()
+})
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown)
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('resize', onResize)
+  window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions)
+  if (rafId !== null) cancelAnimationFrame(rafId)
 })
+
+// ── Inline styles ─────────────────────────────────────────────────────────
+
+const spotlightStyle = computed(() => ({
+  top: `${spotlight.top}px`,
+  left: `${spotlight.left}px`,
+  width: `${spotlight.width}px`,
+  height: `${spotlight.height}px`,
+}))
+
+const tooltipStyle = computed(() => ({
+  top: `${tooltipPos.top}px`,
+  left: `${tooltipPos.left}px`,
+}))
 </script>
 
 <style scoped>
+/*
+ * Spotlight hole — transparent box with a vast box-shadow that paints the
+ * backdrop. The first shadow layer is a thin bright ring hugging the hole
+ * edge (painted on top); the second is the huge dim spread.
+ */
+.tour-spotlight {
+  position: fixed;
+  z-index: 50;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.9),
+    0 0 0 9999px oklch(0.18 0.05 250 / 0.62);
+  transition:
+    top 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    left 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Full-screen transparent click catcher. */
 .tour-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 50;
+  pointer-events: auto;
 }
 
-.tour-highlight {
-  background: rgba(59, 130, 246, 0.3);
-  border: 2px solid #3b82f6;
-  border-radius: 4px;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-}
-
+/* Tooltip card. */
 .tour-tooltip {
   position: fixed;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 320px;
-  z-index: 10000;
+  z-index: 60;
+  transition:
+    top 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tour-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
+/* Whole-tour fade in/out. */
+.tour-fade-enter-active,
+.tour-fade-leave-active {
+  transition: opacity 0.25s ease;
 }
-
-.tour-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tour-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-  flex: 1;
-}
-
-.tour-close {
-  background: transparent;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.tour-close:hover {
-  background: rgba(107, 114, 128, 0.1);
-}
-
-.tour-close:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-.tour-progress {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tour-step-indicator {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.tour-progress-bar {
-  width: 100px;
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.tour-progress-fill {
-  height: 100%;
-  background: #3b82f6;
-  transition: width 0.3s ease;
-}
-
-.tour-message {
-  font-size: 0.875rem;
-  color: #374151;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.tour-action {
-  margin-top: 0.5rem;
-}
-
-.tour-action-button {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tour-action-button:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.tour-action-button:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-.tour-action-button.primary {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: #ffffff;
-}
-
-.tour-action-button.primary:hover {
-  background: #2563eb;
-  border-color: #2563eb;
-}
-
-.tour-action-button.primary:focus {
-  outline-color: #1d4ed8;
-}
-
-.tour-navigation {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  justify-content: center;
-}
-
-.nav-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.nav-button:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.nav-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.nav-button:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Transition animations */
-.tour-overlay-enter-active,
-.tour-overlay-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.tour-overlay-enter-from,
-.tour-overlay-leave-to {
+.tour-fade-enter-from,
+.tour-fade-leave-to {
   opacity: 0;
 }
 
-.tour-overlay-enter-to,
-.tour-overlay-leave-from {
-  opacity: 1;
+/* Per-step content swap (fade-through). */
+.tour-step-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-
-.tour-tooltip-enter-active {
-  transition: all 0.3s ease;
+.tour-step-leave-active {
+  transition: opacity 0.15s ease;
 }
-
-.tour-tooltip-leave-active {
-  transition: all 0.2s ease;
-}
-
-.tour-tooltip-enter-from {
+.tour-step-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(6px);
 }
-
-.tour-tooltip-leave-to {
+.tour-step-leave-to {
   opacity: 0;
-  transform: translateY(10px);
-}
-
-.tour-tooltip-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tour-tooltip-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .tour-tooltip-enter-active,
-  .tour-tooltip-leave-active {
-    transition: none;
-  }
-
-  .tour-tooltip-enter-from,
-  .tour-tooltip-leave-to,
-  .tour-tooltip-enter-to,
-  .tour-tooltip-leave-from {
-    transform: none;
-  }
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .tour-tooltip {
-    max-width: calc(100vw - 2rem);
-    max-height: calc(100vh - 4rem);
-  }
-
-  .tour-content {
-    padding: 1rem;
-  }
-
-  .tour-title {
-    font-size: 1rem;
-  }
-
-  .tour-message {
-    font-size: 0.8125rem;
-  }
 }
 </style>
