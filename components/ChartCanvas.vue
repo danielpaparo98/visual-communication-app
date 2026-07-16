@@ -15,8 +15,31 @@
       :class="previewMode ? 'max-w-[960px]' : 'max-w-[780px]'"
       :style="pageStyle"
     >
-      <!-- ── Title ── -->
+      <!-- ── Title (editable in edit mode) ── -->
+      <template v-if="!previewMode">
+        <input
+          v-if="editingTitle"
+          v-model="titleInputValue"
+          @blur="saveTitle"
+          @keyup.enter="saveTitle"
+          @keyup.escape="cancelTitleEdit"
+          @click.stop
+          type="text"
+          maxlength="60"
+          class="canvas-title w-full text-center font-heading font-extrabold text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 bg-transparent border-b-2 border-primary-400 outline-none px-2 py-0"
+          aria-label="Chart title"
+        />
+        <button
+          v-else
+          @click.stop="startEditingTitle"
+          class="canvas-title w-full text-center font-heading font-extrabold text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 truncate px-1 hover:text-primary-600 transition-colors cursor-text"
+          :aria-label="`Edit chart title: ${title}`"
+        >
+          {{ title }}
+        </button>
+      </template>
       <h1
+        v-else
         class="canvas-title text-center font-heading font-extrabold text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 truncate px-1"
       >
         {{ title }}
@@ -248,6 +271,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: [index: number]
   'update:zoom': [value: number]
+  'update:title': [value: string]
   'set-card-style': [index: number, style: ChartSlotStyle]
   'clear-card-style': [index: number]
   /** Emitted when the user reorders slots by dragging one onto another. */
@@ -470,6 +494,33 @@ const pageStyle = computed(() => ({
 
 /** Index of the card currently being styled, or null when the picker is closed. */
 const styleCardIndex = ref<number | null>(null)
+
+/** Whether the canvas title is being edited inline. */
+const editingTitle = ref(false)
+const titleInputValue = ref('')
+
+function startEditingTitle() {
+  if (props.previewMode) return
+  editingTitle.value = true
+  titleInputValue.value = props.title
+  nextTick(() => {
+    const input = document.querySelector<HTMLInputElement>('.canvas-title input, .canvas-title')
+    input?.focus()
+    input?.select()
+  })
+}
+
+function saveTitle() {
+  const trimmed = titleInputValue.value.trim()
+  if (trimmed && trimmed !== props.title) {
+    emit('update:title', trimmed)
+  }
+  editingTitle.value = false
+}
+
+function cancelTitleEdit() {
+  editingTitle.value = false
+}
 
 /** Index of the card whose label is being edited inline, or null. */
 const editingLabelIndex = ref<number | null>(null)

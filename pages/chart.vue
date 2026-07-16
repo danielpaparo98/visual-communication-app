@@ -1,15 +1,22 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-    <ChartHeader
-      v-model:zoom="zoom"
-      :fit-zoom="fitZoom"
-      v-model:preview-mode="previewMode"
-      @toggle-customize="showCustomizationPanel = !showCustomizationPanel"
-      @export="showExportDialog = true"
-      @show-preview="showPrintPreview = true"
-      @show-shortcuts="showShortcuts = true"
+  <!-- Sticky header bar -->
+  <div class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+      <ChartHeader
+        v-model:zoom="zoom"
+        :fit-zoom="fitZoom"
+        v-model:preview-mode="previewMode"
+        @toggle-customize="showCustomizationPanel = !showCustomizationPanel"
+        @export="showExportDialog = true"
+        @show-preview="showPrintPreview = true"
+        @show-shortcuts="showShortcuts = true"
       @start-tour="onboarding.startTour()"
     />
+  </div>
+  </div>
+
+  <!-- Main editor content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
     <!-- Corruption warning banner -->
     <div
@@ -111,6 +118,7 @@
           @reorder="onReorder"
           @assign-icon-drop="onIconDrop"
           @update-label="onLabelUpdate"
+          @update:title="onCanvasTitleUpdate"
         />
       </div>
 
@@ -662,6 +670,11 @@ function toggleMultiSelectMode() {
 function onLabelUpdate(index: number, label: string) {
   markDirty()
   chartStore.updateLabel(index, label)
+}
+
+function onCanvasTitleUpdate(title: string) {
+  markDirty()
+  chartStore.setTitle(title)
 }
 
 function onSetCardStyle(index: number, style: ChartSlotStyle) {
