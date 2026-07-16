@@ -1,18 +1,8 @@
 <template>
   <div
     data-tour-target="header"
-    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 no-print"
+    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 no-print"
   >
-    <NuxtLink
-      to="/"
-      class="inline-flex items-center gap-1.5 text-slate-500 hover:text-primary-600 transition-colors font-medium text-sm shrink-0"
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5"/>
-        <path d="M12 19l-7-7 7-7"/>
-      </svg>
-      Back home
-    </NuxtLink>
 
     <div class="flex-1 w-full sm:w-auto sm:text-center min-w-0 px-0 sm:px-4">
       <input
