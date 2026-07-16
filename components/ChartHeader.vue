@@ -79,28 +79,25 @@
       </div>
     </div>
 
-    <!-- ── Layout preset selector ── -->
-    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 w-full sm:w-auto no-print">
-      <span class="text-[11px] font-medium text-slate-400 mr-0.5 hidden sm:inline">Layout:</span>
-      <div class="flex flex-wrap gap-1">
-        <button
+    <!-- ── Layout preset dropdown ── -->
+    <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto no-print">
+      <label for="layout-select" class="text-[11px] font-medium text-slate-400 hidden sm:inline">Layout:</label>
+      <select
+        id="layout-select"
+        :value="chartStore.layoutPreset"
+        @change="chartStore.setLayoutPreset(($event.target as HTMLSelectElement).value)"
+        class="appearance-none bg-white border border-slate-200 rounded-md px-2.5 py-1.5 pr-6 text-[11px] font-medium text-slate-700 cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_6px_center] bg-[length:10px]"
+        aria-label="Layout preset"
+      >
+        <option
           v-for="p in LAYOUT_PRESETS"
           :key="p.id"
+          :value="p.id"
           :title="p.description"
-          @click="chartStore.setLayoutPreset(p.id)"
-          :class="[
-            'px-2 py-1 rounded-md text-[11px] font-medium transition-all duration-150 border',
-            chartStore.layoutPreset === p.id
-              ? 'bg-primary-100 text-primary-700 border-primary-300 shadow-sm'
-              : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-700',
-          ]"
-          :aria-label="`${p.name} layout — ${p.description}`"
-          :aria-pressed="chartStore.layoutPreset === p.id"
         >
-          {{ p.name }}
-          <span class="opacity-60 ml-0.5">({{ p.totalSlots }})</span>
-        </button>
-      </div>
+          {{ p.name }} ({{ p.totalSlots }})
+        </option>
+      </select>
     </div>
 
     <!-- ── Zoom controls ── -->
