@@ -249,3 +249,16 @@
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
 }
+
+/* ── More dropdown transition (chart header) ── */
+.more-fade-enter-active,
+.more-fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.more-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.more-fade-leave-to {
+  opacity: 0;
+}
