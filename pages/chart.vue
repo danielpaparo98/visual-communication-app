@@ -11,6 +11,7 @@
         @show-preview="showPrintPreview = true"
         @show-shortcuts="showShortcuts = true"
       @start-tour="onboarding.startTour()"
+      @new-chart="onNewChart"
     />
   </div>
   </div>
@@ -670,6 +671,13 @@ function onLabelUpdate(index: number, label: string) {
 function onCanvasTitleUpdate(title: string) {
   markDirty()
   chartStore.setTitle(title)
+}
+
+/** Create a fresh chart and switch to it. */
+function onNewChart() {
+  const notifications = useNotificationsStore()
+  chartManager.createChart()
+  notifications.success('New chart created!')
 }
 
 function onSetCardStyle(index: number, style: ChartSlotStyle) {

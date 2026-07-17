@@ -4,33 +4,30 @@
     class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 no-print"
   >
 
-    <div class="flex-1 min-w-0 px-0 sm:px-4 order-1">
-      <input
-        v-if="isEditing"
-        v-model="titleInput"
-        ref="titleInputRef"
-        @blur="saveTitle"
-        @keyup.enter="saveTitle"
-        @keyup.escape="cancelEdit"
-        class="w-full sm:max-w-sm mx-auto block text-center font-heading font-extrabold text-lg sm:text-xl text-slate-800 bg-white border-b-2 border-primary-400 outline-none px-2 py-1"
-        aria-label="Chart title"
-      />
+    <div class="flex-1 min-w-0 order-1">
+      <span class="block w-full sm:max-w-sm mx-auto text-center font-heading font-bold text-sm sm:text-base text-slate-600 truncate leading-snug" title="Chart title — click on the canvas to edit">
+        {{ chartStore.title }}
+      </span>
+    </div>
+
+    <!-- ── New Chart button ── -->
+    <div class="flex items-center order-2">
       <button
-        v-else
-        @click="startEditing"
-        class="group w-full sm:max-w-sm mx-auto inline-flex items-center justify-center gap-1.5 font-heading font-extrabold text-lg sm:text-xl text-slate-800 hover:text-primary-600 transition-colors cursor-text truncate max-w-full"
-        aria-label="Edit chart title"
+        @click="emit('new-chart')"
+        class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:text-primary-600 hover:bg-primary-50 hover:border-primary-200 transition-all duration-150"
+        aria-label="Create a new chart"
+        title="New Chart"
       >
-        <span class="truncate">{{ chartStore.title }}</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-300 group-hover:text-primary-400 shrink-0">
-          <path d="M12 20h9"/>
-          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
+        <span class="hidden sm:inline">New</span>
       </button>
     </div>
 
     <!-- ── Edit / Preview mode toggle ── -->
-    <div class="flex items-center gap-1 order-2">
+    <div class="flex items-center gap-1 order-3">
       <div class="flex items-center gap-0.5 border border-slate-200 rounded-lg overflow-hidden">
         <button
           :class="[
@@ -234,6 +231,8 @@ const emit = defineEmits<{
   'update:zoom': [value: number]
   'update:previewMode': [value: boolean]
   'toggleCustomize': []
+  /** Fired when the user clicks "New" — creates a fresh chart. */
+  'new-chart': []
   /** Fired when the user clicks "Export" — opens the export dialog. */
   export: []
   /** Fired when the user clicks "Preview" — opens the print preview modal. */
@@ -256,11 +255,6 @@ function isZoomActive(val: number): boolean {
   return Math.abs(props.zoom - val) < 0.01
 }
 
-const isEditing = ref(false)
-const titleInput = ref(chartStore.title)
-const titleInputRef = ref<HTMLInputElement | null>(null)
-
-/** Whether the "More" dropdown menu is open. */
 const showMoreMenu = ref(false)
 const moreMenuRef = ref<HTMLElement | null>(null)
 
@@ -303,24 +297,4 @@ watch(
 onUnmounted(() => {
   if (truncationTimer) clearTimeout(truncationTimer)
 })
-
-function startEditing() {
-  isEditing.value = true
-  titleInput.value = chartStore.title
-  nextTick(() => {
-    titleInputRef.value?.focus()
-    titleInputRef.value?.select()
-  })
-}
-
-function saveTitle() {
-  const trimmed = titleInput.value.trim()
-  chartStore.setTitle(trimmed || 'My Communication Chart')
-  isEditing.value = false
-}
-
-function cancelEdit() {
-  isEditing.value = false
-  titleInput.value = chartStore.title
-}
 </script>
