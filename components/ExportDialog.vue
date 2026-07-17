@@ -140,7 +140,7 @@
                   </button>
                 </div>
                 <p v-if="format === 'pdf'" class="text-[11px] text-slate-400 leading-snug">
-                  Opens your browser's print dialog — choose “Save as PDF” for a vector file. Quality only affects PNG exports.
+                  Creates a high-resolution PDF file you can save, email, or print.
                 </p>
               </div>
 
@@ -213,9 +213,7 @@
                   <span class="min-w-0">
                     <span class="block text-sm font-medium text-slate-700">Export all charts ({{ chartCount }})</span>
                     <span class="block text-[11px] text-slate-400 leading-tight">
-                      {{ format === 'pdf'
-                        ? 'Prints each chart one at a time — save each as it opens.'
-                        : 'Saves every chart as a separate image file.' }}
+                      Downloads every chart as a separate file.
                     </span>
                   </span>
                 </label>
@@ -323,7 +321,7 @@ interface FormatOption {
 }
 
 const FORMAT_OPTIONS: FormatOption[] = [
-  { id: 'pdf', label: 'PDF (Print)', hint: 'Vector · best quality' },
+  { id: 'pdf', label: 'PDF (Print)', hint: 'Professional · high quality' },
   { id: 'png', label: 'PNG (Image)', hint: 'Raster · shareable' },
 ]
 
@@ -390,7 +388,7 @@ const progressLabel = computed(() => {
   if (props.batchProgress) {
     return `Exporting chart ${props.batchProgress.current} of ${props.batchProgress.total}…`
   }
-  return format.value === 'pdf' ? 'Opening print dialog…' : 'Generating image…'
+  return format.value === 'pdf' ? 'Generating PDF…' : 'Generating image…'
 })
 
 // ── Selection handlers ─────────────────────────────────────────────────────

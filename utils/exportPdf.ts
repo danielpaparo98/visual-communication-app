@@ -1,48 +1,62 @@
-import type { ExportQuality } from './exportFilename'
+import { jsPDF } from 'jspdf'
+import html2canvas from 'html2canvas-pro'
+import { exportFilename, QUALITY_SCALE, type ExportQuality } from './exportFilename'
 
 /**
- * Export the chart as a PDF by delegating to the browser's native print
- * pipeline (`window.print()`).
+ * Export the chart as a PDF by capturing the DOM element with html2canvas
+ * and embedding the image in a jsPDF document with A4 landscape dimensions.
  *
- * Browser print-to-PDF produces **vector, infinitely-scalable output** —
- * the highest fidelity available — which is exactly what we want for a
- * communication board that may be printed at any size. This is deliberately
- * preferred over a rasterised jsPDF approach.
+ * This produces a **rasterised** PDF (the page is rendered as a flat image
+ * inside the document) rather than a vector one.  For vector output users
+ * can use the native browser print-to-PDF flow via the Print / Preview
+ * button instead.
  *
- * The native print dialog does not let us programmatically set the saved
- * file name, but most browsers pre-fill the filename from `document.title`.
- * We therefore temporarily swap the document title for a clean,
- * title-derived slug so the suggested filename reads e.g.
- * `my-communication-chart.pdf` instead of the page heading.
- *
- * @param _canvasElement The chart DOM element (kept in the signature for
- *   API symmetry with {@link exportToPng}; native print renders its own
- *   print-only copy, so this element is not read here).
- * @param filename Suggested download name (without extension) — used to
- *   seed `document.title`.
- * @param _quality Unused by native print (vector output has no resolution);
- *   retained for signature parity.
+ * @param canvasElement The chart DOM node to capture.
+ * @param title Chart title — used to build the download filename.
+ * @param quality Pixel-ratio for html2canvas (draft=1, normal=2, high=3).
+ *   Higher values produce crisper output at the cost of a larger file.
  */
-export function exportToPdf(
-  _canvasElement: HTMLElement,
-  filename: string,
-  _quality: ExportQuality = 'normal',
+export async function exportToPdf(
+  canvasElement: HTMLElement,
+  title: string,
+  quality: ExportQuality = 'normal',
 ): Promise<void> {
-  // SSR guard — print is a client-only API.
-  if (typeof window === 'undefined') return Promise.resolve()
+  const scale = QUALITY_SCALE[quality]
 
-  const previousTitle = document.title
-  document.title = filename
+  // Wait for fonts to load before rasterising (prevents fallback-font text)
+  if (typeof document !== 'undefined' && 'fonts' in document) {
+    try {
+      await (document as Document & { fonts: { ready: Promise<unknown> } }).fonts.ready
+    } catch {
+      // Non-critical
+    }
+  }
 
-  // `window.print()` blocks (synchronously) until the user dismisses the
-  // dialog in most browsers, so the title has already been read by the
-  // time we restore it. We restore on a short delay to be safe across
-  // browsers that open the dialog asynchronously.
-  window.print()
+  const canvas = await html2canvas(canvasElement, {
+    scale,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    ignoreElements: (el) => el.classList?.contains('print-footer'),
+  })
 
-  window.setTimeout(() => {
-    document.title = previousTitle
-  }, 500)
+  const imgData = canvas.toDataURL('image/png')
 
-  return Promise.resolve()
+  // A4 landscape dimensions in mm
+  const PDF_WIDTH = 297
+  const PDF_HEIGHT = 210
+
+  const pdf = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  // Scale the image to fit the page width
+  const imgHeight = (canvas.height * PDF_WIDTH) / canvas.width
+
+  pdf.addImage(imgData, 'PNG', 0, 0, PDF_WIDTH, imgHeight)
+
+  const filename = exportFilename(title, 'pdf')
+  pdf.save(filename)
 }

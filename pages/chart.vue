@@ -273,7 +273,7 @@ import { useSlotClipboard } from '~/composables/useSlotClipboard'
 import { loadIconCategories } from '~/utils/iconLoader'
 import { exportToPng } from '~/utils/exportPng'
 import { exportToPdf } from '~/utils/exportPdf'
-import { exportFilename, sanitizeFilename } from '~/utils/exportFilename'
+import { exportFilename } from '~/utils/exportFilename'
 import type { IconCategory } from '~/types/icons'
 import type { ChartSlotStyle } from '~/types/chart'
 import type { BatchProgress, ExportConfig, ExportResult } from '~/types/export'
@@ -366,59 +366,54 @@ function delay(ms: number): Promise<void> {
  * Export whichever chart is currently loaded in the chart store, in the
  * chosen format and quality.
  *
- * For **PNG** the on-screen canvas is forced into preview mode at natural
- * size (zoom 1) so the capture is a faithful 1:1 of the A4 page with no
- * editing chrome, then restored afterwards. The preview-mode watcher also
- * re-asserts a "fit" zoom on its own tick, so we re-apply zoom 1 after a
- * short beat to win that race deterministically.
+ * Switches to preview mode at natural size (zoom 1) so the capture is a
+ * faithful 1:1 render of the A4 page with no editing chrome, then restores
+ * the user's view state afterwards.
  *
- * For **PDF** we delegate to the browser's native print pipeline
- * (`window.print()`); the `ChartPrint` component renders the print version
- * straight from the store, so no mode switch is needed.
+ * Both formats now use html2canvas for capture (the PNG is downloaded
+ * directly; the PDF is assembled via jsPDF from the captured image).
  *
- * @returns The download filename (or suggested print name).
+ * @returns The download filename for display in the export dialog.
  */
 async function exportActiveChart(config: ExportConfig, title: string): Promise<string> {
-  if (config.format === 'png') {
-    const canvasEl = canvasComponentRef.value?.canvasPageRef
-    if (!canvasEl) {
-      throw new Error('The chart is not ready yet — please try again in a moment.')
-    }
-
-    const prevZoom = zoom.value
-    const prevPreview = previewMode.value
-    previewMode.value = true
-    zoom.value = 1
-    try {
-      await nextTick()
-      // Let the preview-mode watcher's applyFitZoom run first, then re-assert
-      // the full-size zoom so the capture is not shrunken to fit.
-      await delay(80)
-      zoom.value = 1
-      // Give images + fonts a moment to paint before rasterising.
-      await delay(400)
-      await exportToPng(canvasEl, title, config.quality)
-    } finally {
-      zoom.value = prevZoom
-      previewMode.value = prevPreview
-    }
-    return exportFilename(title, 'png')
+  const pageEl = canvasComponentRef.value?.canvasPageRef
+  if (!pageEl) {
+    throw new Error('The chart is not ready yet — please try again in a moment.')
   }
 
-  // PDF — native vector print.
-  const canvasEl = canvasComponentRef.value?.canvasPageRef ?? document.body
-  await exportToPdf(canvasEl, sanitizeFilename(title), config.quality)
-  return exportFilename(title, 'pdf')
+  const prevZoom = zoom.value
+  const prevPreview = previewMode.value
+
+  try {
+    // Switch to preview mode to hide editing chrome
+    previewMode.value = true
+    await nextTick()
+
+    // Let the preview-mode watcher's applyFitZoom settle, then re-assert
+    // full-size zoom so we capture at 1:1, not the fit-shrunk version.
+    await delay(120)
+    zoom.value = 1
+    await delay(200)
+
+    if (config.format === 'png') {
+      await exportToPng(pageEl, title, config.quality)
+    } else {
+      await exportToPdf(pageEl, title, config.quality)
+    }
+  } finally {
+    zoom.value = prevZoom
+    previewMode.value = prevPreview
+  }
+
+  return exportFilename(title, config.format)
 }
 
 /**
  * Export every chart in the manager store sequentially.
  *
  * The active chart is saved first (so any pending edits aren't lost), then
- * each chart is made active in turn via the proper `setActiveChart` path —
- * this keeps auto-save writing to the correct chart. The originally-active
- * chart is restored at the end. For PDF this means one print dialog per
- * chart (the user saves each as it appears); for PNG each chart downloads.
+ * each chart is made active in turn. The originally-active chart is
+ * restored at the end.
  *
  * @returns The number of charts successfully exported.
  */
@@ -436,9 +431,9 @@ async function exportAllCharts(config: ExportConfig): Promise<{ count: number }>
       if (!chart) continue
       exportDialogBatchProgress.value = { current: i + 1, total: list.length }
       chartManager.setActiveChart(chart.id)
-      // Allow the canvas + print render to update to the new chart data.
+      // Allow the canvas render to update to the new chart data before capture.
       await nextTick()
-      await delay(config.format === 'png' ? 150 : 60)
+      await delay(200)
       await exportActiveChart(config, chartStore.title)
       count++
     }
